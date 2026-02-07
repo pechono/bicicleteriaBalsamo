@@ -23,12 +23,13 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+  
     protected $fillable = [
         'name',
         'email',
         'password',
+        'user_type', // Añadir aquí
     ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -42,15 +43,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    /**
      * The accessors to append to the model's array form.
      *
      * @var array<int, string>
@@ -58,4 +50,17 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 }
