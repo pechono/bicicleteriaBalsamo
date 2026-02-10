@@ -122,9 +122,9 @@
         </div>
     </section>
     
-    <section id="features" class="py-16 bg-gray-100">
+    {{-- <section id="features" class="py-16 bg-gray-100">
         @livewire('imagenes.mostrar-imagenes')
-    </section>
+    </section> --}}
   
     <!-- Testimonials Section -->
     <section id="testimonials" class="py-16 bg-white">
