@@ -1,0 +1,58 @@
+name: Deploy Laravel to Shared Hosting
+
+on:
+  push:
+    branches:
+      - master   # o master si usás master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Clonar el repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Usar Node (solo para build)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3️⃣ Instalar dependencias frontend
+      - name: Install NPM dependencies
+        run: npm install
+
+      # 4️⃣ Build de Vite
+      - name: Build assets
+        run: npm run build
+
+      # 5️⃣ Instalar Composer
+      - name: Install Composer dependencies
+        #run: composer install --no-dev --optimize-autoloader
+        run: composer install --no-dev --prefer-dist --no-scripts --no-progress --no-suggest
+
+
+      # 6️⃣ Limpieza antes del deploy
+      - name: Cleanup files
+        run: |
+          rm -rf node_modules
+          rm -rf .git
+          rm -rf .github
+          rm -f .env
+
+      # 7️⃣ Deploy por FTP
+      - name: Deploy to Hosting via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /bicicleteria/
+          exclude: |
+            **/.git*
+            **/.env
+            **/node_modules/**
+            **/tests/**
+            **/storage/logs/**
