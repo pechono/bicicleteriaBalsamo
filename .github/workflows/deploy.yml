@@ -28,7 +28,7 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      # 5️⃣ Instalar Composer
+      # 5️⃣ Instalar Composer --
       - name: Install Composer dependencies
         #run: composer install --no-dev --optimize-autoloader
         run: composer install --no-dev --prefer-dist --no-scripts --no-progress --no-suggest
