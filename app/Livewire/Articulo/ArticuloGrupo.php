@@ -10,13 +10,19 @@ use App\Models\Articulo;
 use App\Models\Categoria;
 use App\Models\GruposArticulos;
 use App\Models\HistoriasPrecio;
-use App\Models\Ofertas;
 use App\Models\Stock;
 use App\Models\Suelto;
 use App\Models\Unidad;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Generator;
+
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Renderer\Image\GdImageBackEnd;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+
+use BaconQrCode\Writer;
+
+
 
 
 class ArticuloGrupo extends Component
@@ -114,23 +120,27 @@ class ArticuloGrupo extends Component
             'suelto'=>  $this->suelto,
             'activo'=>1
         ]);
-        $ultimo=Articulo::latest()->first();
-        //---------------------------
-        $qrData =  $ultimo->id;
-        $qr = new Generator('gd'); // Forzamos el motor GD
-        $qrImage = $qr->format('png')
-            ->size(200)
-            ->generate($qrData);
-        
-            $fileName = 'qrcodes/articulo_'.$ultimo->id.'.png';
+        $ultimo = Articulo::latest()->first();
 
+$qrData = (string) $ultimo->id;
 
-        Storage::disk('public')->put($fileName, $qrImage);
+$renderer = new \BaconQrCode\Renderer\ImageRenderer(
+    new RendererStyle(200),
+    new SvgImageBackEnd()
+);
 
-        // 4. Guardar la ruta del QR en la base de datos
-        $articulo = Articulo::find($ultimo->id);
-        $articulo->qr_code = $fileName;
-        $articulo->save();
+$qr = new Writer($renderer);
+
+$qrImage = $qr->writeString($qrData);
+
+$fileName = 'qrcodes/articulo_'.$ultimo->id.'.svg';
+
+Storage::disk('public')->put($fileName, $qrImage);
+
+$articulo = Articulo::find($ultimo->id);
+$articulo->qr_code = $fileName;
+$articulo->save();
+
 
         // 5. Mensaje o redirección
         session()->flash('message', 'Artículo creado con QR generado correctamente.');
