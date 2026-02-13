@@ -33,7 +33,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/', fn() => view('venta.index'))->name('venta.index');
         Route::get('/list', fn() => view('venta.list'))->name('venta.list');
         Route::get('/cuentacorriente', fn() => view('venta.cuentaCorriente'))->name('venta.cuentaCorriente');
-        Route::get('/listcuentacorriente', fn() => view('venta.ListCuentaCorriente'))->name('venta.ListCuentaCorriente');
+        Route::get('/listcuentacorriente', fn() => view('venta.listCuentaCorriente'))->name('venta.listCuentaCorriente');
         Route::get('/express', fn() => view('venta.ventaExpress'))->name('venta.ventaExpress');
         Route::get('/card', fn() => view('venta.ventaCard'))->name('venta.ventaCard');
 
@@ -90,11 +90,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     }); 
     Route::get('/imagenes/cargar', fn() => view('imagenes.imagenes'))->name('imagenes.imagenes');
 
-    Route::get('/servicio/ingresar', fn() => view('Service.ingresarBike'))->name('Service.ingresarBike');
+    Route::get('/servicio/ingresar', fn() => view('service.ingresarBike'))->name('service.ingresarBike');
 Route::get('/servicio/ingreso-imp/{nro_ingreso}', function ($nro_ingreso) {
     return view('service.ingresoImp', compact('nro_ingreso'));
-})->name('Service.ingreso-imp');
+})->name('service.ingreso-imp');
 
-    //Route::get('/servicio//ingreso-imp{nro_ingreso}', fn() => view('Service.ingresoImp'))->name('Service.ingreso-imp');
+    //Route::get('/servicio//ingreso-imp{nro_ingreso}', fn() => view('service.ingresoImp'))->name('service.ingreso-imp');
 
 });

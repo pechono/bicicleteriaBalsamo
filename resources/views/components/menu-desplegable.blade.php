@@ -26,7 +26,7 @@
                 <a href="{{ route('venta.ventaCard') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Venta Card</a>
 
                 <a href="{{ route('venta.cuentaCorriente') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Cuenta Corriente</a>
-                <a href="{{ route('venta.ListCuentaCorriente') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Pago Cuenta Corriente</a>
+                <a href="{{ route('venta.listCuentaCorriente') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Pago Cuenta Corriente</a>
                 <a href="{{ route('cierre.cierreCaja') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Cierre Caja</a>
             </div>
         </div>
@@ -44,7 +44,7 @@
                 </div>
             </a>
             <div id="servicioSubMenu" class="pl-8 hidden text-lg  text-white">
-                <a href="{{ route('Service.ingresarBike') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Ingresar Bicicleta</a>
+                <a href="{{ route('service.ingresarBike') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Ingresar Bicicleta</a>
                 {{-- <a href="{{ route('venta.ventaCard') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Venta Card</a>
 
                 <a href="{{ route('venta.cuentaCorriente') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Cuenta Corriente</a>
