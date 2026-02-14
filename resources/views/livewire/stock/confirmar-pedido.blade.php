@@ -39,6 +39,13 @@
                     </td>
                     <td class="px-4 py-2">
                         <div class="flex items-center">
+                            <Button wire:click="sortby('Codigo')">Codigo</Button>
+                            <x-sort-icon sortFiel='Codigo': sort-by='$sortBy' : sort-asc='$sortAsc'>
+
+                        </div>
+                    </td>
+                    <td class="px-4 py-2">
+                        <div class="flex items-center">
                             <Button wire:click="sortby('articulo')">Articulo</Button>
                             <x-sort-icon sortFiel='apellido': sort-by='$sortBy' : sort-asc='$sortAsc'>
 
@@ -68,6 +75,7 @@
                 @foreach ($inTheCar as $car)
                 <tr>
                     <td class="rounder border px-4 py-2">{{ $car->id }}</td>
+                    <td class="rounder border px-4 py-2">{{ $car->codigo }}</td>
                     <td class="rounder border px-4 py-2">{{ $car->articulo }}</td>
                     <td class="rounder border px-4 py-2">{{ $car->categoria }}</td>
                     <td class="rounder border px-4 py-2">{{ $car->presentacion }}-{{ $car->unidad }}</td>

@@ -36,6 +36,13 @@
                         <x-sort-icon sortFiel='id': sortBy=$sortBy, sortAsc=$sortAsc/>
                         </div>
                     </td>
+                     <td class="px-4 py-2">
+                        <div class="flex items-center">
+                            <Button wire:click="sortby('Cadigo')">Cadigo</Button>
+                            <x-sort-icon sortFiel='Cadigo': sort-by='$sortBy' : sort-asc='$sortAsc'>
+
+                        </div>
+                    </td>
                     <td class="px-4 py-2">
                         <div class="flex items-center">
                             <Button wire:click="sortby('articulo')">Articulo</Button>
@@ -125,6 +132,8 @@
                 @foreach ($articulos as $articulo)
                 <tr>
                     <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
+                    <td class="rounder border px-4 py-2">{{ $articulo->codigo }}</td>
+
                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
@@ -234,12 +243,16 @@
                         <tbody>
                         <tr  >
                                 <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Codigo</td>
+
                                 <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
                                 <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Descripcion</td>
 
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $id }} </td>
+                                <td class="px-4 py-2 border">{{ $codigo }}</td>
+
                                 <td class="px-4 py-2 border">{{ $art }}</td>
                                 <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
 
@@ -301,12 +314,16 @@
                     <tbody>
                     <tr  >
                             <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
+                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Codigo</td>
+
                             <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
                             <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Descripcion</td>
 
                         </tr>
                         <tr>
                             <td class="px-4 py-2 border">{{ $id }} </td>
+                            <td class="px-4 py-2 border">{{ $codigo }}</td>
+
                             <td class="px-4 py-2 border">{{ $art }}</td>
                             <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
 

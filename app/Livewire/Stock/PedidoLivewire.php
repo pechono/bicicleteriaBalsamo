@@ -51,7 +51,7 @@ class PedidoLivewire extends Component
                                         });
                                     })
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
-            ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+            ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo', 'proveedors.nombre')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
@@ -86,6 +86,7 @@ class PedidoLivewire extends Component
 
     public $agregarCar=false;
     public $id;
+    public $codigo;
     public $art;
     public $categoria;
     public $presentacion;
@@ -106,12 +107,13 @@ class PedidoLivewire extends Component
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
         ->join('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
-        ->select('articulos.id','articulos.articulo','categorias.categoria',
+        ->select('articulos.id','articulos.codigo','articulos.articulo','categorias.categoria',
             'articulos.presentacion','unidads.unidad','articulos.descuento',
             'articulos.unidadVenta','articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles',
             'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre')
         ->first();
         $this->id=$articulo->id;
+        $this->codigo=$articulo->codigo;
         $this->art=$articulo->articulo;
         $this->categoria=$articulo->categoria;
         $this->presentacion=$articulo->presentacion;
@@ -142,12 +144,13 @@ class PedidoLivewire extends Component
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
         ->join('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
-        ->select('articulos.id','articulos.articulo','categorias.categoria',
+        ->select('articulos.id', 'articulos.codigo','articulos.articulo','categorias.categoria',
             'articulos.presentacion','unidads.unidad','articulos.descuento',
             'articulos.unidadVenta','articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles',
             'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre')
         ->first();
         $this->id=$articulo->id;
+        $this->codigo=$articulo->codigo;
         $this->art=$articulo->articulo;
         $this->categoria=$articulo->categoria;
         $this->presentacion=$articulo->presentacion;
@@ -182,12 +185,13 @@ class PedidoLivewire extends Component
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
         ->join('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
-        ->select('articulos.id','articulos.articulo','categorias.categoria',
+        ->select('articulos.id','articulos.codigo','articulos.articulo','categorias.categoria',
             'articulos.presentacion','unidads.unidad','articulos.descuento',
             'articulos.unidadVenta','articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles',
             'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre')
         ->first();
         $this->id=$articulo->id;
+        $this->codigo=$articulo->codigo;
         $this->art=$articulo->articulo;
         $this->categoria=$articulo->categoria;
         $this->presentacion=$articulo->presentacion;

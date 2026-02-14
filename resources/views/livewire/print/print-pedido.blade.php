@@ -134,7 +134,7 @@ footer {
                     <table class="invoice-table">
                         <thead>
                             <tr>
-
+                                <th>Codigo</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
 
@@ -143,6 +143,7 @@ footer {
                         <tbody>
                             @foreach ( $pedidos as $op )
                             <tr>
+                                <td>{{ $op->codigo}} </td>
 
                                 <td>{{ $op->articulo}}  {{ $op->presentacion }} {{ $op->unidad }}</td>
                                 <td>{{ $op->cantidad }} </td>

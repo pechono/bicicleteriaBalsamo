@@ -14,7 +14,7 @@ class StockImprimir extends Component
     public function generateReport()
     {
 
-        $articulos=Articulo::select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+        $articulos=Articulo::select('articulos.id', 'articulos.codigo','articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')

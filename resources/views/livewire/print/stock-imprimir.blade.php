@@ -124,6 +124,7 @@ footer {
                             </tr>
                             <tr>
                                 <td class="px-4 py-2"><div class="flex items-center" >Id</div> </td>
+                                <td class="px-4 py-2"><div class="flex items-center" >Codigo</div> </td>
                                 <td class="px-4 py-2"><div class="flex items-center" colspan=''>Articulo</div></td>
                                 <td class="px-4 py-2"><div class="flex items-center">Min.</div></td>
                                 <td class="px-4 py-2"><div class="flex items-center">Stock</div></td>
@@ -138,6 +139,8 @@ footer {
                                 @foreach ($articulos as $articulo)
                                     <tr>
                                         <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
+                                        <td class="rounder border px-4 py-2">{{ $articulo->codigo }}</td>
+
                                         <td class="rounder border px-4 py-2">{{ $articulo->articulo }} {{ $articulo->presentacion }}-{{ $articulo->unidad }} {{ $articulo->categoria }} {{ $articulo->unidadVenta }}</td>
 
 

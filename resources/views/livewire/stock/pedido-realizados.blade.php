@@ -89,6 +89,7 @@
                         <td colspan="6" class="h-12"></td>
                     </tr>
                     <tr  >
+                        <td class=' text-lg bg-blue-100 mt-6 border'>Codigo</td>
                         <td class=' text-lg bg-blue-100 mt-6 border'>Articulo</td>
                         <td class=' text-lg bg-blue-100 mt-6 border'>Cantidad</td>
                     </tr>
@@ -97,6 +98,7 @@
                 <tbody>
                     @foreach ( $artPedido as $op )
                     <tr>
+                        <td class=' text-lg border mt-4  '>{{ $op->codigo }} </td>
                         <td class=' text-lg border mt-4  '>{{ $op->articulo}}  {{ $op->presentacion }} {{ $op->unidad }}</td>
                         <td class=' text-lg border mt-4  '>{{ $op->cantidad }} </td>
                     </tr>
