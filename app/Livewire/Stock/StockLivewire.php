@@ -43,7 +43,7 @@ class StockLivewire extends Component
                                         });
                                     })
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
-            ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+            ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'articulos.codigo','categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
@@ -75,7 +75,7 @@ class StockLivewire extends Component
         $this->resetPage();
 
     }
-    public $idArt, $articulo, $categoria_id, $presentacion, $unidad_id, $descuento, $unidadVenta, 
+    public $idArt,$codigo, $articulo, $categoria_id, $presentacion, $unidad_id, $descuento, $unidadVenta, 
             $precioF, $precioI, $caducidad, $detalles, $suelto, $porcentaje, $proveedor_id, $stock, $stockMinimo;
 
     public $confirmingArticuloEdit=false;
@@ -84,13 +84,14 @@ class StockLivewire extends Component
     public function confirmarArticuloEdit($artEdit )
     {
         $edit=Articulo::where('activo',$this->active)
-        ->select('articulos.id', 'articulos.articulo',  'articulos.presentacion',
+        ->select('articulos.id','articulos.codigo', 'articulos.articulo',  'articulos.presentacion',
         'articulos.descuento', 'articulos.unidadVenta', 'articulos.suelto', 'articulos.activo','stocks.proveedor_id',
         'stocks.stock','stocks.stockMinimo','unidads.unidad','articulos.categoria_id',)
         ->join('stocks', 'stocks.articulo_id','=','articulos.id')
         ->join('unidads', 'unidads.id','articulos.unidad_id')
         ->find($artEdit);
             $this->idArt=$edit->id ;
+            $this->codigo=$edit->codigo;
             $this->articulo=$edit->articulo.'   '.$edit->presentacion .'- '.$edit->unidad;
             $this->categoria_id=$edit->categoria_id;
             $this->unidadVenta=$edit->unidadVenta;
@@ -137,7 +138,7 @@ class StockLivewire extends Component
         $art->update([
             'activo'=>0,
          ]);
-         $this->articulo = $this->categoria_id = $this->presentacion = $this->unidad_id = $this->descuento = null;
+         $this->articulo = $this->categoria_id = $this->presentacion = $this->unidad_id = $this->descuento =$this->codigo = null;
          $this->unidadVenta = $this->precioF = $this->precioI = $this->caducidad = $this->detalles = $this->suelto = $this->stockMinimo = $this->stock = $this->proveedor_id = null;
 
 

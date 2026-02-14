@@ -31,6 +31,12 @@
                         </div>
                     </td>
                     <td class="px-4 py-2">
+                        <div class="flex items-center" >
+                        <button wire:click="sortby('Codigo')">Codigo </button>
+                        <x-sort-icon sortFiel='Codigo': sortBy=$sortBy, sortAsc=$sortAsc/>
+                        </div>
+                    </td>
+                    <td class="px-4 py-2">
                         <div class="flex items-center">
                             <Button wire:click="sortby('articulo')">Articulo</Button>
                             <x-sort-icon sortFiel='apellido': sort-by='$sortBy' : sort-asc='$sortAsc'>
@@ -113,6 +119,8 @@
                 @foreach ($articulos as $articulo)
                 <tr>
                     <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
+                    <td class="rounder border px-4 py-2">{{ $articulo->codigo }}</td>
+
                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
@@ -179,6 +187,11 @@
                     <x-label for="idArt" value="{{ __('Id') }}" />
                     <x-input id="idArt" type="text" class="mt-1 block w-full text-xl" wire:model='idArt' placeholder="idArt" readonly/>
                     <x-input-error for="idArt" class="mt-2" />
+                </div>
+                <div class=" ml-5 w-full">
+                    <x-label for="codigo" value="{{ __('Codigo') }}" />
+                    <x-input id="codigo" type="text" class="mt-1 block w-full text-xl" wire:model='codigo' placeholder="Codigo" readonly/>
+                    <x-input-error for="codigo" class="mt-2" />
                 </div>
                 <div class=" ml-5 w-full">
                     <x-label for="articulo" value="{{ __('Articulo') }}" />
