@@ -120,7 +120,7 @@ footer {
                         <thead>
                             <tr>
                                 <td colspan="2" class="px h-8"> Fecha: {{date('y-m-d')}}</td>
-                                <td colspan="5" class="h-8 px-10 "><div class="items-center">Stock</div></td>
+                                <td colspan="6" class="h-8 px-10 "><div class="items-center">Stock</div></td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2"><div class="flex items-center" >Id</div> </td>
@@ -169,7 +169,7 @@ footer {
                     </table>
                 </main>
                 <footer>
-                    <p>&copy; 2024 Nombre de la Empresa. Todos los derechos reservados.</p>
+                    <p>&copy; 2026 Bicicleteria Balsamo. Todos los derechos reservados.</p>
                 </footer>
             </div>
     </body>
