@@ -97,7 +97,13 @@ class ArticuloGrupo extends Component
             'categoria_id' => 'required',  // Agregar la regla para categoría
             'grupo' => 'required',         // Agregar la regla para grupo (asegúrate que la propiedad exista)
             'proveedor_id' => 'required',
-            'codigo' => 'nullable|alpha_num|unique:articulos,codigo',
+            'codigo' => [
+                'nullable',
+                'unique:articulos,codigo',
+                'regex:/^[A-Za-z0-9\-\/\.]+$/'
+            ],
+
+            
             ], [
                 'categoria_id.required' => 'Debe seleccionar una categoría.',
                 'grupo.required' => 'Debe seleccionar un grupo.',
