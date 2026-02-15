@@ -73,7 +73,7 @@ class VentaExpress extends Component
                         ->orWhere('categoria', 'like', '%' . $this->q . '%');
                 })
                 ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
-                ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+                ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
                     'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
                     'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo')
                 ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
@@ -87,7 +87,7 @@ class VentaExpress extends Component
         ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-        ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+        ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento')
         ->get();

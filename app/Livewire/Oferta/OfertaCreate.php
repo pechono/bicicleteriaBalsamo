@@ -4,12 +4,12 @@ namespace App\Livewire\Oferta;
 
 use App\Models\Articulo;
 use App\Models\OfertaArt;
-<<<<<<< HEAD
-=======
+// <<<<<<< HEAD
+// =======
 use App\Models\OfertaArticulos;
 use App\Models\Ofertas;
 use App\Models\Stock;
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Venta;
@@ -17,30 +17,31 @@ use Livewire\Component;
 
 class OfertaCreate extends Component
 {   public $modalArt=false;
-<<<<<<< HEAD
-    public $articulos=[];
-=======
+// <<<<<<< HEAD
+//     public $articulos=[];
+// =======
     /* public $articulos=[]; */
     public $oferta;
     public $detalles;
     public $precio;
     public $tiempo;
     public $q;
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+    public $oferta_id;
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
     public function mostrarArt()
     {
         $this->modalArt=true;
         $this->articulosQuery();
         $this->ofertaArtQuery();
-<<<<<<< HEAD
-        $this->mostrarArticulosOferta();
+// <<<<<<< HEAD
+//         $this->mostrarArticulosOferta();
 
 
-    }
-    public function render()
-    {
-        return view('livewire.oferta.oferta-create');
-=======
+//     }
+//     public function render()
+//     {
+//         return view('livewire.oferta.oferta-create');
+// =======
         /*
          $this->mostrarArticulosOferta();
 */
@@ -66,7 +67,7 @@ class OfertaCreate extends Component
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
             ->join('stocks', 'stocks.articulo_id','=','articulos.id')->get();
         return view('livewire.oferta.oferta-create',compact('articulos'));
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
     }
     public function seVendio($id){
         $venta = Venta::where('articulo_id', $id)->select(DB::raw('SUM(cantidad) as total_vendido'))->first();
@@ -77,24 +78,24 @@ class OfertaCreate extends Component
              return 0;
         }
     }
-<<<<<<< HEAD
-    public $msj=2;
-    // public function addOferta($id){
-    //     $this->msj=$id;
-    //     OfertaArt::create(['articulo'=>$id,'cantidad'=>0, 'precioOfertado'=>0 ]);
-    //     $this->articulosQuery();
-    // }
+// <<<<<<< HEAD
+//     public $msj=2;
+//     // public function addOferta($id){
+//     //     $this->msj=$id;
+//     //     OfertaArt::create(['articulo'=>$id,'cantidad'=>0, 'precioOfertado'=>0 ]);
+//     //     $this->articulosQuery();
+//     // }
+//     public function articulosQuery()  {
+//         return $this->articulos=Articulo::where('activo',1)
+//         ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+//         'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+//         'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo')
+//         ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
+//         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
+//         ->join('stocks', 'stocks.articulo_id','=','articulos.id')->get();
+// =======
     public function articulosQuery()  {
         return $this->articulos=Articulo::where('activo',1)
-        ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-        'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-        'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo')
-        ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
-        ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-        ->join('stocks', 'stocks.articulo_id','=','articulos.id')->get();
-=======
-    public function articulosQuery()  {
-        /*  return $this->articulos=Articulo::where('activo',1)
          ->when($this->q, function ($query){
                             return $query->where( function($query){
                                          $query->where('articulo','like','%'.$this->q.'%')
@@ -108,22 +109,22 @@ class OfertaCreate extends Component
          'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo','articulos.activo')
          ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
          ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-         ->join('stocks', 'stocks.articulo_id','=','articulos.id'); */
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+         ->join('stocks', 'stocks.articulo_id','=','articulos.id');
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
 
     }
     public $artOferta=[];
     public function ofertaArtQuery()
     {
-<<<<<<< HEAD
-        $this->artOferta;
-        $var= OfertaArt::all();
-        if ($var->isNotEmpty()) {
-            $this->artOferta=$var;
-=======
+// <<<<<<< HEAD
+//         $this->artOferta;
+//         $var= OfertaArt::all();
+//         if ($var->isNotEmpty()) {
+//             $this->artOferta=$var;
+// =======
         if (OfertaArt::all()->isNotEmpty()) {
             $this->artOferta=OfertaArt::all();
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
         } else {
             return 'Sin Seleccion';
         }
@@ -140,46 +141,46 @@ class OfertaCreate extends Component
     }
 
     public function addOferta($id)
-<<<<<<< HEAD
-    {
-        OfertaArt::create([
-            'articulo' => $id,
-            'cantidad'=>0,
-            'precioOfertado'=>0 ]);
-=======
+// <<<<<<< HEAD
+//     {
+//         OfertaArt::create([
+//             'articulo' => $id,
+//             'cantidad'=>0,
+//             'precioOfertado'=>0 ]);
+// =======
     {   $of=Articulo::find($id);
         OfertaArt::create([
             'articulo' => $id,
 
             'precioO'=>0
          ]);
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
         $this->articulosQuery();
     }
     public function deleteOferta($id){
         OfertaArt::where('articulo',$id)->delete();
         $this->articulosQuery();
-<<<<<<< HEAD
-        $this->ofertaArtQuery();
-=======
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// <<<<<<< HEAD
+//         $this->ofertaArtQuery();
+// =======
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
 
 
     }
     public function delete(){
         OfertaArt::truncate();
         $this->articulosQuery();
-<<<<<<< HEAD
-        $this->ofertaArtQuery();
+// <<<<<<< HEAD
+//         $this->ofertaArtQuery();
+
+//     }
+//     public $mostrarLabel=false;
+// =======
 
     }
     public $mostrarLabel=false;
-=======
 
-    }
-    public $mostrarLabel=false;
-
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
     public function numeroDeOferta(){
         if( DB::table('oferta_art')->exists()){
            $oferta=DB::table('oferta_art')
@@ -189,46 +190,31 @@ class OfertaCreate extends Component
             ->orderBy('stocks.stock', 'asc')
             ->first();
             $this->mostrarLabel=true;
-            return $oferta->stock;
+            // return $oferta->stock;
+            if ($oferta) {
+                 return $oferta->stock;
+                }       
+
+            return 0;
+
+
+
         }else{
             $this->mostrarLabel=false;
 
             return 'No Se selecciono Articulo';
         }
-<<<<<<< HEAD
+// <<<<<<< HEAD
 
-    $this->ofertaArtQuery();
+//     $this->ofertaArtQuery();
 
-=======
+// =======
         $this->ofertaArtQuery();
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
 
     }
     public $artOfertados=[];
     public function mostrarArticulosOferta(){
-<<<<<<< HEAD
-        $this->artOfertados=OfertaArt::join('articulos', 'oferta_art.articulo', '=', 'articulos.id')
-                    ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-                    ->join('stocks', 'articulos.id', '=', 'stocks.articulo_id')
-                    ->select('articulos.id', 'articulos.articulo', 'stocks.stock',
-                            'articulos.presentacion', 'unidads.unidad', 'articulos.precioI', 'articulos.precioF')
-                    ->orderBy('stocks.stock', 'asc')
-                    ->get();
-
-    }
-
-    public function cerrarModal(){
-     $this->mostrarArticulosOferta();
-     $this->articulosQuery();
-        $this->ofertaArtQuery();
-     $this->modalArt=false;
-
-
-
-    }
-
-}
-=======
         $this->artOfertados = OfertaArt::join('articulos', 'oferta_art.articulo', '=', 'articulos.id')
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')->join('stocks', 'articulos.id', '=', 'stocks.articulo_id')
         ->select('articulos.id','articulos.articulo','stocks.stock','articulos.presentacion','unidads.unidad','articulos.precioI','articulos.precioF','oferta_art.precioO')
@@ -296,11 +282,13 @@ class OfertaCreate extends Component
         ]);
         Ofertas::create([
             'precio'=>$this->precio,
-            'detalles'=>'Oferta'.$this->detalles,
+            'detalles'=>'Oferta '.$this->detalles,
+
             'oferta'=>$this->oferta,
-            'tiempo'=>$this->tiempo
+            'fecha'=>$this->tiempo
         ]);
          $ultima = Ofertas::latest()->first();
+        $this->oferta_id=$ultima->id;
 
         $this->crearOfertaArticulos($ultima->id);
         $this->crearArticulo($ultima->id);
@@ -351,9 +339,10 @@ class OfertaCreate extends Component
         }
             Articulo::create([
                 'articulo'=>  $oferta->oferta,
-                'categoria_id'=> 1,
+                'codigo'=> 'OFT ' .$this->oferta_id,
+                'categoria_id'=> 7,
                 'presentacion'=>$articulosOF,
-                'unidad_id'=>5,
+                'unidad_id'=>1,
                 'descuento'=> 0,
                 'unidadVenta'=>'Sin Definir',
                 'precioF'=>$oferta->precio,
@@ -391,8 +380,15 @@ class OfertaCreate extends Component
     public function Ofeta($id){
         $stock=Stock::where('articulo_id',$id)->first();
         $ofertaArt = Ofertas::where('articulo_id', $id)->exists();
-        return ($ofertaArt || $stock->stock <= 0) ? true : false;
-    }
+        
+        // return ($ofertaArt || $stock->stock <= 0) ? true : false;
+        if (!$stock) {
+            return true;
+        }
+
+        return ($ofertaArt || $stock->stock <= 0);
+
+        }
 }
 
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701

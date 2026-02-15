@@ -9,8 +9,8 @@ class OfertaArt extends Model
 {
     use HasFactory;
     protected $guarded=[];
-<<<<<<< HEAD
-=======
+// <<<<<<< HEAD
+// =======
 
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+// >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
 }

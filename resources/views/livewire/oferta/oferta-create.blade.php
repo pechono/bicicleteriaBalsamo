@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+{{-- <<<<<<< HEAD
 <div class="w-3/5 mx-auto sm:px-6 lg:px-8">
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
         <div class="w-3/5 p-2 sm:px-5 bg-white dark:bg-gray-800 dark:bg-gradient-to-bl dark:from-gray-700/50 dark:via-transparent border-b border-gray-200 dark:border-gray-700">
@@ -9,7 +9,7 @@
             <div class="flex  justify-center ">
                 {{-- form --}}
                 <div class="mt-4 text-2xln justify-center">
-=======
+{{-- ======= --}}
 <div class="w-auto mx-auto sm:px-6 lg:px-8">
     <div class="flex  justify-center" >
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="mt-4 text-2xl justify-center">
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+{{-- >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701 --}}
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="oferta" value="{{'Nombre Oferta'}}" />
                         <x-input id="oferta" type="text" class="mt-1 block w-full" wire:model='oferta' placeholder="Nombre Oferta"/>
@@ -36,13 +36,13 @@
                         <x-input-error for="precio" class="mt-2" />
                     </div>
                     <div class="col-span-6 sm:col-span-4">
-<<<<<<< HEAD
+{{-- <<<<<<< HEAD
                         <x-label for="tiempo" value="{{'Tiempo'}}" />
                         <x-input id="tiempo" type="text" class="mt-1 block w-full" wire:model='tiempo' placeholder="tiempo Oferta"/>
-=======
+======= --}}
                         <x-label for="tiempo" value="{{'Vigente hasta'}}" />
                         <x-input id="tiempo" type="date" class="mt-1 block w-full" wire:model='tiempo' placeholder="tiempo Oferta"/>
->>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701
+{{-- >>>>>>> 3aa5920402a6ea09fb3ca6512bce8cb5e0420701 --}}
                         <x-input-error for="tiempo" class="mt-2" />
                     </div>
                     @if ($mostrarLabel)
@@ -53,9 +53,9 @@
 
 
                 </div>
-<<<<<<< HEAD
+{{-- <<<<<<< HEAD
                 @if ($mostrarLabel)
-                {{-- tabla --}}
+               
                 <div class=" justify-center">
                     <table class="table-auto w-full rounded-md mt-10">
                         <tr>
@@ -184,7 +184,7 @@
                                 <td class="rounder border px-4 py-2 text-lg">{{ $articulo->precioI }}</td>
                                 <td class="rounder border px-4 py-2 text-lg">{{ $articulo->precioF }}</td>
                                 <td class="rounder border px-4 py-2 text-lg">
-                                    {{-- {{ $articulo->stockMinimo }} --}}
+                                   
                                     <div class="w-8 h-8 p-2 grid justify-items-center content-center rounded-full {{ ($articulo->stockMinimo >= $articulo->stock) ? 'bg-red-400' : '' }}">
                                         {{ $articulo->stockMinimo }}
                                     </div>
@@ -208,7 +208,7 @@
                                 @endif
                                 </td>
 
-                                {{-- @endif --}}
+                               
                             </tr>
                             @endforeach
                         </tbody>
@@ -223,10 +223,7 @@
                 </x-slot>
 
                 <x-slot name="footer">
-                    {{-- <x-danger-button wire:click="$toggle('modalArt', false)" wire:loading.attr="disabled">
-                        {{ __('Cancelar') }}
-                    </x-danguer-button> --}}
-
+                   
                     <x-secondary-button class="ms-3" wire:click="cerrarModal()" wire:loading.attr="disabled">
                         {{ __('Activar') }}
                     </x-secondary-button>
@@ -235,7 +232,7 @@
         </div>
     </div>
 </div>
-=======
+======= --}}
 
                 <div class=" flex justify-end m-4">
                     <button wire:click='mostrarArt' class="p-2 text-white bg-sky-600 hover:bg-sky-300 rounded-md">Agregar</button>
