@@ -377,14 +377,21 @@ class VentaExpress extends Component
 
      public function saveCliente(){
 
-         $this->validate();
-         Cliente::create([
-             'apellido'=>$this->apellido,
-             'nombre'=>$this->nombre,
-             'dni'=>$this->dni,
-             'telefono'=>$this->telefono,
-             'activo'=>1
-         ]);
+        $this->validate([
+                'apellido' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'dni' => 'required|string|unique:clientes,dni|min:1|max:15|regex:/^[0-9]+$/',
+                'telefono' => 'required|string|max:20|regex:/^[0-9+\-\s]+$/',
+            ]);
+
+            Cliente::create([
+                'apellido' => $this->apellido,
+                'nombre' => $this->nombre,
+                'dni' => $this->dni,
+                'telefono' => $this->telefono,
+                'activo' => 1
+            ]);
+         
          $this->apellido='';
          $this->nombre='';
          $this->dni='';

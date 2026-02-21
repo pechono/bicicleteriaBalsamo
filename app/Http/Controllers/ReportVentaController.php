@@ -10,5 +10,5 @@ class ReportVentaController extends Controller
     public function pasar($operacion, $volver)
     {
     return view('venta.reporte',compact('operacion','volver'));
-}
+    }
 }

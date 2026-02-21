@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\ImprimirPedidoController;
 use App\Http\Controllers\ReportVentaController;
+use App\Http\Controllers\ServicioController;
 use App\Livewire\Print\PrintPedido;
 use App\Livewire\Print\ReportVentaO;
+use App\Livewire\Print\ReporIngreso;
 use App\Livewire\Print\StockImprimir;
+use App\Livewire\Service\Comprobante;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\CargarImagenes;
 Route::get('/', function () {
@@ -90,11 +93,13 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     }); 
     Route::get('/imagenes/cargar', fn() => view('imagenes.imagenes'))->name('imagenes.imagenes');
 
-    Route::get('/servicio/ingresar', fn() => view('service.ingresarBike'))->name('service.ingresarBike');
-Route::get('/servicio/ingreso-imp/{nro_ingreso}', function ($nro_ingreso) {
-    return view('service.ingresoImp', compact('nro_ingreso'));
-})->name('service.ingreso-imp');
 
-    //Route::get('/servicio//ingreso-imp{nro_ingreso}', fn() => view('service.ingresoImp'))->name('service.ingreso-imp');
+    Route::get('/servicio/ingresar', fn() => view('service.ingresarBike'))->name('service.ingresarBike');
+    Route::get('/servicio/ingreso-imp/{nro_ingreso}', function($nro_ingreso) { return view('service.ingresoImp', compact('nro_ingreso'));
+        })->name('service.ingresoImp');
+    
+    Route::get('/servicios/imprimir/ingreso{nro_ingreso}', [ReporIngreso::class, 'generateReport'])->name('imprimirIngreso');
+
+
 
 });

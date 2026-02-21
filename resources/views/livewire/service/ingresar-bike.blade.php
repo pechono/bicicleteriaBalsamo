@@ -333,48 +333,48 @@
             @endif --}}
 
             @if($modalMarca)
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 
-    <div class="bg-white w-full max-w-md rounded shadow-lg p-4 relative">
+                    <div class="bg-white w-full max-w-md rounded shadow-lg p-4 relative">
 
-        <h2 class="text-lg font-semibold mb-3">Agregar Marca</h2>
+                        <h2 class="text-lg font-semibold mb-3">Agregar Marca</h2>
 
-        <input
-            type="text"
-            wire:model.defer="nuevaMarca"
-            placeholder="Nombre de la marca"
-            class="w-full border rounded px-2 py-1 mb-3 text-sm"
-        >
+                        <input
+                            type="text"
+                            wire:model.defer="nuevaMarca"
+                            placeholder="Nombre de la marca"
+                            class="w-full border rounded px-2 py-1 mb-3 text-sm"
+                        >
 
-        <div class="flex justify-end gap-2 mb-3">
-            <button
-                wire:click="$set('modalMarca', false)"
-                class="px-3 py-1 text-sm border rounded"
-            >
-                Cancelar
-            </button>
+                        <div class="flex justify-end gap-2 mb-3">
+                            <button
+                                wire:click="$set('modalMarca', false)"
+                                class="px-3 py-1 text-sm border rounded"
+                            >
+                                Cancelar
+                            </button>
 
-            <button
-                wire:click="guardarMarca"
-                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-                Guardar
-            </button>
-        </div>
+                            <button
+                                wire:click="guardarMarca"
+                                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Guardar
+                            </button>
+                        </div>
 
-        <h3 class="text-sm font-semibold mb-1">Marcas cargadas</h3>
+                        <h3 class="text-sm font-semibold mb-1">Marcas cargadas</h3>
 
-        <ul class="max-h-40 overflow-y-auto text-sm border rounded p-2">
-            @foreach($brands as $brand)
-                <li class="border-b last:border-b-0 py-1">
-                    {{ $brand->marca }}
-                </li>
-            @endforeach
-        </ul>
+                        <ul class="max-h-40 overflow-y-auto text-sm border rounded p-2">
+                            @foreach($brands as $brand)
+                                <li class="border-b last:border-b-0 py-1">
+                                    {{ $brand->marca }}
+                                </li>
+                            @endforeach
+                        </ul>
 
-    </div>
-</div>
-@endif
+                    </div>
+                </div>
+            @endif
 
 
 

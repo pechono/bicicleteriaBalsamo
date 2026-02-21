@@ -30,6 +30,7 @@ class PrintPedido extends Component
                         ->join('unidads', 'unidads.id','=','articulos.unidad_id')
                         ->select('articulos.articulo','articulos.codigo','articulos.presentacion','unidads.unidad', 'pedidos.cantidad','pedidos.pedido')
                         ->where('pedidos.pedido','=',$id)->get();
+                        
         $proveedor=Pedido::join('proveedors','proveedors.id','=','pedidos.proveedor_id')
                             ->where('pedidos.pedido','=',$id)
                             ->select('proveedors.nombre','pedidos.pedido', 'proveedors.telefono','proveedors.localidad','proveedors.direccion')->first();

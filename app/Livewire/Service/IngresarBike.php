@@ -211,12 +211,12 @@ public function guardarIngreso()
                 'bici_id' => Bici::max('id'),
                 'nro_ingreso' => $nroIng,
                 'articulo_id' => $procesoId,
-                'estado' => 'pendiente'
+                
             ]);
         }
     // Acá después se guarda el servicio completo
     session()->flash('message', 'Ingreso guardado correctamente');
-    return redirect()->route('Service.ingreso-imp', ['nro_ingreso' => $nroIng]);
+    return redirect()->route('service.ingresoImp', ['nro_ingreso' => $nroIng]);
 
 
     }

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Document</title>
+    <style>
+        @media print {
+            @page {
+                size: A5; /* También puedes usar: 148mm 210mm */
+                margin: 1.5cm; /* Ajusta los márgenes según necesites */
+            }
+            
+            /* Opcional: orientación horizontal */
+            @page {
+                size: A5 landscape;
+            }
+        }
+        /* Contenedor que simula una hoja A5 */
+.a5-preview {
+    width: 148mm;
+    height: 210mm;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 10mm; /* Márgenes internos */
+    box-sizing: border-box;
+}
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .fila{
+            width: 50%;
+        }
+         /* Opción 4: Grid con diferentes tamaños */
+        .grid-container-variable {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, auto));
+            gap: 12px;
+            background: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .grid-item-variable {
+            background: #f59e0b;
+            color: white;
+            padding: 5px 9px;
+            border-radius: 6px;
+            white-space: nowrap; /* Evita que el texto se rompa */
+        }
+    </style>
+</head>
+<body>
+    <div class="a5-preview">
+        <table class="tabla-redondeada">
+            <thead >
+                <tr class="fila-redondeada">
+                    <th class="fila">Nro Ingreso</th><th class="fila" rowspan="2">Empresa</th>
+
+                    </th>
+                <tr>
+                    <th>Bicicleta</th>
+                </tr>    
+                
+                <tr>
+                    <th>Fecha Ingreso: 20/02/2024</th>
+                    <th>Fecha Egreso: 28/02/2024</th>
+                </tr>
+                <tr>
+                    <tr>
+            <td>
+                <h2 class="text-lg font-semibold mb-3">🔸 Grid con tamaños variables</h2>
+                <div class="grid-container-variable">
+                    <span class="grid-item-variable">Pequeño</span>
+                    <span class="grid-item-variable">Mediano</span>
+                    <span class="grid-item-variable">Muy largo este texto</span>
+                    <span class="grid-item-variable">Corto</span>
+                    <span class="grid-item-variable">Extremadamente largo para probar</span>
+                    <span class="grid-item-variable">Med</span>
+                </div>
+            </td>
+        </tr>
+                    <td><div>
+                        <p>lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas                           
+                        </p>
+                    </div></td>
+                </tr>
+                <tr>
+                    <th colspan="2">Total</th>
+                </tr>
+            
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+  
+    </div>
+</body>
+</html>
