@@ -55,18 +55,26 @@ class IngresarBike extends Component
     /* ================== PROCESOS ================== */
     
 
-    
-    public function cargarProcesos()
-{
-    $this->procesos = Articulo::where('categoria_id', 1) // Servicio
-        ->when($this->filtroActivos, fn ($q) =>
-            $q->where('activo', true)
-        )
-        ->when($this->buscarProceso, fn ($q) =>
-            $q->where('articulo', 'like', '%' . $this->buscarProceso . '%')
-        )
-        ->orderBy('articulo')
-        ->get();
+    public $mostrarProcesos = 0;
+
+        public function cargarProcesos()
+    {   
+
+        if($this->mostrarProcesos == 0) {
+        $this->procesos = Articulo::where('categoria_id', 1) // Procesos (categoría 1)
+            ->when($this->filtroActivos, fn ($q) => $q->where('activo', true))
+            ->when($this->buscarProceso, fn ($q) =>
+                $q->where('articulo', 'like', '%' . $this->buscarProceso . '%'))
+            ->orderBy('articulo')
+            ->get();
+    } else {
+        $this->procesos = Articulo::where('categoria_id', '<>', 1) // Artículos (otras categorías)
+            ->when($this->filtroActivos, fn ($q) => $q->where('activo', true))
+            ->when($this->buscarProceso, fn ($q) =>
+                $q->where('articulo', 'like', '%' . $this->buscarProceso . '%'))
+            ->orderBy('articulo')
+            ->get();
+    }
 }
 
     public function updatedBuscarProceso()

@@ -119,7 +119,7 @@
                 @foreach ($articulos as $articulo)
                 <tr>
                     <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->codigo }}</td>
+                    <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</td>
 
                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>

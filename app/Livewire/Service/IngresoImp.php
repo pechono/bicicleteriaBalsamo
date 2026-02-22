@@ -63,10 +63,17 @@ class IngresoImp extends Component
 
 
 
-
+    public $botonSalir=false;
+     
 
     public function imprimirComprobante()  // Este método nunca se ejecuta
     {
+        $this->botonSalir=true;
         return redirect()->route('service.reporteIngreso', ['nro_ingreso' => $this->nro_ingreso]);
+    }
+    public function ver()  // Este método nunca se ejecuta
+    {
+        return redirect()->route('service.ingresarBike');
+       
     }
 }

@@ -45,7 +45,7 @@ class StockLivewire extends Component
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
             ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'articulos.codigo','categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo')
+            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo','stocks.codigo_proveedor' )
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
             ->join('stocks', 'stocks.articulo_id','=','articulos.id');
@@ -86,7 +86,7 @@ class StockLivewire extends Component
         $edit=Articulo::where('activo',$this->active)
         ->select('articulos.id','articulos.codigo', 'articulos.articulo',  'articulos.presentacion',
         'articulos.descuento', 'articulos.unidadVenta', 'articulos.suelto', 'articulos.activo','stocks.proveedor_id',
-        'stocks.stock','stocks.stockMinimo','unidads.unidad','articulos.categoria_id',)
+        'stocks.stock','stocks.stockMinimo','unidads.unidad','articulos.categoria_id','stocks.codigo_proveedor')
         ->join('stocks', 'stocks.articulo_id','=','articulos.id')
         ->join('unidads', 'unidads.id','articulos.unidad_id')
         ->find($artEdit);

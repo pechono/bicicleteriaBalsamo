@@ -132,7 +132,7 @@
                 @foreach ($articulos as $articulo)
                 <tr>
                     <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->codigo }}</td>
+                    <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</td>
 
                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>
@@ -155,37 +155,7 @@
                     @php
                        $sta=false;
                     @endphp
-                   {{--  @foreach ($inTheCar as $car)
-                        @if ($car->articulo_id==$articulo->id)
-                            @php
-                                $sta=true;
-                            @endphp
-                            <td class="rounder border px-4 py-2">{{ $car->cantidad }}</td>
-
-                        @endif
-                    @endforeach
-
-                    @if (!$sta)
-                        <td class="rounder border px-4 py-2">-</td>
-                        <td class="rounder border px-4 py-2 content-center" colspan="3">
-                            <x-secondary-button  wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="bg-green-700 hover:bg-green-500 text-white ">
-                                Solicitar
-                            </x-secondary-button>
-                        </td>
-                    @else
-                        <td class="rounder border-t border-b px-4 py-2 ">
-                            <x-button  wire:click="ModCar({{ $articulo->id }})" wire:loading.attr="disabled" class="bg-blue-700 hover:bg-glue-500">
-                                Modificar
-                            </x-button>
-                        <td>
-                        <td class="rounder border-t border-b border-r px-4 py-2 ">
-                            <x-danger-button  wire:click="elimCar({{ $articulo->id }})" wire:loading.attr="disabled" class="bg-green-700 hover:bg-green-500">
-                                Quitar
-                            </x-danger-button>
-                        </td>
-
-
-                    @endif --}}
+                  
                 @php
                     // Busca si el artículo está en el carrito
                     $car = $inTheCar->firstWhere('articulo_id', $articulo->id);
@@ -251,7 +221,7 @@
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $id }} </td>
-                                <td class="px-4 py-2 border">{{ $codigo }}</td>
+                                <td class="px-4 py-2 border">{{ $codigo_proveedor }}-{{ $codigo }}</td>
 
                                 <td class="px-4 py-2 border">{{ $art }}</td>
                                 <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
@@ -322,7 +292,7 @@
                         </tr>
                         <tr>
                             <td class="px-4 py-2 border">{{ $id }} </td>
-                            <td class="px-4 py-2 border">{{ $codigo }}</td>
+                            <td class="px-4 py-2 border">{{ $codigo_proveedor }}-{{ $codigo }}</td>
 
                             <td class="px-4 py-2 border">{{ $art }}</td>
                             <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>

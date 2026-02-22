@@ -37,7 +37,7 @@ class ArticuloGrupo extends Component
     public $articulo, $categoria_id, $presentacion, $unidad_id,
             $descuento, $unidadVenta='Unidad', $precioF, $precioI, $caducidad,
             $detalles, $suelto, $porcentaje, $idArtitul, $proveedor_id, $stock, $stockMinimo, $codigo,
-            $articulosGrupo=[];
+            $articulosGrupo=[],$codigo_proveedor;
 
     public function mount()
     {
@@ -151,12 +151,15 @@ $articulo->save();
         // 5. Mensaje o redirección
         session()->flash('message', 'Artículo creado con QR generado correctamente.');
         //---------------------------
-        
+        $this->codigo_proveedor = Proveedor::find($this->proveedor_id)->abreviatura ?? null;
+
+
         Stock::create([
             'articulo_id'=>$ultimo->id,
             'stockMinimo'=>$this->stockMinimo,
             'stock'=>$this->stock,
-            'proveedor_id'=>$this->proveedor_id
+            'proveedor_id'=>$this->proveedor_id,
+            'codigo_proveedor'=>$this->codigo_proveedor
         ]);
 
         if($this->suelto==1){

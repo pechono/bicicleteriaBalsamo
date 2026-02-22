@@ -123,7 +123,65 @@
         <div class="lg:w-[65%] bg-white shadow rounded p-4 relative overflow-hidden">
 
             <h3 class="text-lg font-semibold mb-2">Procesos</h3>
+            {{-- <label for="">
+                <input type="radio" name="procesos0" id="procesos0" wire:model="mostrarProcesos" value="0" class="p-4 mx-4">       
+                Mostrar procesos
+            </label>
+            <label for="">
+                <input type="radio" name="procesos0" id="procesos1" wire:model="mostrarProcesos" value="1" class="p-4 m-4">
+                Mostrar Articulos
+            </label> --}}
 
+
+
+
+
+            <div class="relative inline-flex p-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200"
+                x-data="{ selected: @entangle('mostrarProcesos') }">
+                
+                <!-- Fondo animado -->
+                <div class="absolute top-1 bottom-1 rounded-full bg-white shadow-md transition-all duration-300"
+                    :style="'width: calc(50% - 4px); left: ' + (selected == 0 ? '4px' : '50%')"></div>
+                
+                <!-- Opciones -->
+                <label class="relative z-10 cursor-pointer">
+                    <input type="radio" 
+                        name="procesos0" 
+                        wire:model="mostrarProcesos" 
+                        value="0" 
+                        class="sr-only">
+                    <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300"
+                        :class="selected == 0 ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
+                        Procesos
+                    </span>
+                </label>
+                
+                <label class="relative z-10 cursor-pointer">
+                    <input type="radio" 
+                        name="procesos0" 
+                        wire:model="mostrarProcesos" 
+                        value="1" 
+                        class="sr-only">
+                    <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300"
+                        :class="selected == 1 ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
+                        Artículos
+                    </span>
+                </label>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
             {{-- BOTÓN NOTA --}}
             <div class="flex justify-end mb-2">
                 <button

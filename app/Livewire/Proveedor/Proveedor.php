@@ -28,6 +28,7 @@ class Proveedor extends Component
     }
     protected $rules=[
         'nombre'=>'required|string|min:4',
+        'abreviatura'=>'required|string|min:2',
         'telefono'=>'required|string|min:4',
         'rubro'=>'required|string|min:4',
         'direccion'=>'required|string|min:4',
@@ -35,13 +36,14 @@ class Proveedor extends Component
         'mail'=>'required|string|min:4',
     ];
 
-    public $nombre, $telefono, $rubro, $direccion, $localidad, $mail, $idPro;
+    public $nombre,$abreviatura, $telefono, $rubro, $direccion, $localidad, $mail, $idPro;
     public function saveProveedor()
     {
         $this->validate();
         ModelsProveedor::create([
             'nombre'=>$this->nombre,
             'telefono'=>$this->telefono,
+            'abreviatura'=>$this->abreviatura,
             'rubro'=>$this->rubro,
             'direccion'=>$this->direccion,
             'localidad'=>$this->localidad,
@@ -59,6 +61,7 @@ class Proveedor extends Component
         $proveedorModal=ModelsProveedor::find($id);
 
             $this->nombre=$proveedorModal->nombre;
+            $this->abreviatura=$proveedorModal->abreviatura;
             $this->telefono=$proveedorModal->telefono;
             $this->rubro=$proveedorModal->rubro;
             $this->direccion=$proveedorModal->direccion;
@@ -72,6 +75,7 @@ class Proveedor extends Component
         $proveedorModal=ModelsProveedor::find($this->idPro);
         $proveedorModal->update([
             'nombre'=>$this->nombre,
+            'abreviatura'=>$this->abreviatura,
             'telefono'=>$this->telefono,
             'rubro'=>$this->rubro,
             'direccion'=>$this->direccion,
@@ -116,6 +120,7 @@ class Proveedor extends Component
     }
     public function vaciar(){
         $this->nombre='';
+        $this->abreviatura='';
         $this->telefono='';
         $this->rubro='';
         $this->direccion='';

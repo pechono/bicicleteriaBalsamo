@@ -19,14 +19,16 @@
 
                 <button 
                 
-                class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                    </svg>
-                    Imprimir 
-                </button>
-                <button 
-                    
+                    wire:click="imprimirComprobante"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Imprimir Comprobante
+                    </button>
+                   
+                    <button 
+                    wire:click="salir"
                     class="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition flex items-center gap-2 font-medium">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -176,57 +178,7 @@
 
     </div>
 
-    {{-- ================= ESTADO Y ACCIONES ================= --}}
-    {{-- <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-gray-500">
-        <div class="bg-gradient-to-r from-gray-50 to-white px-4 py-3 border-b">
-            <h2 class="font-semibold text-gray-800 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Estado y Acciones
-            </h2>
-        </div>
-        <div class="p-4">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-1">
-                    <span class="font-medium text-gray-700">Estado actual:</span>
-                    <select class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="pendiente" selected>⏳ Pendiente</option>
-                        <option value="en_proceso">🔧 En proceso</option>
-                        <option value="terminado">✅ Terminado</option>
-                        <option value="entregado">🎯 Entregado</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-2">
-                    <button 
-                    wire:click="imprimirComprobante"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Generar Comprobantekkkk
-                    </button>
-
-        <div class="h-50% flex items-center justify-center mt-10">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg h-auto w-96 flex flex-col items-center justify-center border p-10">
-                <a href="{{ route('imprimirIngreso',['nro_ingreso'=>$nro_ingreso]) }}" target="_blank" class="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Imprimir Comprobante</a>
-
-            </div>
-        </div>
-
-
-
-                    <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Marcar como Entregado
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+    
 
     {{-- ================= HISTORIAL DE CAMBIOS ================= --}}
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -279,9 +231,20 @@
                 <div class="flex gap-2">
                     <div class="h-50% flex items-center justify-center mt-10">
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg h-auto w-96 flex flex-col items-center justify-center border p-10">
-                            <a href="{{ route('imprimirIngreso',['nro_ingreso'=>$nro_ingreso]) }}" target="_blank" class="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Imprimir Comprobante</a>
-
+                            <button wire:click="ver" class="mb-4 px-4 py-2 bg-green-500 text-white rounded">Ver</button>
+                            <a href="{{ route('imprimirIngreso',['nro_ingreso'=>$nro_ingreso]) }}" target="_blank"
+                                wire:click="ver"
+                                 class="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Imprimir Comprobante</a>
                         </div>
+
+                        @if ($botonSalir)
+                            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg h-auto w-96 flex flex-col items-center justify-center border p-10">
+                            <a href="{{ route('service.ingresarBike') }}" target="_blank" class="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Salir</a>
+                        </div>
+                        @endif
+
+
+                        
                     </div>
                 </div>
             </div>

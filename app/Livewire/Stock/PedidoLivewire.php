@@ -53,7 +53,7 @@ class PedidoLivewire extends Component
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
             ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo', 'proveedors.nombre')
+            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo', 'proveedors.nombre' ,'stocks.codigo_proveedor')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
             ->join('stocks', 'stocks.articulo_id','=','articulos.id')
@@ -95,6 +95,7 @@ class PedidoLivewire extends Component
     public $stockMinimo;
     public $stock;
     public $proveedor;
+    public $codigo_proveedor;
     public $var=0;
     public $msj='';
     public $hasRecords;
@@ -110,7 +111,7 @@ class PedidoLivewire extends Component
         ->select('articulos.id','articulos.codigo','articulos.articulo','categorias.categoria',
             'articulos.presentacion','unidads.unidad','articulos.descuento',
             'articulos.unidadVenta','articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles',
-            'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre')
+            'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre','stocks.codigo_proveedor')
         ->first();
         $this->id=$articulo->id;
         $this->codigo=$articulo->codigo;
@@ -121,6 +122,7 @@ class PedidoLivewire extends Component
         $this->stock=$articulo->stock;
         $this->stockMinimo=$articulo->stockMinimo;
         $this->proveedor=$articulo->nombre;
+        $this->codigo_proveedor=$articulo->codigo_proveedor;
         $this->msj='Cantidad a Solicitar';
 
     }
@@ -147,7 +149,7 @@ class PedidoLivewire extends Component
         ->select('articulos.id', 'articulos.codigo','articulos.articulo','categorias.categoria',
             'articulos.presentacion','unidads.unidad','articulos.descuento',
             'articulos.unidadVenta','articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles',
-            'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre')
+            'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre','stocks.codigo_proveedor')
         ->first();
         $this->id=$articulo->id;
         $this->codigo=$articulo->codigo;
@@ -158,7 +160,7 @@ class PedidoLivewire extends Component
         $this->stock=$articulo->stock;
         $this->stockMinimo=$articulo->stockMinimo;
         $this->proveedor=$articulo->nombre;
-
+        $this->codigo_proveedor=$articulo->codigo_proveedor;
         try {
             $p = PedidoCar::where('articulo_id', $id)->firstOrFail();
             $this->pedido = $p->cantidad;
@@ -188,7 +190,7 @@ class PedidoLivewire extends Component
         ->select('articulos.id','articulos.codigo','articulos.articulo','categorias.categoria',
             'articulos.presentacion','unidads.unidad','articulos.descuento',
             'articulos.unidadVenta','articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles',
-            'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre')
+            'articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.nombre','stocks.codigo_proveedor')
         ->first();
         $this->id=$articulo->id;
         $this->codigo=$articulo->codigo;
@@ -199,6 +201,7 @@ class PedidoLivewire extends Component
         $this->stock=$articulo->stock;
         $this->stockMinimo=$articulo->stockMinimo;
         $this->proveedor=$articulo->nombre;
+        $this->codigo_proveedor=$articulo->codigo_proveedor;
 
         try {
             $p = PedidoCar::where('articulo_id', $id)->firstOrFail();

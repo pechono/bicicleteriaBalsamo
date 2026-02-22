@@ -15,14 +15,12 @@ return new class extends Migration
         $table->string('codigo_proveedor')->nullable()->after('proveedor_id');
 
         // Opcional pero MUY recomendable:
-        $table->unique(['proveedor_id', 'codigo_proveedor']);
     });
 }
 
 public function down()
 {
     Schema::table('stocks', function (Blueprint $table) {
-        $table->dropUnique(['proveedor_id', 'codigo_proveedor']);
         $table->dropColumn('codigo_proveedor');
     });
 }

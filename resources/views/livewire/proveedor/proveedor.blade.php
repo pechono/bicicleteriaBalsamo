@@ -18,6 +18,8 @@
                     <tr>
                         <td class="px-4 py-2">Id</td>
                         <td class="px-4 py-2">Empresa </td>
+                        <td class="px-4 py-2">Abreviatura</td>
+
                         <td class="px-4 py-2">Telefono</td>
                         <td class="px-4 py-2">Rubro</td>
                         <td class="px-4 py-2">Direccion</td>
@@ -31,6 +33,7 @@
                     <tr>
                         <td class="rounder border px-4 py-2">{{ $proveedor->id }}</td>
                         <td class="rounder border px-4 py-2">{{ $proveedor->nombre }}</td>
+                        <td class="rounder border px-4 py-2">{{ $proveedor->abreviatura }}</td>
                         <td class="rounder border px-4 py-2">{{ $proveedor->telefono }}</td>
                         <td class="rounder border px-4 py-2">{{ $proveedor->rubro }}</td>
                         <td class="rounder border px-4 py-2">{{ $proveedor->direccion }}</td>
@@ -99,6 +102,11 @@
                 <x-input-error for="nombre" class="mt-2" />
             </div>
             <div class="col-span-6 sm:col-span-4 mt-2">
+                <x-label for="abreviatura" value="{{ __('Abreviatura') }}" />
+                <x-input id="abreviatura" type="text" class="mt-1 block w-full" wire:model="abreviatura" name='abreviatura' />
+                <x-input-error for="abreviatura" class="mt-2" />
+            </div>
+            <div class="col-span-6 sm:col-span-4 mt-2">
                 <x-label for="telefono" value="{{ __('Telefono') }}" />
                 <x-input id="telefono" type="text" class="mt-1 block w-full" wire:model="telefono" name='telefono' />
                 <x-input-error for="telefono" class="mt-2" />
@@ -147,6 +155,11 @@
                 <x-label for="nombre" value="{{ __('Empresa') }}" />
                 <x-input id="nombre" type="text" class="mt-1 block w-full" wire:model="nombre" name='nombre' />
                 <x-input-error for="nombre" class="mt-2" />
+            </div>
+            <div class="col-span-6 sm:col-span-4 mt-2">
+                <x-label for="abreviatura" value="{{ __('Abreviatura') }}" />
+                <x-input id="abreviatura" type="text" class="mt-1 block w-full" wire:model="abreviatura" name='abreviatura' />
+                <x-input-error for="abreviatura" class="mt-2" />
             </div>
             <div class="col-span-6 sm:col-span-4 mt-2">
                 <x-label for="telefono" value="{{ __('Telefono') }}" />
