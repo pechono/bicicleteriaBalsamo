@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Articulo;
 
-
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Proveedor;
 use App\Models\Grupos;
 use App\Models\Articulo;
@@ -14,22 +14,21 @@ use App\Models\Stock;
 use App\Models\Suelto;
 use App\Models\Unidad;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\DB;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Renderer\Image\GdImageBackEnd;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-
 use BaconQrCode\Writer;
-
-
-
 
 class ArticuloGrupo extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'tailwind';
+    
+    public $paginacionPorDefecto = 10;
+    
     public $proveedor;
     public $grupo;
-
     public $proveedores = [];
     public $grupos = [];
     public $categorias = [];
@@ -37,51 +36,91 @@ class ArticuloGrupo extends Component
     public $articulo, $categoria_id, $presentacion, $unidad_id,
             $descuento, $unidadVenta='Unidad', $precioF, $precioI, $caducidad,
             $detalles, $suelto, $porcentaje, $idArtitul, $proveedor_id, $stock, $stockMinimo, $codigo,
-            $articulosGrupo=[],$codigo_proveedor;
+            $codigo_proveedor;
+    
+    public $mensajeError = '-';
+    public $cargando = false;
 
     public function mount()
     {
         $this->proveedores = Proveedor::all();
-        $this->categorias=Categoria::All();
-        $this->unidades=Unidad::all();
+        $this->categorias = Categoria::all();
+        $this->unidades = Unidad::all();
+    }
+    
+    public function render()
+    {
+        return view('livewire.articulo.articulo-grupo', [
+            'articulosGrupo' => $this->grupo ? $this->obtenerArticulosGrupo() : collect()
+        ]);
+    }
+    
+    private function obtenerArticulosGrupo()
+    {
+        if (!$this->grupo) {
+            return collect();
+        }
+        
+        try {
+            $articulos = DB::table('grupos_articulos')
+                ->where('grupos_articulos.grupo_id', $this->grupo)
+                ->join('articulos', 'articulos.id', '=', 'grupos_articulos.articulo_id')
+                ->leftJoin('stocks', function($join) {
+                    $join->on('stocks.articulo_id', '=', 'articulos.id')
+                         ->where('stocks.proveedor_id', '=', $this->proveedor_id);
+                })
+                ->select(
+                    'articulos.id',
+                    'articulos.articulo',
+                    'articulos.codigo',
+                    'articulos.presentacion',
+                    'articulos.unidadVenta',
+                    'stocks.codigo_proveedor'
+                )
+                ->orderBy('articulos.id')
+                ->paginate($this->paginacionPorDefecto);
+            
+            return $articulos;
+            
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error al cargar artículos: ' . $e->getMessage());
+            return collect();
+        }
     }
     
     public function crearProveedor()
     {
-        // Lógica para abrir modal o agregar uno nuevo
         session()->flash('message', 'Abrir modal para agregar proveedor');
     }
 
     public function crearGrupo()
     {
-        // Lógica para abrir modal o agregar uno nuevo
         session()->flash('message', 'Abrir modal para agregar grupo');
     }
 
     public function seleccionar()
     {
-        // Acción con proveedor y grupo seleccionados
         session()->flash('message', "Seleccionado proveedor: $this->proveedor, grupo: $this->grupo");
     }
-    public function render()
-    {
-        return view('livewire.articulo.articulo-grupo');
-    }
+    
     public function calcular()
     {
-        $this->precioF=(($this->precioI *$this->porcentaje)/(100))+$this->precioI;
+        $this->precioF = (($this->precioI * $this->porcentaje) / 100) + $this->precioI;
     }
+    
     public function mostrarGrupo()
     {
-        $this->grupos = Grupos::where("proveedor_id" , $this->proveedor_id)->get();   
+        $this->grupos = Grupos::where("proveedor_id", $this->proveedor_id)->get();
+        $this->grupo = '';
+        $this->resetPage();
     }
+    
     public function cargarArticulo()
     {
-         $this->caducidad='No';
-            $this->suelto=0;
+        $this->caducidad = 'No';
+        $this->suelto = 0;
         
-
-                $this->validate([
+        $this->validate([
             'articulo' => 'required|string|min:4',
             'presentacion' => 'required|string|min:1',
             'unidad_id' => 'required',
@@ -94,114 +133,131 @@ class ArticuloGrupo extends Component
             'suelto' => 'boolean',
             'stock' => 'required|numeric|min:1',
             'stockMinimo' => 'required|integer|min:1',
-            'categoria_id' => 'required',  // Agregar la regla para categoría
-            'grupo' => 'required',         // Agregar la regla para grupo (asegúrate que la propiedad exista)
+            'categoria_id' => 'required',
+            'grupo' => 'required',
             'proveedor_id' => 'required',
             'codigo' => [
                 'nullable',
                 'unique:articulos,codigo',
                 'regex:/^[A-Za-z0-9\-\/\.]+$/'
             ],
-
-            
-            ], [
-                'categoria_id.required' => 'Debe seleccionar una categoría.',
-                'grupo.required' => 'Debe seleccionar un grupo.',
-                'proveedor_id.required' => 'Debe seleccionar un proveedor.'
-                ]);
-
-
-        Articulo::create([
-            'articulo'=>  $this->articulo,
-            'codigo'=>  $this->codigo ?: null, // 👈 transforma '' en null
-            'categoria_id'=>  $this->categoria_id,
-            'presentacion'=>  $this->presentacion,
-            'unidad_id'=>  $this->unidad_id,
-            'descuento'=>  $this->descuento,
-            'unidadVenta'=>  $this->unidadVenta,
-            'precioF'=>  $this->precioF,
-            'precioI'=>  $this->precioI,
-            'caducidad'=>  $this->caducidad,
-            'detalles'=>  $this->detalles,
-            'suelto'=>  $this->suelto,
-            'activo'=>1
-        ]);
-        $ultimo = Articulo::latest()->first();
-
-$qrData = (string) $ultimo->id;
-
-$renderer = new \BaconQrCode\Renderer\ImageRenderer(
-    new RendererStyle(200),
-    new SvgImageBackEnd()
-);
-
-$qr = new Writer($renderer);
-
-$qrImage = $qr->writeString($qrData);
-
-$fileName = 'qrcodes/articulo_'.$ultimo->id.'.svg';
-
-Storage::disk('public')->put($fileName, $qrImage);
-
-$articulo = Articulo::find($ultimo->id);
-$articulo->qr_code = $fileName;
-$articulo->save();
-
-
-        // 5. Mensaje o redirección
-        session()->flash('message', 'Artículo creado con QR generado correctamente.');
-        //---------------------------
-        $this->codigo_proveedor = Proveedor::find($this->proveedor_id)->abreviatura ?? null;
-
-
-        Stock::create([
-            'articulo_id'=>$ultimo->id,
-            'stockMinimo'=>$this->stockMinimo,
-            'stock'=>$this->stock,
-            'proveedor_id'=>$this->proveedor_id,
-            'codigo_proveedor'=>$this->codigo_proveedor
+        ], [
+            'categoria_id.required' => 'Debe seleccionar una categoría.',
+            'grupo.required' => 'Debe seleccionar un grupo.',
+            'proveedor_id.required' => 'Debe seleccionar un proveedor.'
         ]);
 
-        if($this->suelto==1){
-            Suelto::create([
-                'articulo_id'=>$this->suelto
+        DB::beginTransaction();
+        
+        try {
+            $articulo = Articulo::create([
+                'articulo' => $this->articulo,
+                'codigo' => $this->codigo ?: null,
+                'categoria_id' => $this->categoria_id,
+                'presentacion' => $this->presentacion,
+                'unidad_id' => $this->unidad_id,
+                'descuento' => $this->descuento,
+                'unidadVenta' => $this->unidadVenta,
+                'precioF' => $this->precioF,
+                'precioI' => $this->precioI,
+                'caducidad' => $this->caducidad,
+                'detalles' => $this->detalles,
+                'suelto' => $this->suelto,
+                'activo' => 1
             ]);
-        }
 
-        HistoriasPrecio::create([
-             'articulo_id'=>$ultimo->id,
-             'precioFinal'=>$this->precioF,
-             'precioIcial'=>$this->precioI
-        ]);
-        GruposArticulos::create([
-            'grupo_id'=>$this->grupo,
-            'articulo_id'=>$ultimo->id
-        ]);
-        session()->flash('message', 'Artículo creado exitosamente.');
-        $this->borrarCampos();
-        $this->articulosGrupos();
+            $qrData = (string) $articulo->id;
+            $renderer = new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd());
+            $qr = new Writer($renderer);
+            $qrImage = $qr->writeString($qrData);
+            $fileName = 'qrcodes/articulo_' . $articulo->id . '.svg';
+            Storage::disk('public')->put($fileName, $qrImage);
+            
+            $articulo->qr_code = $fileName;
+            $articulo->save();
+
+            $this->codigo_proveedor = Proveedor::find($this->proveedor_id)->abreviatura ?? null;
+
+            Stock::create([
+                'articulo_id' => $articulo->id,
+                'stockMinimo' => $this->stockMinimo,
+                'stock' => $this->stock,
+                'proveedor_id' => $this->proveedor_id,
+                'codigo_proveedor' => $this->codigo_proveedor
+            ]);
+
+            if ($this->suelto == 1) {
+                Suelto::create(['articulo_id' => $articulo->id]);
+            }
+
+            HistoriasPrecio::create([
+                'articulo_id' => $articulo->id,
+                'precioFinal' => $this->precioF,
+                'precioIcial' => $this->precioI
+            ]);
+            
+            GruposArticulos::create([
+                'grupo_id' => $this->grupo,
+                'articulo_id' => $articulo->id
+            ]);
+            
+            DB::commit();
+            
+            session()->flash('message', 'Artículo creado exitosamente.');
+            $this->borrarCampos();
+            $this->resetPage();
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Error al crear artículo: ' . $e->getMessage());
+        }
     }
+    
     public function articulosGrupos()
     {
-        $this->articulosGrupo = GruposArticulos::where('grupo_id', $this->grupo)
-        ->select('articulos.id', 'articulos.articulo', 'articulos.codigo', 'articulos.presentacion','unidadVenta',)
-        ->join('articulos','articulos.id','grupos_articulos.articulo_id')->get();
+        $this->resetPage();
     }
-    public function borrarCampos(){
-        $this->articulo='';
+    
+    public function borrarCampos()
+    {
+        $this->articulo = '';
         $this->codigo = null;
+        $this->presentacion = '';
+        $this->unidad_id = '';
+        $this->descuento = '';
+        $this->unidadVenta = 'Unidad';
+        $this->precioF = '';
+        $this->precioI = '';
+        $this->caducidad = '';
+        $this->detalles = '';
+        $this->suelto = '';
+        $this->stockMinimo = '';
+        $this->stock = '';
+    }
+    
+    public function comprobarCodigo()
+    {
+        if (empty($this->codigo) || empty($this->proveedor_id)) {
+            $this->mensajeError = '-';
+            return;
+        }
 
-         $this->presentacion='';
-         $this->unidad_id='';
-         $this->descuento='';
-         $this->unidadVenta='Unidad';
-         $this->precioF='';
-         $this->precioI='';
-         $this->caducidad='';
-         $this->detalles='';
-         $this->suelto='';
-         $this->stockMinimo='';
-         $this->stock='';
-     }
-
+        $existe = DB::table('stocks')
+            ->where('proveedor_id', $this->proveedor_id)
+            ->join('articulos', 'articulos.id', '=', 'stocks.articulo_id')
+            ->where('articulos.codigo', $this->codigo)
+            ->exists();
+        
+        if ($existe) {
+            $this->mensajeError = '❌ El código ' . $this->codigo . ' NO está disponible.';
+        } else {
+            $this->mensajeError = '✅ El código ' . $this->codigo . ' SÍ está disponible.';
+        }
+    }
+    
+    public function actualizarPaginacion($cantidad)
+    {
+        $this->paginacionPorDefecto = $cantidad;
+        $this->resetPage();
+    }
 }

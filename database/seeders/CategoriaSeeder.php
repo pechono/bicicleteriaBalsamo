@@ -15,7 +15,8 @@ class CategoriaSeeder extends Seeder
     {
         Categoria::create(['categoria'=>'Servicio']);
         Categoria::create(['categoria'=>'General']);
-
+        Categoria::create(['categoria'=>'Accesorio']);
+        Categoria::create(['categoria'=>'Repuesto']);
         Categoria::create(['categoria'=>'Camara']);
         Categoria::create(['categoria'=>'Cubierta']);
         Categoria::create(['categoria'=>'Rueda']);
