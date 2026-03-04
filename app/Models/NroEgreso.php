@@ -12,5 +12,6 @@ class NroEgreso extends Model
         'numeroEgreso',
         'monto',
         'detalles',
+        'mecanico_id'
     ];
 }

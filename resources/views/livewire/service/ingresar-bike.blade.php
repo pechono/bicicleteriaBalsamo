@@ -18,6 +18,21 @@
                 </button>
             </div>
         </div>
+        @if ( $this->confirmingClienteAdd)
+            <div class="bg-yellow-50 border border-yellow-400 rounded p-3 text-sm">
+            Cliente no encontrado. Puede agregarlo haciendo clic en 
+            <button wire:click='confirmarClienteAdd' class="text-white bg-green-500 hover:bg-green-300 rounded-md w-36 py-2 px-5 mt-1.5" style="margin-top: 3px;">
+                Agregar Cliente
+            </button>
+        </div>
+        @endif
+        
+        @else
+
+
+
+
+        
     @endif
 
     {{-- ================= DATOS CLIENTE ================= --}}
@@ -123,22 +138,9 @@
         <div class="lg:w-[65%] bg-white shadow rounded p-4 relative overflow-hidden">
 
             <h3 class="text-lg font-semibold mb-2">Procesos</h3>
-            {{-- <label for="">
-                <input type="radio" name="procesos0" id="procesos0" wire:model="mostrarProcesos" value="0" class="p-4 mx-4">       
-                Mostrar procesos
-            </label>
-            <label for="">
-                <input type="radio" name="procesos0" id="procesos1" wire:model="mostrarProcesos" value="1" class="p-4 m-4">
-                Mostrar Articulos
-            </label> --}}
-
-
-
-
-
             <div class="relative inline-flex p-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200"
                 x-data="{ selected: @entangle('mostrarProcesos') }">
-                
+               
                 <!-- Fondo animado -->
                 <div class="absolute top-1 bottom-1 rounded-full bg-white shadow-md transition-all duration-300"
                     :style="'width: calc(50% - 4px); left: ' + (selected == 0 ? '4px' : '50%')"></div>
@@ -147,7 +149,8 @@
                 <label class="relative z-10 cursor-pointer">
                     <input type="radio" 
                         name="procesos0" 
-                        wire:model="mostrarProcesos" 
+                        wire:model="mostrarProcesos"
+                        wire:click="actualizarMostrarProcesos"
                         value="0" 
                         class="sr-only">
                     <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300"
@@ -160,6 +163,8 @@
                     <input type="radio" 
                         name="procesos0" 
                         wire:model="mostrarProcesos" 
+                        wire:click="actualizarMostrarProcesos"
+
                         value="1" 
                         class="sr-only">
                     <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300"
@@ -435,6 +440,47 @@
             @endif
 
 
+{{-- -------------------cleintes--> --}}
+            <x-dialog-modal wire:model.live="confirmingClienteAdd" maxWidth="2xl">
+            <x-slot name="title">
+                {{ __('Cargar Cliente') }}
+            </x-slot>
+            <x-slot name="content">
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="apellido" value="{{ __('Apellido') }}" />
+                    <x-input id="apellido" type="text" class="mt-1 block w-full" wire:model="apellido" name='apellido' />
+                    <x-input-error for="apellido" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4 mt-2">
+                    <x-label for="nombre" value="{{ __('Nombre') }}" />
+                    <x-input id="nombre" type="text" class="mt-1 block w-full" wire:model="nombre" name='nombre' />
+                    <x-input-error for="nombre" class="mt-2" />
 
+
+                </div>
+                
+                <div class="col-span-6 sm:col-span-4 mt-2">
+                    <div>
+                        <x-label for="dni2" value="DNI " />
+                        <x-input id="dni2" type="text" class="mt-1 block w-full" wire:model='dni2' placeholder="DNI"/>
+                        <x-input-error for="dni2" class="mt-2" />
+                    </div>
+                </div>
+                <div class="col-span-6 sm:col-span-4 mt-2">
+                    <x-label for="telefono" value="{{ __('Telefono') }}" />
+                    <x-input id="telefono" type="text" class="mt-1 block w-full" wire:model="telefono"  />
+                    <x-input-error for="telefono" class="mt-2" />
+                </div>
+            </x-slot>
+            <x-slot name="footer">
+                <x-danger-button wire:click="$toggle('confirmingClienteAdd', false)" wire:loading.attr="disabled">
+                    {{ __('Cancelar') }}
+                </x-danger-button>
+
+                <x-secondary-button class="ms-3" wire:click="saveCliente()" wire:loading.attr="disabled">
+                    {{ __('Guardar') }}
+                </x-secondary-button>
+            </x-slot>
+        </x-dialog-modal>
 
 </div>

@@ -1,16 +1,20 @@
 <?php
 
-namespace App\Livewire\Venta\Categoria;
+namespace App\Livewire\Service;
 
 use App\Models\Articulo;
 use App\Models\Car;
-use App\Models\Categoria;
 use App\Models\Cliente;
 use App\Models\Ofertas;
 use App\Models\Operacion;
 use App\Models\Stock;
 use App\Models\TipoVenta;
 use App\Models\Venta;
+use App\Models\Mecanico;
+use App\Models\NroIngreso;
+use App\Models\Bici;
+use App\Models\EgresoBici;
+use App\Models\NroEgreso;
 use Carbon\CarbonPeriod;
 use Illuminate\Validation\ValidationException;
 
@@ -19,10 +23,17 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use PhpParser\Node\Stmt\If_;
 
-class VentaCart extends Component
+class EgresoTerminar extends Component
 {
-    use WithPagination;
+    public $nro, $cantidadArt, $descArt, $NroDatos,$idBici;
 
+    public function mount($nro_ingreso)
+    {
+        $this->nro = $nro_ingreso;
+        $this->procesosCargar($this->nro);
+    }
+
+// A
     public $active=1;
     public $q;
 
@@ -46,12 +57,12 @@ class VentaCart extends Component
         'apellido'=>'required|string|min:4',
         'nombre'=>'required|string|min:4',
         'telefono'=>'required|string|min:4',
+        'dni' => 'required|regex:/^\d{7,9}$/|unique:clientes,dni',
         'activo'=>'boolean',
         'tipo_id'=>'required|integer',
         'cliente_id'=>'required|integer',
         'detalles'=>'required|string|min:4',
         'cuentaCorriente'=>'required|float',
-        'dni'=>'required|string|min:4|clienteUnico',
          ];
     public $BloquearBoton;
     public function cancelarBoton(){
@@ -66,48 +77,108 @@ class VentaCart extends Component
     {
         $articulos = collect(); // Colección vacía por defecto
 
-       
+
+
+        if ($this->q) {
             $articulos = Articulo::where('activo', $this->active)
-                ->select('articulos.id', 'articulos.codigo','articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+                ->where(function ($query) {
+                    $query->where('articulo', 'like', '%' . $this->q . '%')
+                        ->orWhere('detalles', 'like', '%' . $this->q . '%')
+                        ->orWhere('categoria', 'like', '%' . $this->q . '%');
+                })
+                ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
+                ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
                     'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-                    'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo','articulos.categoria_id')
+                    'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'stocks.codigo_proveedor')
                 ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
                 ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
                 ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
                 ->get();
-        
-
+                
+        }
+        $this->procesosCargar($this->nro);
         $inTheCar = Car::where('user_id', auth()->user()->id)
         ->join('articulos', 'cars.articulo_id', '=', 'articulos.id')
         ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-        ->select('articulos.id', 'articulos.codigo', 'articulos.articulo','articulos.categoria_id', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+        ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento')
+            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
         ->get();
-    
-        /* foreach ($articulos as $articulo){
-             $this->estaEnCarrito = $inTheCar->contains('articulo_id', $articulo->id);
-        } */
+  
         $countCar = Car::count();
         $tipoVentas=TipoVenta::all();
         $clientes=Cliente::all();
-        $categoris=Categoria::all();
+        $mecanicos=Mecanico::all();
         $this->cancelarBoton();
+        
+        //    Cliente asociado al ingreso de bicicleta (puede ser null)
+        $clientesBici = Cliente::select(
+        'ingreso_bicis.nro_ingreso',
+        'clientes.nombre',
+        'clientes.apellido',
+        'clientes.dni',
+        'clientes.telefono',
+        'bicis.color',
+        'bicis.id',
+        'marcas.marca',
+        'tipo_bikes.tipo',
+        'nro_ingresos.estado'
+        )
+        ->join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
+        ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
+        ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
+        ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+        ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+        ->where('ingreso_bicis.nro_ingreso', $this->nro)
+        ->first();
 
-        return view('livewire.venta.categoria.venta-cart',compact('inTheCar','articulos','countCar','tipoVentas','clientes','categoris'));
+        $this->idBici=$clientesBici->id;
+
+
+        // $nDetalles = NroIngreso::find($this->nro);
+            $nDetalles ='';
+        
+        return view('livewire.service.egreso-terminar', compact(
+        'inTheCar', 
+        'articulos', 
+        'countCar',
+        'tipoVentas', 
+        'clientes', 
+        'nDetalles', 
+        'clientesBici',
+        'mecanicos'
+     ));
     }
+    public $procesos = [],$mecanicoSelect;
+    public function procesosCargar($nro_ingresoP)
+{
+   
+    $this->procesos = Bici::join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+        ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+        ->join('articulos', 'articulos.id', '=', 'ingreso_bicis.articulo_id')
+        ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+        ->where('ingreso_bicis.nro_ingreso', $nro_ingresoP)
+        ->select(
+            'articulos.id',
+            'stocks.codigo_proveedor',
+            'articulos.codigo',
+            'articulos.articulo'
+        )->get();
+}
+    
+
     public function Total(){
         $inTheCar = Car::where('user_id', auth()->user()->id)
-    ->join('articulos', 'cars.articulo_id', '=', 'articulos.id')
-    ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
-    ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-    ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-    ->select('articulos.id', 'articulos.articulo', 'articulos.codigo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-        'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-        'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento')
-    ->get();
+        ->join('articulos', 'cars.articulo_id', '=', 'articulos.id')
+        ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
+        ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
+        ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+        ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento', 'stocks.codigo_proveedor')
+        ->get();
 
         
         $this->total=0;
@@ -115,35 +186,13 @@ class VentaCart extends Component
             $this->total+= ($car->cantidad*$car->precioF)-($car->cantidad*$car->precioF)*$car->descuento/100;
         }
     }
-    public $id;
-    public $art;
-    public $codigo;
-    public $categoria;
-    public $presentacion;
-    public $unidad;
-    public $descuento;
-    public $unidadVenta;
-    public $precioF;
-    public $precioI;
-    public $caducidad;
-    public $detalles;
-    public $suelto;
-    public $porcentaje;
-    public $msj;
-    public $descArt=0;
-    public $cantidadArt;
-    public $proveedor_id;
-    public $stock;
-    public $stockMinimo;
-
-
-
+    public $id, $art, $categoria, $presentacion, $unidad, $descuento, $unidadVenta, $precioF, $precioI, $caducidad, $detalles, $suelto, $stockMinimo, $stock, $proveedor_id;
     public $agregarCant=false;
     public $articulosMuestra=[];
     public function addCar($id)
     {
-        $this->articulosMuestra = Articulo::select('articulos.id','articulos.articulo', 'articulos.codigo','categorias.categoria','articulos.presentacion','unidads.unidad','articulos.descuento','articulos.unidadVenta',
-            'articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles','articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo')
+        $this->articulosMuestra = Articulo::select('articulos.id','articulos.articulo','categorias.categoria','articulos.presentacion','unidads.unidad','articulos.descuento','articulos.unidadVenta',
+            'articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles','articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','stocks.codigo_proveedor')
         ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
@@ -154,8 +203,8 @@ class VentaCart extends Component
         $this->agregarCant=1;
     }
     public function modCar($id){
-        $this->articulosMuestra = Articulo::select('articulos.id', 'articulos.codigo','articulos.articulo','categorias.categoria','articulos.presentacion','unidads.unidad','articulos.descuento','articulos.unidadVenta',
-        'articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles','articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo')
+        $this->articulosMuestra = Articulo::select('articulos.id','articulos.articulo','categorias.categoria','articulos.presentacion','unidads.unidad','articulos.descuento','articulos.unidadVenta',
+        'articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles','articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','stocks.codigo_proveedor')
         ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
@@ -220,8 +269,8 @@ class VentaCart extends Component
     public $cDescuento=false;
     public function descuentoArt($id){
 
-        $articulos=Articulo::select('articulos.id', 'articulos.codigo','articulos.articulo','categorias.categoria','articulos.presentacion','unidads.unidad','articulos.descuento','articulos.unidadVenta',
-                                    'articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles','articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo')
+        $articulos=Articulo::select('articulos.id','articulos.articulo','categorias.categoria','articulos.presentacion','unidads.unidad','articulos.descuento','articulos.unidadVenta',
+                                    'articulos.precioF','articulos.precioI','articulos.caducidad','articulos.detalles','articulos.suelto','articulos.activo','stocks.stock','stocks.stockMinimo','stocks.codigo_proveedor')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
             ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
@@ -229,7 +278,6 @@ class VentaCart extends Component
             ->find($id);
 
             $this->id=$articulos->id;
-            $this->codigo=$articulos->codigo;
             $this->art=$articulos->articulo;
             $this->categoria=$articulos->categoria;
             $this->presentacion=$articulos->presentacion;
@@ -266,16 +314,9 @@ class VentaCart extends Component
     public $ac='display:none';
     public $operacion;
     // -----------op
-    public function tipoVenta(){
-        if($this->tipo_id==4){
-             $this->ac='';
-        }else{
-             $this->cuentaCorriente=0;
-             $this->ac='display:none';
-        }
-     }
-
-     public function ConfirmarVenta()
+   
+    public $clienteId;
+    public function ConfirmarVenta()
      {
 
         $inTheCar = Car::where('user_id', auth()->user()->id)
@@ -283,84 +324,69 @@ class VentaCart extends Component
         ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-        ->select('articulos.id', 'articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+        ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
             'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento')
+            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
         ->get();
-    
+
+
+
+        $client = Cliente::select('clientes.id')
+        ->join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
+        ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+        ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+        ->where('ingreso_bicis.nro_ingreso', $this->nro)
+        ->first();
+        $this->clienteId=$client->id;
+        $this->cliente_id=$client->id;
+
         // $this->Total();
-        $this->validate(['tipo_id'=>'required|numeric','cliente_id'=>'required|numeric']);
+        $this->validate(['mecanicoSelect'=>'required|numeric']);        
+            $detallesNotas='-';
+            NroEgreso::create([
+                'numeroEgreso'=>'-',
+                'monto'=>$this->total,
+                'detalles'=>$detallesNotas,
+                'mecanico_id'=>$this->mecanicoSelect,
+            ]);
+             $nro_egreso=NroEgreso::latest()->first();
+             $idegreso=$nro_egreso->id;
 
-         if($this->tipo_id==4)
-         {
-             Operacion::create([
-                 'usuario_id'=>auth()->user()->id,
-                 'tipoVenta_id'=>$this->tipo_id,
-                 'cliente_id'=>$this->cliente_id,
-                 'detalles'=>'-',
-                 'venta'=>0,
-
-             ]);
-             $operacion=Operacion::latest()->first();
-             $id=$operacion->id;
              foreach($inTheCar as $car){
-                 Venta::create([
+               
+                 EgresoBici::create([
+                    'ingreso_bici_id'=>$this->idBici,
                      'articulo_id'=>$car->articulo_id,
                      'cantidad'=>$car->cantidad,
-                     'precioI'=>0,
-                     'precioF'=>0,
-                     'descuento'=>$car->descuento,
-                     'operacion'=>$operacion->id,
-
+                     'precio_inicial'=>$car->precioI,
+                     'precio_final'=>$car->precioF,
+                     'nro_egreso'=>$idegreso
                  ]);
 
-             $changeStock=Stock::where('articulo_id',$car->articulo_id)->first();
-             $changeStock->update([
-                 'stock'=>$changeStock->stock - $car->cantidad,
-             ]);
-
-
-             }
-
-         }else{
-
-             Operacion::create([
-                 'usuario_id'=>auth()->user()->id,
-                 'tipoVenta_id'=>$this->tipo_id,
-                 'cliente_id'=>$this->cliente_id,
-                 'detalles'=>'-',
-                 'venta'=>$this->total,
-
-             ]);
-             $operacion=Operacion::latest()->first();
-             $id=$operacion->id;
-             foreach($inTheCar as $car){
-                 Venta::create([
-                     'articulo_id'=>$car->articulo_id,
-                     'cantidad'=>$car->cantidad,
-                     'precioI'=>$car->precioI,
-                     'precioF'=>$car->precioF,
-                     'descuento'=>$car->descuento,
-                     'operacion'=>$operacion->id,
-
-                 ]);
                  $changeStock=Stock::where('articulo_id',$car->articulo_id)->first();
                  $changeStock->update([
                      'stock'=>$changeStock->stock - $car->cantidad,
                  ]);
 
              }
-         }
-
+         
+       $nroIngreso = NroIngreso::find($this->nro); // o el ID que corresponda
+        if ($nroIngreso) {
+            $nroIngreso->update([
+                'estado' => 'completado'
+            ]);
+        }
          Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();
          $this->cliente_id='';
          $this->tipo_id='';
          $this->cancelarBoton();
-         return redirect()->route('venta.reporte',['operacion'=>$operacion,'volver'=>'venta.ventaCard']);
+         return redirect()->route('service.egresoBici');
      }
 
      public $apellido;
      public $nombre;
+     public $biciId;
+     public $dni;
      public $telefono;
      public $activo=1;
 
@@ -371,22 +397,7 @@ class VentaCart extends Component
          $this->confirmingClienteAdd=true;
      }
 
-     public function saveCliente(){
-
-         $this->validate();
-         Cliente::create([
-             'apellido'=>$this->apellido,
-             'nombre'=>$this->nombre,
-             'telefono'=>$this->telefono,
-                'dni'=>$this->dni,
-             'activo'=>1
-         ]);
-         $this->apellido='';
-         $this->nombre='';
-         $this->telefono='';
-         $this->dni='';
-         $this->confirmingClienteAdd=false;
-     }
+     
      public $confirmarOpVenta=false;
 
      public function PreguntaConfirmarVenta(){
@@ -398,7 +409,7 @@ class VentaCart extends Component
          Car::truncate();
          $this->cliente_id='';
          $this->tipo_id='';
-         return redirect()->route('venta.ventaCard');
+         return redirect()->route('venta.ventaExpress');
      }
      public function Ofeta($id){
         $ofertaArt = Ofertas::where('articulo_id', $id)->exists();
@@ -410,9 +421,7 @@ class VentaCart extends Component
         return $stock->stock<=0 ? true : false;
     }
     public function estaEnCarrito ($articulo){
-        return $inTheCar = Car::where('user_id', auth()->user()->id)->get()->contains('articulo_id', $articulo);
+       return $inTheCar = Car::where('user_id', auth()->user()->id)->get()->contains('articulo_id', $articulo);
 
    }
-
 }
-

@@ -40,11 +40,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
                       </svg>
 
-                    <span class="movableDiv text-2xl rounded-lg transition-transform duration-300 ease-in-out text-white">Venta</span>
+                    <span class="movableDiv text-2xl rounded-lg transition-transform duration-300 ease-in-out text-white">Servicio</span>
                 </div>
             </a>
             <div id="servicioSubMenu" class="pl-8 hidden text-lg  text-white">
                 <a href="{{ route('service.ingresarBike') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Ingresar Bicicleta</a>
+                <a href="{{ route('service.egresoBici') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Registro Servicio</a>
+
                 {{-- <a href="{{ route('venta.ventaCard') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Venta Card</a>
 
                 <a href="{{ route('venta.cuentaCorriente') }}" class="hover:text-xl block py-1 px-4 hover:bg-gray-600">Cuenta Corriente</a>

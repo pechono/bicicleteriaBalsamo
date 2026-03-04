@@ -22,6 +22,12 @@ class IngresarBike extends Component
     public function buscarCliente()
     {
         $this->cliente = Cliente::where('dni', $this->dni)->first();
+        if (!$this->cliente) {
+            $this->dni2 = $this->dni; // Prellenar el campo DNI del nuevo cliente
+            $this->confirmingClienteAdd = true;
+        } else {
+            $this->confirmingClienteAdd = false;
+        }
     }
 
     /* ================== DATOS BICI ================== */
@@ -59,7 +65,6 @@ class IngresarBike extends Component
 
         public function cargarProcesos()
     {   
-
         if($this->mostrarProcesos == 0) {
         $this->procesos = Articulo::where('categoria_id', 1) // Procesos (categoría 1)
             ->when($this->filtroActivos, fn ($q) => $q->where('activo', true))
@@ -225,8 +230,44 @@ public function guardarIngreso()
     // Acá después se guarda el servicio completo
     session()->flash('message', 'Ingreso guardado correctamente');
     return redirect()->route('service.ingresoImp', ['nro_ingreso' => $nroIng]);
-
-
     }
-    
+ public function actualizarMostrarProcesos()
+    {
+        $this->mostrarProcesos = $this->mostrarProcesos;
+        $this->cargarProcesos();
+    }   
+ public $apellido;
+     public $nombre;
+     public $telefono;
+     public $activo=1;
+     public $dni2;
+    public $confirmingClienteAdd=false;
+     public function confirmarClienteAdd()
+     {
+           
+
+         $this->confirmingClienteAdd=true; 
+         $this->dni2=$this->dni;
+     }
+
+     public function saveCliente(){
+            $this->validate([
+                'apellido'=>'required|string|max:255',
+                'nombre'=>'required|string|max:255',
+                'telefono'=>'required|string|max:20',
+                'dni2'=>'required|string|max:20|unique:clientes,dni',
+            ]);
+         Cliente::create([
+             'apellido'=>$this->apellido,
+             'nombre'=>$this->nombre,
+             'telefono'=>$this->telefono,
+             'dni'=>$this->dni2,
+             'activo'=>1
+         ]);
+         $this->apellido='';
+         $this->nombre='';
+         $this->telefono='';
+         $this->confirmingClienteAdd=false;
+     }
+     public $mostraBotonAddCliente=false;
 }
