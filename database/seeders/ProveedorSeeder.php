@@ -15,10 +15,10 @@ class ProveedorSeeder extends Seeder
     {
         Proveedor::create([
             'nombre'=>'Sin Definir',
-            'telefono'=>'-',
+            'telefono'=>'----',
             'rubro'=>'Sin Defenir',
-            'direccion'=>'-',
-            'localidad'=>'-',
+            'direccion'=>'----',
+            'localidad'=>'----',
             'mail'=>'correo@correo.com',
             'activo'=>'1'
         ]);

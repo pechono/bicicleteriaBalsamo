@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('bici_id');
             $table->foreignId('articulo_id');
             $table->string('nro_ingreso');
-            $table->enum('estado', ['pendiente', 'en_proceso', 'terminado'])->default('pendiente');
+            $table->enum('estado', ['Pendiente', 'Terminado', 'Entregado'])->default('Pendiente');
 
             $table->text('detalles')->nullable();
             $table->timestamps();

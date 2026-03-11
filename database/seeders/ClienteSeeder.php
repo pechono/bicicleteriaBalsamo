@@ -14,9 +14,9 @@ class ClienteSeeder extends Seeder
     public function run(): void
     {
         Cliente::create([
-            'apellido'=>'Consumidor Final',
-            'nombre'=>'-',
-            'telefono'=>'-',
+            'apellido'=>'Consumidor ',
+            'nombre'=>'Final',
+            'telefono'=>'123456',
             'activo'=>1,
             'dni'=>0,       
          ]);

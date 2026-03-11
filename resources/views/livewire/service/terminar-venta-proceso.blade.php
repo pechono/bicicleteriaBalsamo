@@ -1,93 +1,11 @@
 <div class="flex ">
-    <div class=" h-auto  w-full  m-1 ">
-        <div class=" bg-white p-4 rounded-lg border">
-            <div class=" bg-white p-4 rounded-lg shadow-lg w-auto border">
-            {{-- articulos --}}
-                <div class="mt-4 text-2xl flex justify-between shadow-inner">
-                    <div>Terminar Proceso Nro:     {{$nro}}</div>
-                </div>
-
-                <strong>{{$nro}}</strong>
-                <strong>Cliente: {{$clientesBici->nombre}} {{$clientesBici->apellido}}</strong>
-            </div>
-
-            <div class="mt-3 w-full rounded-lg border shadow-lg p-4">
-
-                                <table class="table-auto w-full">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-4 py-2">Id</th>
-                                            <th class="px-4 py-2">Codigo</th>
-                                            <th class="px-4 py-2">Artículo</th>
-                                            <th class=" py-2">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($procesos as $Items)                
-                                        
-                                            @if (!$this->stockInsufisinte($Items->id))
-                                                <tr wire:key="{{ $Items->id }}"
-                                                    class="cursor-pointer {{ $this->estaEnCarrito($Items->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
-                                                    wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$Items->id.')' : 'addCar('.$Items->id.')' }}"
-                                                    wire:loading.attr="disabled">
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-green-500 font-bold':'' }}">{{ $Items->id }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-green-500 font-bold':'' }}">{{$Items->codigo_proveedor}}-{{ $Items->codigo }}</td>
-
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-green-500 font-bold':'' }}">{{ $Items->articulo }}</td>
-                                                    <td class="rounder border flex p-1 flex-wrap">   
-                                                                @if ($this->estaEnCarrito($Items->id))
-                                                                    <div class="flex gap-1 justify-center">
-                                                                        <!-- Botón Eliminar -->
-                                                                        <button wire:click="deletCar({{ $Items->id }})" 
-                                                                                wire:loading.attr="disabled"
-                                                                                class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-red-400 to-red-600 hover:from-red-500 hover:to-red-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white">
-                                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                                            </svg>
-                                                                        </button>
-
-                                                                        <!-- Botón Modificar -->
-                                                                        <button wire:click="modCar({{ $Items->id }})" 
-                                                                                wire:loading.attr="disabled"
-                                                                                class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white">
-                                                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                @else
-                                                                    <!-- Botón Agregar -->
-                                                                    <button wire:click="addCar({{ $Items->id }})" 
-                                                                            wire:loading.attr="disabled"
-                                                                            class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95 mx-auto">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                                        </svg>
-                                                                    </button>
-                                                                @endif
-                                                            </td>
-                                                                      
-        
-                                                </tr>      
-                                            @endif
-                                        
-                                        @endforeach
-                                    </tbody>
-                                </table>
-
-                            
-                        </div>  
-    
-
-        </div>  
-    </div>            
-    <div class=" h-auto  md:w-[60%]  m-5 ">
+        <div class=" h-auto  md:w-[70%]  m-5 ">
 
                 <div class=" bg-white p-4 rounded-lg border">
                     <div class=" bg-white p-4 rounded-lg shadow-lg w-auto border">
                     {{-- articulos --}}
                         <div class="mt-4 text-2xl flex justify-between shadow-inner">
-                            <div>Articulos/Procesos</div>
+                            <div>Articulo</div>
                         </div>
                         <div>
                             <!-- Campo de búsqueda -->
@@ -100,69 +18,69 @@
                             @endif
                         </div>
                         <div class="mt-3 w-full rounded-lg border shadow-lg p-4">
-                            @if ($q)
+                        @if ($q)
 
-                                <table class="table-auto w-full">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-4 py-2">Id</th>
-                                            <th class="px-4 py-2">Codigo</th>
-                                            <th class="px-4 py-2">Artículo</th>
-                                            <th class="px-4 py-2">Unidad Cantidad</th>
-                                            <th class="px-4 py-2">Precio Final</th>
-                                            <th class="px-4 py-2">Stock</th>
-                                            <th class=" py-2">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($articulos as $articulo)                
-                                        
-                                            @if (!$this->stockInsufisinte($articulo->id))
-                                                <tr wire:key="{{ $articulo->id }}"
-                                                    class="cursor-pointer {{ $this->estaEnCarrito($articulo->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
-                                                    wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$articulo->id.')' : 'addCar('.$articulo->id.')' }}"
-                                                    wire:loading.attr="disabled">
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->id }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{$articulo->codigo_proveedor}}-{{ $articulo->codigo }}</td>
+                            <table class="table-auto w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-2">Id</th>
+                                        <th class="px-4 py-2">Codigo</th>
+                                        <th class="px-4 py-2">Artículo</th>
+                                        <th class="px-4 py-2">Unidad Cantidad</th>
+                                        <th class="px-4 py-2">Precio Final</th>
+                                        <th class="px-4 py-2">Stock</th>
+                                        <th class=" py-2">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($articulos as $articulo)                
+                                    
+                                        @if (!$this->stockInsufisinte($articulo->id))
+                                            <tr wire:key="{{ $articulo->id }}"
+                                                class="cursor-pointer {{ $this->estaEnCarrito($articulo->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
+                                                wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$articulo->id.')' : 'addCar('.$articulo->id.')' }}"
+                                                wire:loading.attr="disabled">
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->id }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{$articulo->codigo_proveedor}}-{{ $articulo->codigo }}</td>
 
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">
-                                                        @if ($articulo->suelto == 1)
-                                                            <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
-                                                        @else
-                                                            {{ $articulo->stock }}
-                                                        @endif
-                                                    </td>
-                                                    <td class="rounder border flex p-1 flex-wrap">
-                                                        @if ($this->estaEnCarrito($articulo->id))
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">
+                                                    @if ($articulo->suelto == 1)
+                                                        <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
+                                                    @else
+                                                        {{ $articulo->stock }}
+                                                    @endif
+                                                </td>
+                                                <td class="rounder border flex p-1 flex-wrap">
+                                                    @if ($this->estaEnCarrito($articulo->id))
 
-                                                            <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded-lg ">
-                                                                Elim
-                                                            </button>
-                                                            <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-lg "">
-                                                                Mod
-                                                            </button> 
-                                                        
-                                                        @else
-                                                            <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded-lg ">
-                                                                Agregar
-                                                            </button>
+                                                        <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded-lg ">
+                                                            Elim
+                                                        </button>
+                                                        <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-lg "">
+                                                            Mod
+                                                        </button> 
+                                                       
+                                                    @else
+                                                        <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded-lg ">
+                                                            Agregar
+                                                        </button>
 
-                                                        @endif
-                                                    </td>
-                                                </tr>      
-                                            @endif
-                                        
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                    @endif
+                                                </td>
+                                            </tr>      
+                                        @endif
+                                      
+                                    @endforeach
+                                </tbody>
+                            </table>
 
-                            @endif
+                        @endif
                         </div>
                     {{-- fin articulos --}}
-                    </div>
+                </div>
                 </div>
                 <div class=" bg-white p-4 rounded-lg shadow-lg w-auto mt-10">
                         {{-- seleccionados --}}
@@ -188,9 +106,10 @@
                                         $total=0;
                                     @endphp
                                         @foreach ($inTheCar as $item)
-                                            <tr class="{{ $this->Ofeta($item->articulo_id) ? 'text-green-500 font-bold':'' }}">
+                                            <tr class="{{ $this->desdeProcesos($item->articulo_id) ? 'text-blue-500 font-bold':'' }}">
                                                 <td class="rounder border px-4 py-2">{{ $item->articulo_id }}</td>
-                                                <td class="rounder border px-4 py-2">{{ $item->codigo_proveedor }}-{{ $item->codigo }}</td>
+                                                 <td class="rounder border px-4 py-2">{{ $item->codigo_proveedor }}-{{ $item->codigo }}</td>
+
                                                 <td class="rounder border px-4 py-2">{{ $item->articulo }} {{ $item->presentacion }} - {{ $item->unidad  }}</td>
                                                 <td class="rounder border px-4 py-2">{{ $item->precioF  }}</td>
                                                 <td class="rounder border px-4 py-2">{{ $item->stockMinimo }}</td>
@@ -212,12 +131,26 @@
                                                 @endphp
                                                 <td class="rounder border px-4 py-2">{{ $subtotal}}</td>
                                                 <td class="rounder border  py-1 flex p-1 flex-wrap">
-                                                        <button wire:click="deletCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded-lg ">
+                                                   @if ($this->desdeProcesos($item->articulo_id))
+                                                        <div class="flex items-center justify-center">
+                                                            <div class="backdrop-blur-sm bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-1.5">
+                                                                <div class="flex items-center space-x-2">
+                                                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                                    </svg>
+                                                                    <span class="text-green-700 font-medium text-sm">Finalizado</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <button wire:click="deletCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded-lg">
                                                             Elim
                                                         </button>
-                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg "">
+                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg">
                                                             Mod
-                                                        </button> 
+                                                        </button>
+                                                    @endif
+                                                         
                                                        
                                                    
                                                 </td>
@@ -229,56 +162,127 @@
                         </div>
                         {{-- fin seleccionados --}}
                 </div>
-{{-- cliente------ Boton terminar --}}
-                <div class=" bg-white  rounded-lg shadow-md  m-5 h-3/4">
-                        <div class="w-full rounded-lg shadow-md m-5 p-4">
-                            <div class="flex gap-4 w-full">
-                                 <div class="flex-1">
-                                    <div class="col-span-6 sm:col-span-4 rounded-lg border shadow-lg p-4">
-                                        <div class="text-lg mb-4">Mecanico </div>
-                                        <select id="mecanicoSelect" class="block w-full text-1xl rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" 
-                                                wire:model.live='mecanicoSelect' >
-                                            <option value="">Seleccionar...</option>
-                                            @foreach ($mecanicos as $m)
-                                                <option value="{{ $m->id }}">
-                                                    {{ $m->id }} - {{ $m->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <x-input-error for="mecanicoSelect" class="mt-2" />
+        </div>
+
+        <div class="w-30 bg-white rounded-lg shadow-md md:w-[25%] m-5 h-3/4">
+    {{-- operacion --}}
+    <div class="w-auto rounded-lg shadow-md m-5 p-4">
+        
+        {{-- SECCIÓN CLIENTE MEJORADA --}}
+        <div class="col-span-6 sm:col-span-4 rounded-lg border shadow-lg p-4">
+            <div class="text-lg mb-3 text-gray-700 font-semibold border-b pb-2">
+                <i class="fas fa-user mr-2"></i>Cliente
+            </div>
+            
+            {{-- Tarjeta de cliente --}}
+            @if($clienteId)
+                    <div class="flex w-full">
+                         <div class="bg-gray-50 p-5 rounded-2xl w-full">
+                            <h4 class="text-sm font-medium text-gray-400 mb-4 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                FICHA DEL CLIENTE
+                            </h4>
+                            
+                            <div class="flex flex-col space-y-3">
+                                <div class="flex items-center p-3 bg-white rounded-xl shadow-sm">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-blue-600 font-bold text-sm">ID</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-400">Identificación</p>
+                                        <p class="font-semibold text-gray-800">#{{ $clienteId }}</p>
                                     </div>
                                 </div>
                                 
-                                <div class="flex-1">
-                                    <div class="bg-gray-100 rounded-lg border shadow-lg p-4 h-full flex flex-col justify-center">
-                                        <div class="text-lg text-gray-600 mb-2">Total:</div>
-                                        <div class="text-4xl font-bold text-right">
-                                            ${{ number_format($total, 2) }}
-                                        </div>
+                                <div class="flex items-center p-3 bg-white rounded-xl shadow-sm">
+                                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-400">Nombre</p>
+                                        <p class="font-semibold text-gray-800">{{ $clienteAp }} {{ $clienteNom }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center p-3 bg-white rounded-xl shadow-sm">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-400">Documento</p>
+                                        <p class="font-semibold text-gray-800">{{ $clienteDni }}</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                                    @if ($BloquearBoton)
-
-                                    <div class=' rounded-lg border shadow-lg bg-green-400 m-4 p-2 flex justify-between'>
-                                        <x-danger-button wire:click="cancelarOperacion()" wire:loading.attr="disabled">
-                                            {{ __('Cancelar') }}
-                                        </x-danguer-button>
-                                            @if ($mecanicoSelect)
-                                            <x-secondary-button class="ms-3" wire:click="PreguntaConfirmarVenta()" wire:loading.attr="disabled">
-                                                {{ __('Confirmar') }}
-                                            </x-secondary-button>
-                                            @endif
-                                    </div>
-                                @endif
+                        </div>                        
                     </div>
+            @else
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center text-gray-500">
+                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <p class="mt-2">Ningún cliente seleccionado</p>
+                </div>
+            @endif
+        </div>
 
-{{-- fin cliente boton terminar------------ --}}
+        {{-- SECCIÓN TIPO DE VENTA --}}
+        <div class="col-span-6 sm:col-span-4 mt-4 rounded-lg border shadow-lg p-4">
+            <div class="text-lg mb-3 text-gray-700 font-semibold border-b pb-2">
+                <i class="fas fa-tag mr-2"></i>Tipo de Venta
+                    </div>
+                    
+                    <select id="tipo_id" class="block w-full mt-2 text-1xl rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" wire:model='tipo_id' wire:click='tipoVenta()'>
+                        <option value="">Seleccionar tipo de venta...</option>
+                        @foreach ($tipoVentas as $tipo)
+                            <option value="{{ $tipo->id }}">
+                                {{ $tipo->id }} - {{ $tipo->tipoVenta }}
+                            </option>
+                        @endforeach
+                    </select>
 
+                    <x-input-error for="tipo_id" class="mt-2" />
+                </div>
 
-    </div>
-{{--fin articulos y seleccionados --}}
+                {{-- SECCIÓN TOTAL --}}
+                <div class="flex bg-gray-100 pr-4 mb-10 mt-10 h-20 items-center border-gray-300 rounded-lg border shadow-lg">
+                    <div class="text-2xl flex items-end justify-end flex-grow mr-4 text-gray-600">
+                        Total:
+                    </div>
+                    <div class="text-4xl font-bold text-blue-600 rounded-md shadow-sm flex items-center justify-end">
+                        ${{ number_format($total, 2) }}
+                    </div>
+                </div>
+            </div>
+
+            {{-- SECCIÓN BOTONES DE ACCIÓN --}}
+            @if ($BloquearBoton)
+                <div class='rounded-lg border shadow-lg bg-gradient-to-r from-green-400 to-green-500 m-4 p-3 flex justify-between'>
+                    <x-danger-button wire:click="cancelarOperacion()" wire:loading.attr="disabled" class="bg-red-500 hover:bg-red-700">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        {{ __('Cancelar') }}
+                    </x-danger-button>
+                    
+                    @if ( $tipo_id)
+                        <x-secondary-button wire:click="PreguntaConfirmarVenta()" wire:loading.attr="disabled" class="bg-white hover:bg-gray-100 text-green-600 font-bold">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            {{ __('Confirmar') }}
+                        </x-secondary-button>
+                    @endif
+                </div>
+            @endif
+            {{-- fin operacion --}}
+        </div>
 
         {{-- modal --}}
         @if ($agregarCant)
@@ -450,7 +454,7 @@
         </x-dialog-modal>
         {{-- ---- Fin modal confirmar venta---- --}}
         <!-- aDD User Confirmation Modal -->
-        {{-- <x-dialog-modal wire:model.live="confirmingClienteAdd" maxWidth="2xl">
+        <x-dialog-modal wire:model.live="confirmingClienteAdd" maxWidth="2xl">
             <x-slot name="title">
                 {{ __('Cargar Cliente') }}
             </x-slot>
@@ -490,7 +494,7 @@
                     {{ __('Guardar') }}
                 </x-secondary-button>
             </x-slot>
-        </x-dialog-modal> --}}
+        </x-dialog-modal>
 
 </div>
 

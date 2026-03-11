@@ -214,7 +214,8 @@ public function guardarIngreso()
         'detalles' => '',]);
     
     NroIngreso::create([
-        'detalles' => $this->notaProceso,
+        'detalles' =>'-' .$this->notaProceso,
+        'estado'=>'Pendiente'
     ]);
     $nroIng=NroIngreso::max('id') ?? 0;
 

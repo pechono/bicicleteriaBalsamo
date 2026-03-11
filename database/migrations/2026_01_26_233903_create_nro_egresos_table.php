@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('nro_egresos', function (Blueprint $table) {
     $table->id();
 
-    $table->string('numeroEgreso')->unique(); // ej: EGR-000001
-    $table->float('monto')->default(0);
+    $table->string('operacion')->nullable();
+$table->decimal('monto', 15, 2)->nullable(); // 15 dígitos totales, 2 decimales
     $table->text('detalles')->nullable();
     $table->integer('mecanico_id');
     $table->timestamps();
@@ -24,7 +24,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migratio
      */
     public function down(): void
     {

@@ -99,8 +99,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         })->name('service.ingresoImp');
     Route::get('/servicios/imprimir/ingreso{nro_ingreso}', [ReporIngreso::class, 'generateReport'])->name('imprimirIngreso');
     Route::get('/servicio/egreso', fn() => view('service.egresoBici'))->name('service.egresoBici');
-        Route::get('/servicio/egreso/terminar/{nro_ingreso}', function($nro_ingreso) { return view('service.egresoTerminar', compact('nro_ingreso'));
+    Route::get('/servicio/egreso/terminar/{nro_ingreso}', function($nro_ingreso) { return view('service.egresoTerminar', compact('nro_ingreso'));
             })->name('service.egresoTerminar');
+    Route::get('/servicio/terminar/venta/{nro_ingreso}', function($nro_ingreso) { return view('service.terminarVentaProceso', compact('nro_ingreso'));
+            })->name('service.terminarVentaProceso');
+        
 
 
 

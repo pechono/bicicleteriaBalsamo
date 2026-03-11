@@ -28,10 +28,12 @@ class BicicletaCatalogoSeeder extends Seeder
         // TIPOS DE BICICLETAS
         // =========================
         DB::table('tipo_bikes')->insert([
-            ['tipo' => 'Mountain Bike', 'created_at' => $now, 'updated_at' => $now],
+            ['tipo' => 'MTB', 'created_at' => $now, 'updated_at' => $now],
             ['tipo' => 'Ruta', 'created_at' => $now, 'updated_at' => $now],
             ['tipo' => 'Urbana', 'created_at' => $now, 'updated_at' => $now],
+            ['tipo' => 'Tipo Ingles', 'created_at' => $now, 'updated_at' => $now],
             ['tipo' => 'BMX', 'created_at' => $now, 'updated_at' => $now],
+            ['tipo' => 'Dama', 'created_at' => $now, 'updated_at' => $now],
             ['tipo' => 'Eléctrica', 'created_at' => $now, 'updated_at' => $now],
             ['tipo' => 'Plegable', 'created_at' => $now, 'updated_at' => $now],
         ]);
@@ -40,14 +42,23 @@ class BicicletaCatalogoSeeder extends Seeder
         // MARCAS
         // =========================
         DB::table('marcas')->insert([
-            ['marca' => 'Trek', 'created_at' => $now, 'updated_at' => $now],
-            ['marca' => 'Specialized', 'created_at' => $now, 'updated_at' => $now],
-            ['marca' => 'Giant', 'created_at' => $now, 'updated_at' => $now],
-            ['marca' => 'Cannondale', 'created_at' => $now, 'updated_at' => $now],
-            ['marca' => 'Scott', 'created_at' => $now, 'updated_at' => $now],
-            ['marca' => 'Venzo', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Vanzo', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Cool', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Siambretta', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Volpro', 'created_at' => $now, 'updated_at' => $now],
             ['marca' => 'Fire Bird', 'created_at' => $now, 'updated_at' => $now],
-        ]);
+            ['marca' => 'SLP', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Olmo', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Vairo', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Trinx', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Raleigh', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Gribom', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'Enrique', 'created_at' => $now, 'updated_at' => $now],
+            ['marca' => 'El Cairo', 'created_at' => $now, 'updated_at' => $now],
+
+
+
+            ]);
 
         // =========================
         // PROCESOS / PROCEDIMIENTOS

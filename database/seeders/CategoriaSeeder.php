@@ -22,6 +22,14 @@ class CategoriaSeeder extends Seeder
         Categoria::create(['categoria'=>'Rueda']);
         Categoria::create(['categoria'=>'Trasmicion']);
         Categoria::create(['categoria'=>'Formas']);
+        Categoria::create(['categoria'=>'Indumentaria']);
+        Categoria::create(['categoria'=>'iluminacion']);
+        Categoria::create(['categoria'=>'Asientos']);
+        Categoria::create(['categoria'=>'Parche/Soluion']);
+        Categoria::create(['categoria'=>'Frenos']);
+        Categoria::create(['categoria'=>'Orquilla']);
+        Categoria::create(['categoria'=>'Movimientos']);
+        Categoria::create(['categoria'=>'Prelota']);
         Categoria::create(['categoria'=>'Oferta']);
 
 

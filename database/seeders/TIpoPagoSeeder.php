@@ -17,6 +17,9 @@ class TIpoPagoSeeder extends Seeder
             'tipoVenta'=>'Contado Efectivo'
         ]);
         TipoVenta::create([
+            'tipoVenta'=>'Transferencia'
+        ]);
+        TipoVenta::create([
             'tipoVenta'=>'Contado Debito'
         ]);
         TipoVenta::create([
