@@ -100,5 +100,13 @@ class BicicletaCatalogoSeeder extends Seeder
                 'updated_at' => $now,
             ],
         ]);
+
+        DB::table('mecanicos')->insert(
+        [
+            ['nombre'=>'Bladimiro','activo'=>1,'created_at' => $now,'updated_at' => $now],
+            ['nombre'=>'chito','activo'=>1,'created_at' => $now,'updated_at' => $now],
+            ['nombre'=>'Pablo','activo'=>1,'created_at' => $now,'updated_at' => $now]
+        ]);
+        
     }
 }

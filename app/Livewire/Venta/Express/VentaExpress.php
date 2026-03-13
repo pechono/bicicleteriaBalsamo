@@ -70,7 +70,8 @@ class VentaExpress extends Component
                 ->where(function ($query) {
                     $query->where('articulo', 'like', '%' . $this->q . '%')
                         ->orWhere('detalles', 'like', '%' . $this->q . '%')
-                        ->orWhere('categoria', 'like', '%' . $this->q . '%');
+                        ->orWhere('categoria', 'like', '%' . $this->q . '%')
+                        ->orwhere('codigo_proveedor', 'like', '%' . $this->q . '%');
                 })
                 ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
                 ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
@@ -269,7 +270,7 @@ class VentaExpress extends Component
     public $operacion;
     // -----------op
     public function tipoVenta(){
-        if($this->tipo_id==4){
+        if($this->tipo_id==5){
              $this->ac='';
         }else{
              $this->cuentaCorriente=0;
@@ -293,7 +294,7 @@ class VentaExpress extends Component
         // $this->Total();
         $this->validate(['tipo_id'=>'required|numeric','cliente_id'=>'required|numeric']);
 
-         if($this->tipo_id==4)
+         if($this->tipo_id==5)
          {
              Operacion::create([
                  'usuario_id'=>auth()->user()->id,

@@ -9,6 +9,8 @@ use App\Models\EgresoBici;
 use App\Models\NroIngreso;
 use Illuminate\Support\Facades\DB;
 
+use Livewire\WithPagination;
+
 class Egreso extends Component
 {
     public $clienteBici;
@@ -22,22 +24,42 @@ class Egreso extends Component
     public $searchCliente = '';
     public $active=1;
     public $q;
-    public function render()
-{
-    $clientes = collect();
+    use WithPagination;
     
-    $clientes = Cliente::where('clientes.activo', $this->active)
+    public $filtroEstado = 'todo'; // Valor por defecto
+    
+    protected $paginationTheme = 'tailwind';
+    
+    public function actualizarFiltro()
+    {
+        $this->resetPage(); // Resetear paginación al cambiar filtro
+    }
+    
+    // También puedes usar updatedFiltroEstado para detectar cambios automáticos
+    public function updatedFiltroEstado()
+    {
+        $this->resetPage();
+    }
+    
+    public function render()
+    {
+        $clientes = Cliente::where('clientes.activo', $this->active)
             ->join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
             ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
             ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
             ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
             ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+            
+            // FILTRO POR ESTADO (NUEVO)
+            ->when($this->filtroEstado != 'todo', function ($query) {
+                return $query->where('nro_ingresos.estado', $this->filtroEstado);
+            })
+            
             ->when($this->searchIngreso != '', function ($query) {
-                // Filtro por número de ingreso (exacto o como like)
                 return $query->where('ingreso_bicis.nro_ingreso', 'LIKE', '%' . $this->searchIngreso . '%');
             })
+            
             ->when($this->searchCliente != '', function ($query) {
-                // Filtro por datos del cliente (nombre, apellido, DNI, teléfono)
                 return $query->where(function ($subquery) {
                     $subquery->where('clientes.nombre', 'LIKE', '%' . $this->searchCliente . '%')
                         ->orWhere('clientes.apellido', 'LIKE', '%' . $this->searchCliente . '%')
@@ -45,6 +67,7 @@ class Egreso extends Component
                         ->orWhere('clientes.telefono', 'LIKE', '%' . $this->searchCliente . '%');
                 });
             })
+            
             ->select(
                 'ingreso_bicis.nro_ingreso',
                 'clientes.nombre',
@@ -55,13 +78,14 @@ class Egreso extends Component
                 'marcas.marca',
                 'tipo_bikes.tipo',
                 'nro_ingresos.estado'
-
             )
             ->distinct()
             ->paginate(10);
         
         return view('livewire.service.egreso', compact('clientes'));
     }
+
+
 
     public $ver=false;
     public function verCliente($nro_ingreso)

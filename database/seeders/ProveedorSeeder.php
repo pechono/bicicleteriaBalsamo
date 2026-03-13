@@ -16,7 +16,18 @@ class ProveedorSeeder extends Seeder
         Proveedor::create([
             'nombre'=>'Sin Definir',
             'telefono'=>'----',
+            'abreviatura'=>'SinDF',
             'rubro'=>'Sin Defenir',
+            'direccion'=>'----',
+            'localidad'=>'----',
+            'mail'=>'correo@correo.com',
+            'activo'=>'1'
+        ]);
+        Proveedor::create([
+            'nombre'=>'Biciclateria Balsamo',
+            'telefono'=>'----',
+            'abreviatura'=>'MdO',
+            'rubro'=>'Servicio',
             'direccion'=>'----',
             'localidad'=>'----',
             'mail'=>'correo@correo.com',

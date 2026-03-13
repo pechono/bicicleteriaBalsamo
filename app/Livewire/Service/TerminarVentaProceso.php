@@ -112,7 +112,9 @@ class TerminarVentaProceso extends Component
                 ->where(function ($query) {
                     $query->where('articulo', 'like', '%' . $this->q . '%')
                         ->orWhere('detalles', 'like', '%' . $this->q . '%')
-                        ->orWhere('categoria', 'like', '%' . $this->q . '%');
+                        ->orWhere('categoria', 'like', '%' . $this->q . '%')
+                        ->orwhere('codigo_proveedor', 'like', '%' . $this->q . '%');
+
                 })
                 ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
                 ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
@@ -308,7 +310,7 @@ class TerminarVentaProceso extends Component
     public $operacion;
     // -----------op
     public function tipoVenta(){
-        if($this->tipo_id==4){
+        if($this->tipo_id==5){
              $this->ac='';
         }else{
              $this->cuentaCorriente=0;
@@ -329,10 +331,10 @@ class TerminarVentaProceso extends Component
             'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
         ->get();
     
-        // $this->Total();
-        $this->validate(['tipo_id'=>'required|numeric','cliente_id'=>'required|numeric']);
+         $this->Total();
+        $this->validate(['tipo_id'=>'required|numeric']);
 
-         if($this->tipo_id==4)
+         if($this->tipo_id==5)
          {
              Operacion::create([
                  'usuario_id'=>auth()->user()->id,
@@ -406,7 +408,7 @@ NroEgreso::join('egreso_bicis', 'egreso_bicis.nro_egreso', '=', 'nro_egresos.id'
          Car::where('user_id', auth()->user()->id)->delete(); //Car::truncate();
          $this->tipo_id='';
          $this->cancelarBoton();
-         NroIngreso::find($this->nroI)->update(['estado' => 'entregado']);
+          NroIngreso::find($this->nroI)->update(['estado' => 'Entregado']);
 
          return redirect()->route('venta.reporte',['operacion'=>$operacion,'volver'=>'venta.ventaExpress']);
      }

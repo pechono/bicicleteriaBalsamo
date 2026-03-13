@@ -86,7 +86,9 @@ class EgresoTerminar extends Component
                 ->where(function ($query) {
                     $query->where('articulo', 'like', '%' . $this->q . '%')
                         ->orWhere('detalles', 'like', '%' . $this->q . '%')
-                        ->orWhere('categoria', 'like', '%' . $this->q . '%');
+                        ->orWhere('categoria', 'like', '%' . $this->q . '%')
+                        ->orwhere('codigo_proveedor', 'like', '%' . $this->q . '%');
+
                 })
                 ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
                 ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
@@ -374,7 +376,7 @@ class EgresoTerminar extends Component
        $nroIngreso = NroIngreso::find($this->nro); // o el ID que corresponda
         if ($nroIngreso) {
             $nroIngreso->update([
-                'estado' => 'Completado'
+                'estado' => 'Terminado'
             ]);
         }
          Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();

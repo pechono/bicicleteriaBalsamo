@@ -143,9 +143,10 @@
                
                 <!-- Fondo animado -->
                 <div class="absolute top-1 bottom-1 rounded-full bg-white shadow-md transition-all duration-300"
-                    :style="'width: calc(50% - 4px); left: ' + (selected == 0 ? '4px' : '50%')"></div>
+                    :style="'width: calc(50% - 4px); left: ' + (selected == 0 ? '4px' : '50%')">
+                </div>
                 
-                <!-- Opciones -->
+                
                 <label class="relative z-10 cursor-pointer">
                     <input type="radio" 
                         name="procesos0" 

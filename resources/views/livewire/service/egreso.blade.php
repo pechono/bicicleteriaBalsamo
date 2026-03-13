@@ -40,6 +40,80 @@
                     class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm"
                 />
             </div>
+                {{-- --------------------- --}}
+                <div class="relative inline-flex p-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200"
+    x-data="{ selected: @entangle('filtroEstado') }">
+    
+    <!-- Fondo animado (ajustado para 4 opciones) -->
+    <div class="absolute top-1 bottom-1 rounded-full bg-white shadow-md transition-all duration-300"
+        :style="{
+            width: 'calc(25% - 4px)', 
+            left: selected == 'todo' ? '4px' : 
+                  (selected == 'pendiente' ? 'calc(25% - 0px)' : 
+                  (selected == 'terminado' ? 'calc(50% - 0px)' : 
+                  'calc(75% - 0px)'))
+        }">
+    </div>
+    
+    <!-- Opción: Todo -->
+    <label class="relative z-10 cursor-pointer">
+        <input type="radio" 
+            name="filtro_estado" 
+            wire:model="filtroEstado"
+            wire:click="actualizarFiltro"
+            value="todo" 
+            class="sr-only">
+        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
+            :class="selected == 'todo' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
+            Todo
+        </span>
+    </label>
+    
+    <!-- Opción: Pendiente -->
+    <label class="relative z-10 cursor-pointer">
+        <input type="radio" 
+            name="filtro_estado" 
+            wire:model="filtroEstado"
+            wire:click="actualizarFiltro"
+            value="pendiente" 
+            class="sr-only">
+        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
+            :class="selected == 'pendiente' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
+            Pendiente
+        </span>
+    </label>
+    
+    <!-- Opción: Terminado -->
+    <label class="relative z-10 cursor-pointer">
+        <input type="radio" 
+            name="filtro_estado" 
+            wire:model="filtroEstado"
+            wire:click="actualizarFiltro"
+            value="terminado" 
+            class="sr-only">
+        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
+            :class="selected == 'terminado' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
+            Terminado
+        </span>
+    </label>
+    
+    <!-- Opción: Entregado -->
+    <label class="relative z-10 cursor-pointer">
+        <input type="radio" 
+            name="filtro_estado" 
+            wire:model="filtroEstado"
+            wire:click="actualizarFiltro"
+            value="entregado" 
+            class="sr-only">
+        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
+            :class="selected == 'entregado' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
+            Entregado
+        </span>
+    </label>
+</div>
+
+
+                {{-- ---------------------------------- --}}
         </div>
         
         <!-- Indicadores de búsqueda activa -->
