@@ -123,7 +123,7 @@
                     @foreach($colors as $color)
                         <label class="flex items-center gap-1">
                             <input type="checkbox" 
-                                wire:modellive="selectedColors" 
+                                wire:model.live="selectedColors" 
                                 
                                 value="{{ $color->id }}">
                             {{ $color->color }}
@@ -174,20 +174,7 @@
                     </span>
                 </label>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
+          
             {{-- BOTÓN NOTA --}}
             <div class="flex justify-end mb-2">
                 <button
@@ -206,11 +193,6 @@
                     placeholder="Buscar proceso..."
                     class="w-full border rounded px-2 py-1 text-sm"
                 >
-
-               
-
-
-
 
                 <label class="text-sm flex items-center gap-1">
                     <input type="checkbox" wire:model="filtroActivos">

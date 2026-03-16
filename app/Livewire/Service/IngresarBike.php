@@ -205,12 +205,22 @@ public function guardarIngreso()
         'selectedBrands' => 'required',
         'procesosSeleccionados' => 'required|array|min:1',
     ]);
+    $c='';
+    $a=0;
+    foreach($this->selectedColors as $colorItem){ 
+        if ($a==0){
+            $c=Color::find($colorItem)->color;
+        }else{
+            $c=$c. ' - '.Color::find($colorItem)->color;
+        }
+        $a++;
+    }
 
     Bici::create([
         'cliente_id' => $this->cliente->id,
         'tipo_id' => $this->selectedTypes,
         'marca_id' => $this->selectedBrands,
-        'color' => json_encode($this->selectedColors),
+        'color' => $c,
         'detalles' => '',]);
     
     NroIngreso::create([

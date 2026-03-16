@@ -362,7 +362,7 @@
 
         <x-dialog-modal wire:model.live="cDescuento" maxWidth="2xl">
             <x-slot name="title">
-                {{ __('Seleecionar Articulo') }}
+                {{ __('Seleccionar Articulo') }}
             </x-slot>
             <x-slot name="content">
                 <div class="rounded-t-lg" >
@@ -431,7 +431,7 @@
         {{-- ----modal confirmar venta---- --}}
         <x-dialog-modal wire:model.live="confirmarOpVenta" maxWidth="2xl">
             <x-slot name="title">
-                {{ __('Eliminar articulo') }}
+                {{ __('Confirmar Venta') }}
             </x-slot>
 
             <x-slot name="content">

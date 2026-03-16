@@ -18,7 +18,7 @@
 
 body {
     font-family: 'Courier New', monospace;
-    font-size: 14px; /* 🔥 Tamaño general */
+    font-size: 12px; /* 🔥 Tamaño general */
     line-height: 1.4;
     color: #000;
     width: 128mm;
@@ -126,6 +126,36 @@ th, td {
 </head>
 
 <body>
+<div class="titulo">· NOTA INGRESO, Nro {{ $bicicleta->nro_ingreso }} ·</div>
+<div>
+    <table>
+        <tr>
+            <th>Empresa</th>
+            <th>Cliente</th>
+        </tr>
+        <tr>
+            <td>
+                {{ $emp->empresa }}<br>
+                Tel: {{ $emp->telefono }}
+            </td>
+            <td>
+                Ap y Nom: {{ $bicicleta->apellido . ' ' . $bicicleta->nombre }}<br>
+                Dni: {{ $bicicleta->dni }}<br>
+                Telefono: {{ $bicicleta->telefono }}
+            </td>
+    </table>
+</div>
+    
+<div class="linea-punteada"></div>
+
+<div class="recuadro-punteado">
+    <div>CONDICIONES</div>
+    <div class="condicion-item">
+    PLAZO: 7 DÍAS HÁBILES ({{ $bicicleta->fecha_retiro }}). NO RESPONSABLES POR ROBO, HURTO O DAÑOS.
+   VERIFICAR ESTADO AL RETIRAR - NO RECLAMOS
+    </div>
+</div>
+
 
 <div class="titulo">· INGRESO RODADO ·</div>
 
@@ -178,56 +208,6 @@ Nota: {{ $bicicleta->detalles }}
 
 <div class="footer">
 
-<div class="titulo">· NOTA INGRESO, Nro {{ $bicicleta->nro_ingreso }} ·</div>
-    {{-- <div class="datos-cliente"> 
-        <div>
-            <div class="fila-punteada">
-                Empresa:
-                <div class="relleno">{{ $emp->nombre }}</div>
-            </div>
-
-            <div class="fila-punteada">
-                Teléfono:
-                <div class="relleno">3826-541085</div>
-            </div>
-        </div>
-        <div class="fila-punteada">
-                Cliente:
-            <div class="relleno">
-                Ap y Nom: {{ $bicicleta->apellido . ' ' . $bicicleta->nombre }}<br>
-                Dni: {{ $bicicleta->dni }}<br>
-                Telefono: {{ $bicicleta->telefono }}
-            </div>
-        </div>
-    </div> --}}
-<div>
-    <table>
-        <tr>
-            <th>Empresa</th>
-            <th>Cliente</th>
-        </tr>
-        <tr>
-            <td>
-                {{ $emp->empresa }}<br>
-                Tel: {{ $emp->telefono }}
-            </td>
-            <td>
-                Ap y Nom: {{ $bicicleta->apellido . ' ' . $bicicleta->nombre }}<br>
-                Dni: {{ $bicicleta->dni }}<br>
-                Telefono: {{ $bicicleta->telefono }}
-            </td>
-    </table>
-</div>
-    
-<div class="linea-punteada"></div>
-
-<div class="recuadro-punteado">
-    <div>CONDICIONES</div>
-    <div class="condicion-item">
-    PLAZO: 7 DÍAS HÁBILES ({{ $bicicleta->fecha_retiro }}). NO RESPONSABLES POR ROBO, HURTO O DAÑOS.
-   VERIFICAR ESTADO AL RETIRAR - NO RECLAMOS
-    </div>
-</div>
 
 </div>
 

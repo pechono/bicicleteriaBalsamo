@@ -213,7 +213,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->estado }}</td>
 
-                            <td class="px-4 py-3 text-sm text-gray-700 border-r">
+                            <td class="px-4 py-3 text-sm text-gray-700 border-r min-w-fit">
                                     
                                     @if ($ver == $cliente->nro_ingreso)
                                         @if($cliente->estado=='Pendiente' || $cliente->estado=='pendiente')
@@ -236,7 +236,13 @@
                                             </button>
                                         @endif
 
-                                        
+
+                                        @if ($operacionNro)
+                                                <a href="{{ route('comprobante',['operacion'=>$operacionNro]) }}" target="_blank"                                                 class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
+Imprimir Comprobante</a>
+
+                                        @endif
+  
                                     @else
                                         <button 
                                         wire:click="verCliente({{ $cliente->nro_ingreso }})"
@@ -256,67 +262,67 @@
 
                             <!-- Fila expandible con artículos -->
                             @if ($ver == $cliente->nro_ingreso)
-                                    @if($cliente->estado=='Completado' || $cliente->estado=='completado')
+                                    @if($cliente->estado=='Terminado')
                                     <tr> 
                                         
                                         <td colspan="7" class="px-6 py-4">
-    <div class="flex flex-col w-full">
-    <div class="flex items-start gap-4">
-        <!-- Tabla -->
-        <table class="w-10/12 border-collapse border border-gray-300 rounded-lg overflow-hidden">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ID</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Código</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Artículo</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($procesosTerminado as $item)
-                <tr class="hover:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2">{{$item->id ?? 'N/A'}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$item->codigo_proveedor}}-{{$item->codigo}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$item->articulo}}</td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                            {{$item->cantidad}}
-                        </span>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="border border-gray-300 px-6 py-8">
-                        <div class="bg-white rounded-lg p-6 text-center">
-                            <div class="flex flex-col items-center justify-center space-y-3">
-                                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                </svg>
-                                <h1 class="text-xl font-bold text-gray-800">¡Sin procesos terminados!</h1>
-                                <p class="text-gray-600">No hay datos disponibles para mostrar en este momento.</p>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                                            <div class="flex flex-col w-full">
+                                                <div class="flex items-start gap-4">
+                                                    <!-- Tabla -->
+                                                    <table class="w-10/12 border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                                                        <thead>
+                                                            <tr class="bg-gray-100">
+                                                                <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ID</th>
+                                                                <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Código</th>
+                                                                <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Artículo</th>
+                                                                <th class="border border-gray-300 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Cantidad</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse ($procesosTerminado as $item)
+                                                            <tr class="hover:bg-gray-50">
+                                                                <td class="border border-gray-300 px-4 py-2">{{$item->id ?? 'N/A'}}</td>
+                                                                <td class="border border-gray-300 px-4 py-2">{{$item->codigo_proveedor}}-{{$item->codigo}}</td>
+                                                                <td class="border border-gray-300 px-4 py-2">{{$item->articulo}}</td>
+                                                                <td class="border border-gray-300 px-4 py-2">
+                                                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                                                                        {{$item->cantidad}}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            @empty
+                                                            <tr>
+                                                                <td colspan="4" class="border border-gray-300 px-6 py-8">
+                                                                    <div class="bg-white rounded-lg p-6 text-center">
+                                                                        <div class="flex flex-col items-center justify-center space-y-3">
+                                                                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                                            </svg>
+                                                                            <h1 class="text-xl font-bold text-gray-800">¡Sin procesos terminados!</h1>
+                                                                            <p class="text-gray-600">No hay datos disponibles para mostrar en este momento.</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
 
-        <!-- Botón a la par de la tabla -->
-        <div class="flex-1 justify-center">
-            <button 
-                                                wire:click="terminarProcesoVenta({{ $cliente->nro_ingreso }})" placeholder="Terminar Proceso"
-                                                class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
-                                                <h3>Entregar</h3>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.99 7.5 3.75-3.75m0 0 3.75 3.75m-3.75-3.75v16.499H4.49" />
-                                                </svg>
+                                                    <!-- Botón a la par de la tabla -->
+                                                    <div class="flex-1 justify-center">
+                                                        <button 
+                                                            wire:click="terminarProcesoVenta({{ $cliente->nro_ingreso }})" placeholder="Terminar Proceso"
+                                                            class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
+                                                            <h3>Entregar</h3>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="m11.99 7.5 3.75-3.75m0 0 3.75 3.75m-3.75-3.75v16.499H4.49" />
+                                                            </svg>
 
-                                            </button>
-        </div>
-    </div>
-</div>
-</td>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                     @else    
                                         <tr class="bg-blue-50 border-t-2 border-blue-200">

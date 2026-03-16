@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Bici;
 use App\Models\Cliente;
 use App\Models\EgresoBici;
+use App\Models\NroEgreso;
 use App\Models\NroIngreso;
 use Illuminate\Support\Facades\DB;
 
@@ -40,7 +41,18 @@ class Egreso extends Component
     {
         $this->resetPage();
     }
+public $operacionNro;
+    public function operacion($nro)
+{
+    $operacion = DB::table('nro_egresos')
+        ->join('egreso_bicis', 'egreso_bicis.nro_egreso', '=', 'nro_egresos.id')
+        ->join('ingreso_bicis', 'egreso_bicis.ingreso_bici_id', '=', 'ingreso_bicis.id')
+        ->where('ingreso_bicis.nro_ingreso', $nro)
+        ->select('nro_egresos.operacion')
+        ->first();  // ← Usa first() en lugar de get()
     
+    $this->operacionNro= $operacion->operacion;
+}
     public function render()
     {
         $clientes = Cliente::where('clientes.activo', $this->active)
@@ -49,6 +61,7 @@ class Egreso extends Component
             ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
             ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
             ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+                        
             
             // FILTRO POR ESTADO (NUEVO)
             ->when($this->filtroEstado != 'todo', function ($query) {
@@ -81,6 +94,7 @@ class Egreso extends Component
             )
             ->distinct()
             ->paginate(10);
+            
         
         return view('livewire.service.egreso', compact('clientes'));
     }
@@ -93,6 +107,7 @@ class Egreso extends Component
         // Aquí puedes agregar la lógica para mostrar el detalle del ingreso
         $this->ver = $nro_ingreso;
         $this->ingresoProceso($nro_ingreso);
+        $this->operacion($nro_ingreso);
     $this->mostrarProcesosTerminado($nro_ingreso);
 
         $this->nroDetalles($nro_ingreso);
@@ -130,11 +145,11 @@ class Egreso extends Component
         // Aquí puedes agregar la lógica para terminar el proceso del ingreso
        return redirect()->route('service.egresoTerminar', ['nro_ingreso' => $nro_ingreso]);
     }
-    public $procesosTerminado;
+    public $procesosTerminado, $operacionId;
     public function mostrarProcesosTerminado($nro)
     {
         $this->procesosTerminado = EgresoBici::select(
-                'egreso_bicis.id',  // Importante para distinguir
+                'articulos.id',  // Importante para distinguir
                 'ingreso_bicis.nro_ingreso',
                 'stocks.codigo_proveedor',
                 'articulos.codigo',
@@ -150,6 +165,7 @@ class Egreso extends Component
             ->where('ingreso_bicis.nro_ingreso', $nro)
             ->distinct('egreso_bicis.id')  // Distinct por ID de egreso
             ->get();
+            
     }
 
    public function terminarProcesoVenta($nro)
