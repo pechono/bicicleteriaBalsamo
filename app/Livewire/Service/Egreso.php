@@ -49,9 +49,14 @@ public $operacionNro;
         ->join('ingreso_bicis', 'egreso_bicis.ingreso_bici_id', '=', 'ingreso_bicis.id')
         ->where('ingreso_bicis.nro_ingreso', $nro)
         ->select('nro_egresos.operacion')
-        ->first();  // ← Usa first() en lugar de get()
-    
-    $this->operacionNro= $operacion->operacion;
+        ->first();
+
+    // Verificar si existe la operación y no es null
+    if ($operacion && !is_null($operacion->operacion)) {
+        $this->operacionNro = $operacion->operacion;
+    } else {
+        $this->operacionNro = null; // Explícitamente establecer como null
+    }
 }
     public function render()
     {
@@ -93,7 +98,7 @@ public $operacionNro;
                 'nro_ingresos.estado'
             )
             ->distinct()
-            ->paginate(10);
+            ->get();
             
         
         return view('livewire.service.egreso', compact('clientes'));

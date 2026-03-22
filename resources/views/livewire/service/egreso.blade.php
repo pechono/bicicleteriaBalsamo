@@ -161,7 +161,7 @@
                 
                 <!-- Contador de resultados -->
                 <span class="px-3 py-1 bg-white/20 text-white rounded-full text-sm">
-                    {{ $clientes->total() }} resultados
+                     resultados
                 </span>
             </div>
             
@@ -226,21 +226,23 @@
                                                 </svg>
                                             </button>
                                         @endif
-                                        @if($cliente->estado=='Completado()' || $cliente->estado=='completado')
+                                        @if($cliente->estado=='Completado' || $cliente->estado=='completado')
                                             <button 
                                                 wire:click="cerrarDetalles" placeholder="Terminar Proceso"
                                                 class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
                                                 <h3>cerrar</h3>
-                                               
-
                                             </button>
                                         @endif
 
 
-                                        @if ($operacionNro)
-                                                <a href="{{ route('comprobante',['operacion'=>$operacionNro]) }}" target="_blank"                                                 class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
-Imprimir Comprobante</a>
-
+                                        @if(($cliente->estado != 'Pendiente' && $cliente->estado != 'pendiente' && 
+                                            $cliente->estado != 'Completado' && $cliente->estado != 'completado') && 
+                                            isset($operacionNro) && !is_null($operacionNro))
+                                            <a href="{{ route('comprobante',['operacion'=>$operacionNro]) }}" 
+                                            target="_blank" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow">
+                                                Imprimir Comprobante
+                                            </a>
                                         @endif
   
                                     @else
@@ -403,6 +405,5 @@ Imprimir Comprobante</a>
     
     <!-- Paginación -->
     <div class="mt-4">
-        {{ $clientes->links() }}
     </div>
 </div>

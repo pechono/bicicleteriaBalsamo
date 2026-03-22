@@ -20,6 +20,22 @@
                     <p>Total: ${{ $this->efectivo }}</p>
                 </div>
             </div>
+            
+             <div class="bg-white p-4 rounded-lg shadow-lg w-full border mt-5">
+                <div class="mt-4 text-2xl flex justify-between shadow-inner">
+                    <div>Tranferencia</div>
+                </div>
+                <div class="mt-10 text-xl flex justify-between">
+                    <p>Total: ${{ $this->tranferencia}}</p>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            
+            
             <div class="bg-white p-4 rounded-lg shadow-lg w-full border mt-5">
                 <div class="mt-4 text-2xl flex justify-between shadow-inner">
                     <div>Debito</div>
@@ -72,7 +88,7 @@
                     <div>Cierre de Caja con un Ingreso de</div>
                 </div>
                 <div class="mt-10 text-4xl flex justify-between ">
-                    <p>${{ $this->efectivo+$this->debito+$this->tarjeta+$this->cuentaCorientes }}</p>
+                    <p>${{ $this->efectivo+$this->debito+$this->tarjeta+$this->cuentaCorientes + $this->tranferencia}}</p>
                 </div>
             </div>
             <div class=" bg-white p-4 rounded-lg shadow-lg w-auto border mt-5">

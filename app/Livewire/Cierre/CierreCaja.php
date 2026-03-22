@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 class CierreCaja extends Component
 {
     public $fecha_formateada;
-    public $efectivo;
+    public $efectivo,$tranferencia;
     public $debito;
     public $tarjeta;
     public $cuentaCorientes;
@@ -28,13 +28,16 @@ class CierreCaja extends Component
             ->whereDate('created_at', $this->hoy)
             ->where('cerrado', 0)->where('usuario_id', auth()->user()->id)
             ->sum('venta');
-
-        $this->debito = Operacion::where('tipoVenta_id', 2)
+        $this->tranferencia = Operacion::where('tipoVenta_id', 2)
+            ->whereDate('created_at', $this->hoy)
+            ->where('cerrado', 0)->where('usuario_id', auth()->user()->id)
+            ->sum('venta');
+        $this->debito = Operacion::where('tipoVenta_id', 3)
             ->whereDate('created_at', $this->hoy)
             ->where('cerrado', 0)->where('usuario_id', auth()->user()->id)
             ->sum('venta');
 
-        $this->tarjeta = Operacion::where('tipoVenta_id', 3)
+        $this->tarjeta = Operacion::where('tipoVenta_id', 4)
             ->whereDate('created_at', $this->hoy)
             ->where('cerrado', 0)->where('usuario_id', auth()->user()->id)
             ->sum('venta');
@@ -68,6 +71,7 @@ class CierreCaja extends Component
     // Realiza el cierre de caja
     ModelsCierreCaja::create([
         'efectivo' => $this->efectivo,
+        'tranferencia'=>$this->tranferencia,
         'debito' => $this->debito,
         'tarjeta' => $this->tarjeta,
         'cuentaCorriente' => $this->cuentaCorientes,

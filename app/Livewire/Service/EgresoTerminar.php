@@ -15,6 +15,8 @@ use App\Models\NroIngreso;
 use App\Models\Bici;
 use App\Models\EgresoBici;
 use App\Models\NroEgreso;
+use App\Livewire\Traits\WithWhatsApp; // 👈 AGREGAR
+
 use Carbon\CarbonPeriod;
 use Illuminate\Validation\ValidationException;
 
@@ -26,7 +28,7 @@ use PhpParser\Node\Stmt\If_;
 class EgresoTerminar extends Component
 {
     public $nro, $cantidadArt, $descArt, $NroDatos,$idBici;
-
+    use WithWhatsApp;
     public function mount($nro_ingreso)
     {
         $this->nro = $nro_ingreso;
@@ -320,71 +322,71 @@ class EgresoTerminar extends Component
     // -----------op
    
     public $clienteId;
-    public function ConfirmarVenta()
-     {
+    // public function ConfirmarVenta()
+    //  {
 
-        $inTheCar = Car::where('user_id', auth()->user()->id)
-        ->join('articulos', 'cars.articulo_id', '=', 'articulos.id')
-        ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
-        ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-        ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-        ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
-        ->get();
+    //     $inTheCar = Car::where('user_id', auth()->user()->id)
+    //     ->join('articulos', 'cars.articulo_id', '=', 'articulos.id')
+    //     ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
+    //     ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
+    //     ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+    //     ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+    //         'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+    //         'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
+    //     ->get();
 
 
 
-        $client = Cliente::select('clientes.id')
-        ->join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
-        ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
-        ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
-        ->where('ingreso_bicis.nro_ingreso', $this->nro)
-        ->first();
-        $this->clienteId=$client->id;
-        $this->cliente_id=$client->id;
+    //     $client = Cliente::select('clientes.id')
+    //     ->join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
+    //     ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+    //     ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+    //     ->where('ingreso_bicis.nro_ingreso', $this->nro)
+    //     ->first();
+    //     $this->clienteId=$client->id;
+    //     $this->cliente_id=$client->id;
 
-        // $this->Total();
-        $this->validate(['mecanicoSelect'=>'required|numeric']);        
-            $detallesNotas='-';
-            NroEgreso::create([
-                             'monto'=>$this->total,
-                'detalles'=>$detallesNotas,
-                'mecanico_id'=>$this->mecanicoSelect,
-            ]);
-             $nro_egreso=NroEgreso::latest()->first();
-             $idegreso=$nro_egreso->id;
+    //     // $this->Total();
+    //     $this->validate(['mecanicoSelect'=>'required|numeric']);        
+    //         $detallesNotas='-';
+    //         NroEgreso::create([
+    //                          'monto'=>$this->total,
+    //             'detalles'=>$detallesNotas,
+    //             'mecanico_id'=>$this->mecanicoSelect,
+    //         ]);
+    //          $nro_egreso=NroEgreso::latest()->first();
+    //          $idegreso=$nro_egreso->id;
 
-             foreach($inTheCar as $car){
+    //          foreach($inTheCar as $car){
                
-                 EgresoBici::create([
-                    'ingreso_bici_id'=>$this->idBici,
-                     'articulo_id'=>$car->articulo_id,
-                     'cantidad'=>$car->cantidad,
-                     'precio_inicial'=>$car->precioI,
-                     'precio_final'=>$car->precioF,
-                     'nro_egreso'=>$idegreso
-                 ]);
+    //              EgresoBici::create([
+    //                 'ingreso_bici_id'=>$this->idBici,
+    //                  'articulo_id'=>$car->articulo_id,
+    //                  'cantidad'=>$car->cantidad,
+    //                  'precio_inicial'=>$car->precioI,
+    //                  'precio_final'=>$car->precioF,
+    //                  'nro_egreso'=>$idegreso
+    //              ]);
 
-                 $changeStock=Stock::where('articulo_id',$car->articulo_id)->first();
-                 $changeStock->update([
-                     'stock'=>$changeStock->stock - $car->cantidad,
-                 ]);
+    //              $changeStock=Stock::where('articulo_id',$car->articulo_id)->first();
+    //              $changeStock->update([
+    //                  'stock'=>$changeStock->stock - $car->cantidad,
+    //              ]);
 
-             }
+    //          }
          
-       $nroIngreso = NroIngreso::find($this->nro); // o el ID que corresponda
-        if ($nroIngreso) {
-            $nroIngreso->update([
-                'estado' => 'Terminado'
-            ]);
-        }
-         Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();
-         $this->cliente_id='';
-         $this->tipo_id='';
-         $this->cancelarBoton();
-         return redirect()->route('service.egresoBici');
-     }
+    //    $nroIngreso = NroIngreso::find($this->nro); // o el ID que corresponda
+    //     if ($nroIngreso) {
+    //         $nroIngreso->update([
+    //             'estado' => 'Terminado'
+    //         ]);
+    //     }
+    //      Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();
+    //      $this->cliente_id='';
+    //      $this->tipo_id='';
+    //      $this->cancelarBoton();
+    //      return redirect()->route('service.egresoBici');
+    //  }
 
      public $apellido;
      public $nombre;
@@ -407,17 +409,153 @@ class EgresoTerminar extends Component
         $this->confirmarOpVenta=true;
       }
 
-     public function cancelarOperacion()
-     {   $this->cancelarBoton();
-         Car::truncate();
-         $this->cliente_id='';
-         $this->tipo_id='';
-         return redirect()->route('venta.ventaExpress');
-     }
+    //  public function cancelarOperacion()
+    //  {   $this->cancelarBoton();
+    //      Car::truncate();
+    //      $this->cliente_id='';
+    //      $this->tipo_id='';
+    //      return redirect()->route('venta.ventaExpress');
+    //  }
      public function Ofeta($id){
         $ofertaArt = Ofertas::where('articulo_id', $id)->exists();
         return $ofertaArt ? true : false;
     }
+    public function ConfirmarVenta()
+{
+    $inTheCar = Car::where('user_id', auth()->user()->id)
+        ->join('articulos', 'cars.articulo_id', '=', 'articulos.id')
+        ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
+        ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
+        ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+        ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
+            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+            'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
+        ->get();
+
+    $client = Cliente::select('clientes.id', 'clientes.nombre', 'clientes.apellido', 'clientes.telefono')
+        ->join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
+        ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+        ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+        ->where('ingreso_bicis.nro_ingreso', $this->nro)
+        ->first();
+    
+    $this->clienteId = $client->id;
+    $this->cliente_id = $client->id;
+
+    // ✅ DECLARAR $bicicleta AQUÍ (antes de usarla)
+    $bicicleta = Bici::join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
+        ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
+        ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
+        ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+        ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
+        ->where('ingreso_bicis.nro_ingreso', $this->nro)
+        ->select(
+            'clientes.nombre',
+            'clientes.apellido',
+            'clientes.telefono',
+            'marcas.marca',
+            'tipo_bikes.tipo',
+            'bicis.color',
+            'ingreso_bicis.nro_ingreso'
+        )
+        ->first();
+
+    $this->validate(['mecanicoSelect' => 'required|numeric']);        
+    $detallesNotas = '-';
+    
+    NroEgreso::create([
+        'monto' => $this->total,
+        'detalles' => $detallesNotas,
+        'mecanico_id' => $this->mecanicoSelect,
+    ]);
+    
+    $nro_egreso = NroEgreso::latest()->first();
+    $idegreso = $nro_egreso->id;
+
+    foreach($inTheCar as $car) {
+        EgresoBici::create([
+            'ingreso_bici_id' => $this->idBici,
+            'articulo_id' => $car->articulo_id,
+            'cantidad' => $car->cantidad,
+            'precio_inicial' => $car->precioI,
+            'precio_final' => $car->precioF,
+            'nro_egreso' => $idegreso
+        ]);
+
+        $changeStock = Stock::where('articulo_id', $car->articulo_id)->first();
+        $changeStock->update([
+            'stock' => $changeStock->stock - $car->cantidad,
+        ]);
+    }
+
+    $nroIngreso = NroIngreso::find($this->nro);
+    if ($nroIngreso) {
+        $nroIngreso->update([
+            'estado' => 'Terminado'
+        ]);
+    }
+
+    // 📲 ENVIAR WHATSAPP DE EGRESO (SIN TOTAL)
+    if ($bicicleta && $bicicleta->telefono) {
+        $this->enviarWhatsAppEgreso($bicicleta); // 👈 AHORA SÍ EXISTE $bicicleta
+    }
+
+    Car::where('user_id', auth()->user()->id)->delete();
+    $this->cliente_id = '';
+    $this->tipo_id = '';
+    $this->cancelarBoton();
+    
+    return redirect()->route('service.egresoBici');
+}
+
+/**
+ * Enviar WhatsApp de egreso (bicicleta terminada)
+ */
+protected function enviarWhatsAppEgreso($bicicleta)
+{
+    try {
+        // Verificar que existe el template (cuando esté aprobado)
+        $service = app(\App\Services\WhatsAppService::class);
+        
+        // Separar nombre para saludo
+        $nombres = explode(' ', $bicicleta->nombre);
+        $primerNombre = $nombres[0];
+        
+        // Formatear número de ingreso con ceros
+        $nroIngreso = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
+        
+       
+        
+        // Intentar enviar con el template personalizado (cuando esté aprobado)
+        $resultado = $service->sendTemplate(
+            $bicicleta->telefono,
+            'bicicleteria_balsamo_egreso',
+            [
+                $primerNombre,      // {{1}} - "Juan Roman"
+                $nroIngreso,        // {{2}} - "00234"  
+                $bicicleta->marca,  // {{3}} - "Treck"
+                $bicicleta->tipo,   // {{4}} - "Ruta"
+                $bicicleta->color,  // {{5}} - "Rojo/Blanco"
+                'Terminado'         // {{6}} - "Terminado"
+            ],
+            'es_AR'
+        );
+        
+        if ($resultado['success']) {
+            \Illuminate\Support\Facades\Log::info('✅ WhatsApp egreso enviado a: ' . $bicicleta->telefono);
+            session()->flash('message', 'WhatsApp enviado al cliente');
+        } else {
+            \Illuminate\Support\Facades\Log::error('❌ Error template egreso: ' . json_encode($resultado));
+        }
+        
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('Error al enviar WhatsApp egreso: ' . $e->getMessage());
+        // No interrumpimos el proceso si falla el WhatsApp
+    }
+}
+
+
+
     public function stockInsufisinte($id){
         $stock=Stock::where('articulo_id',$id)->first();
 
