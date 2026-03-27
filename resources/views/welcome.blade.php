@@ -47,10 +47,8 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="rounded-md px-3 py-2 text-black bg-gray-200 hover:bg-gray-300 transition duration-300">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="rounded-md px-3 py-2 text-black bg-gray-200 hover:bg-gray-300 transition duration-300">Log in</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="rounded-md px-3 py-2 text-black bg-gray-200 hover:bg-gray-300 transition duration-300">Register</a>
-                    @endif
+                    <a href="{{ route('login') }}" class="rounded-md px-3 py-2 text-black bg-gray-200 hover:bg-gray-300 transition duration-300">Ingresar</a>
+                    {{--  --}}
                 @endauth
             @endif
         </div>

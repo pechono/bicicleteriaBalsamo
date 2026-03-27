@@ -215,7 +215,9 @@
             </div>
 
             <!-- Usuario -->
-            <div class="menu-group">
+            
+        </x-admin>
+        <div class="menu-group">
                 <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="userSubMenu">
                     <div class="flex items-center space-x-3">
                         <svg class="w-5 h-5 text-gray-500 group-hover:text-cyan-600 dark:text-gray-400 dark:group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,8 +233,6 @@
                     <a href="{{ route('profile') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">👥 Cambia Password</a>
                 </div>
             </div>
-        </x-admin>
-
         <!-- Cierre Caja -->
         <a href="{{ route('cierre.cierreCaja') }}" class="nav-link flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group mt-2">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-red-600 dark:text-gray-400 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
