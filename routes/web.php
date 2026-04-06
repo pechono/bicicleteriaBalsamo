@@ -7,6 +7,8 @@ use App\Livewire\Print\PrintPedido;
 use App\Livewire\Print\ReportVentaO;
 use App\Livewire\Print\ReporIngreso;
 use App\Livewire\Print\StockImprimir;
+use App\Livewire\Print\PrintOperacion;
+
 use App\Livewire\Service\Comprobante;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\CargarImagenes;
@@ -50,7 +52,16 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::prefix('operacion')->group(function () {
         Route::get('/', fn() => view('operacion.index'))->name('operacion.index');
         Route::get('/list', fn() => view('operacion.list'))->name('operacion.list');
+
+        Route::get('/operacion/info-op-imprimir/{datos}',[PrintOperacion::class,'generateReport'])
+        ->name('infoOpImprimir');
     });
+        
+
+
+
+
+
 
     Route::prefix('stock')->group(function () {
         Route::get('/', fn() => view('stock.index'))->name('stock.index');
@@ -104,19 +115,22 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/servicio/terminar/venta/{nro_ingreso}', function($nro_ingreso) { return view('service.terminarVentaProceso', compact('nro_ingreso'));
             })->name('service.terminarVentaProceso');
         
+    
+    Route::get('/servicio/calendario', fn() => view('service.calendarioServicios'))->name('service.calendarioServicios');
 
 
-   Route::get('/gestion/user', function() { return view('admin.gestionUsuario');
+
+
+
+
+    Route::get('/gestion/user', function() { return view('admin.gestionUsuario');
             })->name('admin.gestionUsuario');
 
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
         // ... otras rutas ...
         
         // Perfil de usuario
-        Route::get('/profile', function () {
-            return view('admin.index');
-        })->name('profile');
-    });
+    Route::get('/profile', function () {return view('admin.index'); })->name('profile');});
 
 
 });

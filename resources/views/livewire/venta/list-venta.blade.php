@@ -2,10 +2,8 @@
 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg ">
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg ">
         <div class="w-full p-2 sm:px-5 bg-white dark:bg-gray-800 dark:bg-gradient-to-bl dark:from-gray-700/50 dark:via-transparent border-b border-gray-200 dark:border-gray-700">
-                 <div class="flex">Informe de Venta</div>
-                 <div class="flex mt-5">
-
-
+                <div class="flex">Informe de Venta</div>
+                <div class="flex mt-5">
                     <div x-data="{ visibleDiv: null }">
                         <button wire:click='cancelarD()' @click="visibleDiv = (visibleDiv === 'div1') ? null : 'div1'" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Dia</button>
                         <button wire:click='cancelarDE()' @click="visibleDiv = (visibleDiv === 'div2') ? null : 'div2'" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Entre Dias</button>
@@ -53,10 +51,7 @@
                                 </select>
                             </div>
                         </div>
-
                     </div>
-
-
                     <script>
                         // JavaScript
                         function ocultarDivsAnteriores(visibleDiv) {
@@ -68,8 +63,7 @@
                             });
                         }
                     </script>
-
-                  </div>
+                </div>
 
             <div class="mt-4 text-2xl flex justify-between shadow-inner">
                 <div>{{ $msj }}</div>
