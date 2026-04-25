@@ -1,19 +1,32 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Models\WhatsAppQueue;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Endpoints que tu PC local va a consumir
+Route::prefix('whatsapp')->group(function () {
+    
+    // Tu PC local consulta este endpoint para obtener mensajes pendientes
+    Route::get('/pending', function () {
+        return WhatsAppQueue::where('enviado', false)
+            ->orderBy('created_at', 'asc')
+            ->get(['id', 'telefono', 'mensaje']);
+    });
+    
+    // Tu PC local avisa cuando envió un mensaje
+    Route::post('/mark-sent/{id}', function ($id) {
+        $message = WhatsAppQueue::findOrFail($id);
+        $message->update([
+            'enviado' => true,
+            'enviado_en' => now()
+        ]);
+        return response()->json(['success' => true]);
+    });
+    
+    // Tu PC local avisa si hubo error
+    Route::post('/mark-error/{id}', function ($id) {
+        $message = WhatsAppQueue::findOrFail($id);
+        $message->update(['error' => request('error')]);
+        return response()->json(['success' => true]);
+    });
 });
