@@ -43,7 +43,10 @@ jobs:
           port: 65002
           script: |
             cd ${{ secrets.DEPLOY_APP_PATH }}
-            git pull
+            git fetch origin
+            git stash
+            git checkout main
+            git pull origin main
             cp -rf public/. ${{ secrets.DEPLOY_PUBLIC_PATH }}/
             php artisan migrate --force
             php artisan optimize:clear
