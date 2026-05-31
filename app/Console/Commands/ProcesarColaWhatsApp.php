@@ -14,13 +14,10 @@ class ProcesarColaWhatsApp extends Command
 
     public function handle(WhatsAppService $whatsapp): int
     {
-        $pendientes = WhatsAppQueue::where('enviado', false)
-            ->whereNull('error')
-            ->orWhere(function ($q) {
-                // Reintentar los que fallaron hace más de 5 minutos
-                $q->where('enviado', false)
-                  ->where('updated_at', '<', now()->subMinutes(5));
+        $pendientes = WhatsAppQueue::where(function ($q) {
+                $q->where('enviado', false)->orWhereNull('enviado');
             })
+            ->whereNull('error')
             ->orderBy('created_at')
             ->limit(20)
             ->get();

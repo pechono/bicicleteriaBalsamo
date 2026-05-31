@@ -28,6 +28,7 @@ trait WithWhatsApp
             WhatsAppQueue::create([
                 'telefono' => $to,
                 'mensaje'  => $message,
+                'enviado'  => false,
             ]);
 
             $this->notify('Mensaje de WhatsApp en cola ✓', 'success');
