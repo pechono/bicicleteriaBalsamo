@@ -495,9 +495,13 @@ class EgresoTerminar extends Component
         ]);
     }
 
-    // 📲 ENVIAR WHATSAPP DE EGRESO (SIN TOTAL)
     if ($bicicleta && $bicicleta->telefono) {
-        $this->enviarWhatsAppEgreso($bicicleta); // 👈 AHORA SÍ EXISTE $bicicleta
+        $nombre = $bicicleta->nombre;
+        $nroFormateado = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
+        $this->sendWhatsAppMessage(
+            $bicicleta->telefono,
+            "Hola {$nombre}, tu bici ya está lista para retirar en Bicicletería Balsamo. Número de ingreso: #{$nroFormateado}. Te esperamos!"
+        );
     }
 
     Car::where('user_id', auth()->user()->id)->delete();
@@ -508,51 +512,6 @@ class EgresoTerminar extends Component
     return redirect()->route('service.egresoBici');
 }
 
-/**
- * Enviar WhatsApp de egreso (bicicleta terminada)
- */
-protected function enviarWhatsAppEgreso($bicicleta)
-{
-    try {
-        // Verificar que existe el template (cuando esté aprobado)
-        $service = app(\App\Services\WhatsAppService::class);
-        
-        // Separar nombre para saludo
-        $nombres = explode(' ', $bicicleta->nombre);
-        $primerNombre = $nombres[0];
-        
-        // Formatear número de ingreso con ceros
-        $nroIngreso = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
-        
-       
-        
-        // Intentar enviar con el template personalizado (cuando esté aprobado)
-        $resultado = $service->sendTemplate(
-            $bicicleta->telefono,
-            'bicicleteria_balsamo_egreso',
-            [
-                $primerNombre,      // {{1}} - "Juan Roman"
-                $nroIngreso,        // {{2}} - "00234"  
-                $bicicleta->marca,  // {{3}} - "Treck"
-                $bicicleta->tipo,   // {{4}} - "Ruta"
-                $bicicleta->color,  // {{5}} - "Rojo/Blanco"
-                'Terminado'         // {{6}} - "Terminado"
-            ],
-            'es_AR'
-        );
-        
-        if ($resultado['success']) {
-            \Illuminate\Support\Facades\Log::info('✅ WhatsApp egreso enviado a: ' . $bicicleta->telefono);
-            session()->flash('message', 'WhatsApp enviado al cliente');
-        } else {
-            \Illuminate\Support\Facades\Log::error('❌ Error template egreso: ' . json_encode($resultado));
-        }
-        
-    } catch (\Exception $e) {
-        \Illuminate\Support\Facades\Log::error('Error al enviar WhatsApp egreso: ' . $e->getMessage());
-        // No interrumpimos el proceso si falla el WhatsApp
-    }
-}
 
 
 

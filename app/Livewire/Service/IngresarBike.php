@@ -12,9 +12,11 @@ use App\Models\NroIngreso;
 use App\Models\TipoBike;
 use App\Models\IngresoBici;
 use App\Models\Proceso;
+use App\Livewire\Traits\WithWhatsApp;
 
 class IngresarBike extends Component
 {
+    use WithWhatsApp;
     /* ================== CLIENTE ================== */
     public $dni;
     public $cliente;
@@ -238,7 +240,6 @@ public function guardarIngreso()
                 
             ]);
         }
-    // Acá después se guarda el servicio completo
     session()->flash('message', 'Ingreso guardado correctamente');
     return redirect()->route('service.ingresoImp', ['nro_ingreso' => $nroIng]);
     }

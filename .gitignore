@@ -1,4 +1,8 @@
 /.phpunit.cache
+.env.deploy
+.claude/
+/whatsapp-server/node_modules
+/whatsapp-server/.wwebjs_auth
 /node_modules
 /public/hot
 /storage/*.key

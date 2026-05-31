@@ -119,51 +119,21 @@ class IngresoImp extends Component
      * 📱 NUEVO MÉTODO: Enviar WhatsApp de ingreso
      */
     protected function enviarWhatsAppIngreso($bicicleta)
-{
-    try {
-        $service = app(\App\Services\WhatsAppService::class);
-        
-        // Formatear fecha bien linda en español
-        $fecha = \Carbon\Carbon::parse($this->fecha_retiro);
-        $fechaFormateada = $fecha->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY');
-        $fechaFormateada = ucfirst($fechaFormateada); // Primera letra mayúscula
-        
-        // Separar nombre para saludo personal
-        $nombres = explode(' ', $bicicleta->nombre);
-        $primerNombre = $nombres[0];
-        
-        // Formatear DNI con puntos
-        $dni = number_format($bicicleta->dni, 0, '', '.');
-        
-        // Número de ingreso con 3 dígitos (001, 002, etc)
-        $nroIngreso = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
-        
-        // Enviar template con TODOS los parámetros
-        $resultado = $service->sendTemplate(
-            $bicicleta->telefono,
-            'bicicleteri_balsamo_template',
-            [
-                $primerNombre,                     // {{1}} Saludo
-                $nroIngreso,                        // {{2}} N° ingreso con ceros
-                $fechaFormateada,                   // {{3}} Fecha linda
-                $bicicleta->marca,                   // {{4}} Marca
-                $bicicleta->tipo,                     // {{5}} Tipo
-                $bicicleta->color,                    // {{6}} Color
-                $bicicleta->apellido . ' ' . $bicicleta->nombre, // {{7}} Nombre completo
-                $dni                                 // {{8}} DNI formateado
-            ],
-            'es_AR'
-        );
-        
-        if ($resultado['success']) {
-            Log::info('✅ Template premium enviado');
-            $this->dispatch('notify', 'WhatsApp enviado con todos los datos', 'success');
+    {
+        $nombre      = $bicicleta->nombre;
+        $nroFormateado = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
+
+        if ($this->fecha_retiro) {
+            $fecha = \Carbon\Carbon::parse($this->fecha_retiro);
+            \Carbon\Carbon::setLocale('es');
+            $fechaFormateada = ucfirst($fecha->isoFormat('dddd D [de] MMMM'));
+            $mensaje = "Buenos días {$nombre}, tu bicicleta está registrada en Bicicletería Balsamo bajo el número de ingreso #{$nroFormateado}. La fecha estimada de entrega es el {$fechaFormateada}. Ante cualquier consulta no dudes en comunicarte.";
+        } else {
+            $mensaje = "Buenos días {$nombre}, tu bicicleta está registrada en Bicicletería Balsamo bajo el número de ingreso #{$nroFormateado}. En cuanto esté lista te avisamos.";
         }
-        
-    } catch (\Exception $e) {
-        Log::error('Error: ' . $e->getMessage());
+
+        $this->sendWhatsAppMessage($bicicleta->telefono, $mensaje);
     }
-}
 
     public function ver()
     {

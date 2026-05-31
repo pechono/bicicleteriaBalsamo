@@ -1,58 +1,55 @@
-name: Deploy Laravel to Shared Hosting
+name: Deploy a Hostinger
 
 on:
   push:
-    branches:
-      - master   # o master si usás master
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Clonar el repo
-      - name: Checkout repository
+      - name: Descargar código
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2️⃣ Usar Node (solo para build)
-      - name: Setup Node.js
+      - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
 
-      # 3️⃣ Instalar dependencias frontend
-      - name: Install NPM dependencies
-        run: npm install
+      - name: Instalar dependencias
+        run: npm ci
 
-      # 4️⃣ Build de Vite
-      - name: Build assets
+      - name: Build de assets
         run: npm run build
 
-      # 5️⃣ Instalar Composer --
-      - name: Install Composer dependencies
-        #run: composer install --no-dev --optimize-autoloader
-        run: composer install --no-dev --prefer-dist --no-scripts --no-progress --no-suggest
-
-
-      # 6️⃣ Limpieza antes del deploy
-      - name: Cleanup files
+      - name: Guardar build en el repositorio
         run: |
-          rm -rf node_modules
-          rm -rf .git
-          rm -rf .github
-          rm -f .env
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add public/build/
+          git diff --staged --quiet || git commit -m "build: assets compilados [skip ci]"
+          git push
 
-      # 7️⃣ Deploy por FTP
-      - name: Deploy to Hosting via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy en Hostinger
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /bicicleteria/
-          exclude: |
-            **/.git*
-            **/.env
-            **/node_modules/**
-            **/tests/**
-            **/storage/logs/**
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASS }}
+          port: 22
+          script: |
+            cd ${{ secrets.DEPLOY_APP_PATH }}
+            git pull
+            cp -rf public/build/ ${{ secrets.DEPLOY_PUBLIC_PATH }}/build/
+            cp public/index.php ${{ secrets.DEPLOY_PUBLIC_PATH }}/index.php
+            cp public/.htaccess ${{ secrets.DEPLOY_PUBLIC_PATH }}/.htaccess
+            php artisan migrate --force
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            echo "Deploy completado!"

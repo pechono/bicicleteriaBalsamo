@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem C:\\\\bicicleteriaBalsamo\\\\bicicleteria -Exclude vendor,node_modules,.git | Sort-Object Name | ForEach-Object { if \\($_.PSIsContainer\\) { \"DIR  $\\($_.Name\\)/\" } else { \"FILE $\\($_.Name\\)\" } })"
+    ]
+  }
+}
