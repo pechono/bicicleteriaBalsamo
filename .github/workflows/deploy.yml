@@ -40,7 +40,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASS }}
-          port: 22
+          port: 65002
           script: |
             cd ${{ secrets.DEPLOY_APP_PATH }}
             git pull
