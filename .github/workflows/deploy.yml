@@ -44,9 +44,7 @@ jobs:
           script: |
             cd ${{ secrets.DEPLOY_APP_PATH }}
             git pull
-            cp -rf public/build/ ${{ secrets.DEPLOY_PUBLIC_PATH }}/build/
-            cp public/index.php ${{ secrets.DEPLOY_PUBLIC_PATH }}/index.php
-            cp public/.htaccess ${{ secrets.DEPLOY_PUBLIC_PATH }}/.htaccess
+            cp -rf public/. ${{ secrets.DEPLOY_PUBLIC_PATH }}/
             php artisan migrate --force
             php artisan optimize:clear
             php artisan config:cache
