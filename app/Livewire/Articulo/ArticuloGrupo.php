@@ -34,7 +34,7 @@ class ArticuloGrupo extends Component
     public $categorias = [];
     public $unidades = [];
     public $articulo, $categoria_id, $presentacion, $unidad_id,
-            $descuento, $unidadVenta='Unidad', $precioF, $precioI, $caducidad,
+            $descuento, $unidadVenta='Unidad', $precioF, $precioI, $caducidad=false,
             $detalles, $suelto, $porcentaje, $idArtitul, $proveedor_id, $stock, $stockMinimo, $codigo,
             $codigo_proveedor;
     
@@ -117,8 +117,7 @@ class ArticuloGrupo extends Component
     
     public function cargarArticulo()
     {
-        $this->caducidad = 'No';
-        $this->suelto = 0;
+        
         
         $this->validate([
             'articulo' => 'required|string|min:4',

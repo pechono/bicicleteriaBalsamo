@@ -19,7 +19,6 @@
                         <td class="px-4 py-2">Id</td>
                         <td class="px-4 py-2">Empresa </td>
                         <td class="px-4 py-2">Abreviatura</td>
-
                         <td class="px-4 py-2">Telefono</td>
                         <td class="px-4 py-2">Rubro</td>
                         <td class="px-4 py-2">Direccion</td>
