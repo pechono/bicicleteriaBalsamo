@@ -120,16 +120,21 @@ class IngresoImp extends Component
      */
     protected function enviarWhatsAppIngreso($bicicleta)
     {
-        $nombre      = $bicicleta->nombre;
-        $nroFormateado = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
+        $nombre        = $bicicleta->nombre;
+        $nroFormateado = str_pad($bicicleta->nro_ingreso, 4, '0', STR_PAD_LEFT);
+        $marca         = $bicicleta->marca  ?? '';
+        $color         = $bicicleta->color  ?? '';
+        $tipo          = $bicicleta->tipo   ?? '';
+
+        $encabezado = "🔧 *BICICLETERÍA BALSAMO* 🔧\n----------------------------\nHola {$nombre} 👋\nTu bicicleta ingresó al taller.\n\nN° de ingreso: *#{$nroFormateado}*\n🚲 Marca: {$marca}\n🎨 Color: {$color}\n📋 Tipo: {$tipo}";
 
         if ($this->fecha_retiro) {
             $fecha = \Carbon\Carbon::parse($this->fecha_retiro);
             \Carbon\Carbon::setLocale('es');
-            $fechaFormateada = ucfirst($fecha->isoFormat('dddd D [de] MMMM'));
-            $mensaje = "Buenos días {$nombre}, tu bicicleta está registrada en Bicicletería Balsamo bajo el número de ingreso #{$nroFormateado}. La fecha estimada de entrega es el {$fechaFormateada}. Ante cualquier consulta no dudes en comunicarte.";
+            $fechaFormateada = ucfirst($fecha->isoFormat('dddd D [de] MMMM [de] YYYY'));
+            $mensaje = "{$encabezado}\n\n📅 Fecha estimada de retiro:\n    {$fechaFormateada}\n----------------------------\n¡Gracias por elegirnos! 🙏";
         } else {
-            $mensaje = "Buenos días {$nombre}, tu bicicleta está registrada en Bicicletería Balsamo bajo el número de ingreso #{$nroFormateado}. En cuanto esté lista te avisamos.";
+            $mensaje = "{$encabezado}\n\nEn cuanto esté lista te avisamos.\n----------------------------\n¡Gracias por elegirnos! 🙏";
         }
 
         $this->sendWhatsAppMessage($bicicleta->telefono, $mensaje);

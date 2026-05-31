@@ -496,11 +496,13 @@ class EgresoTerminar extends Component
     }
 
     if ($bicicleta && $bicicleta->telefono) {
-        $nombre = $bicicleta->nombre;
-        $nroFormateado = str_pad($bicicleta->nro_ingreso, 3, '0', STR_PAD_LEFT);
+        $nombre        = $bicicleta->nombre;
+        $nroFormateado = str_pad($bicicleta->nro_ingreso, 4, '0', STR_PAD_LEFT);
+        $marca         = $bicicleta->marca ?? '';
+        $color         = $bicicleta->color ?? '';
         $this->sendWhatsAppMessage(
             $bicicleta->telefono,
-            "Hola {$nombre}, tu bici ya está lista para retirar en Bicicletería Balsamo. Número de ingreso: #{$nroFormateado}. Te esperamos!"
+            "🔧 *BICICLETERÍA BALSAMO* 🔧\n----------------------------\nHola {$nombre}! 🎉\nTu bicicleta *#{$nroFormateado}* ya está lista\npara retirar en nuestro local.\n\n🚲 {$marca} | {$color}\n----------------------------\n⚠️ *Importante:*\nLa bici puede permanecer en el taller\nhasta *7 días* sin cargo adicional.\nPasado ese plazo se cobrará recargo\npor almacenamiento.\n\nEl local no se responsabiliza por daños\nocasionados por el clima, ni por robo o hurto.\n----------------------------\n¡Te esperamos! 📍"
         );
     }
 
