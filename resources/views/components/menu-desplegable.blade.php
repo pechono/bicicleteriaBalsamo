@@ -39,148 +39,146 @@
         <!-- Fondo degradado verde -->
         <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-green-700 opacity-90"></div>
 
-        <div class="relative px-5 pt-6 pb-5">
-            <button class="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-all duration-200" onclick="closeNav()">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative px-4 pt-4 pb-3">
+            <button class="absolute top-3 right-3 w-6 h-6 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-all duration-200" onclick="closeNav()">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
 
-            <div class="flex items-center space-x-3">
-                <!-- Ícono bici -->
-                <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shadow-lg backdrop-blur-sm text-2xl">
-                    🚲
-                </div>
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shadow-md text-xl">🚲</div>
                 <div>
-                    <h2 class="text-base font-bold text-white leading-tight">Bicicletería Balsamo</h2>
-                    <p class="text-xs text-green-100 mt-0.5">Sistema de Gestión</p>
+                    <h2 class="text-sm font-bold text-white leading-tight">Bicicletería Balsamo</h2>
+                    <p class="text-[10px] text-green-100">Sistema de Gestión</p>
                 </div>
             </div>
 
             <!-- Usuario logueado -->
-            <div class="mt-4 flex items-center gap-2 bg-white/15 rounded-xl px-3 py-2">
-                <div class="w-7 h-7 rounded-full bg-white/30 flex items-center justify-center text-white text-xs font-bold">
+            <div class="mt-2.5 flex items-center gap-2 bg-white/15 rounded-lg px-2.5 py-1.5">
+                <div class="w-6 h-6 rounded-full bg-white/30 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-white text-xs font-medium truncate">{{ auth()->user()->name ?? '' }}</p>
+                    <p class="text-white text-[11px] font-medium truncate">{{ auth()->user()->name ?? '' }}</p>
                     <p class="text-green-100 text-[10px] truncate">{{ auth()->user()->email ?? '' }}</p>
                 </div>
             </div>
         </div>
     </div>
     
-    <nav class="py-5 px-3 space-y-1">
+    <nav class="py-2 px-2 space-y-0.5">
         <!-- Dashboard -->
-        <a href="{{ route('dashboard') }}" class="nav-link flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <a href="{{ route('dashboard') }}" class="nav-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition-all duration-200 group">
+            <svg class="w-4 h-4 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
             </svg>
-            <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Dashboard</span>
+            <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Dashboard</span>
         </a>
 
         <!-- Venta -->
         <div class="menu-group">
-            <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="ventaSubMenu">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-emerald-600 dark:text-gray-400 dark:group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="ventaSubMenu">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-emerald-600 dark:text-gray-400 dark:group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"></path>
                     </svg>
-                    <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Venta</span>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Venta</span>
                 </div>
                 <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
-            <div id="ventaSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                <a href="{{ route('venta.ventaExpress') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">🚀 Venta Express</a>
-                <a href="{{ route('venta.ventaCard') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">💳 Venta Card</a>
-                <a href="{{ route('venta.cuentaCorriente') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📊 Cuenta Corriente</a>
-                <a href="{{ route('venta.listCuentaCorriente') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">💰 Pago Cuenta Corriente</a>
+            <div id="ventaSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                <a href="{{ route('venta.ventaExpress') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🚀 Venta Express</a>
+                <a href="{{ route('venta.ventaCard') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">💳 Venta Card</a>
+                <a href="{{ route('venta.cuentaCorriente') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📊 Cuenta Corriente</a>
+                <a href="{{ route('venta.listCuentaCorriente') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">💰 Pago Cuenta Corriente</a>
             </div>
         </div>
 
         <!-- Servicio -->
         <div class="menu-group">
-            <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="servicioSubMenu">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="servicioSubMenu">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21.75 6.75a4.5 4.5 0 01-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 11-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 016.336-4.486l-3.276 3.276a3.004 3.004 0 002.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852z"></path>
                     </svg>
-                    <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Servicio</span>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Servicio</span>
                 </div>
                 <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
-            <div id="servicioSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                <a href="{{ route('service.ingresarBike') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">🚲 Ingresar Bicicleta</a>
-                <a href="{{ route('service.egresoBici') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">🔧 Registro Servicio</a>
-                <a href="{{ route('service.calendarioServicios') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📅 Calendario</a>
+            <div id="servicioSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                <a href="{{ route('service.ingresarBike') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🚲 Ingresar Bicicleta</a>
+                <a href="{{ route('service.egresoBici') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🔧 Registro Servicio</a>
+                <a href="{{ route('service.calendarioServicios') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📅 Calendario</a>
+                <a href="{{ route('service.cuentaMecanico') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">💰 Cuenta Mecánico</a>
             </div>
         </div>
 
         <!-- Stock -->
         <div class="menu-group">
-            <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="stockSubMenu">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-amber-600 dark:text-gray-400 dark:group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="stockSubMenu">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-amber-600 dark:text-gray-400 dark:group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"></path>
                     </svg>
-                    <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Stock</span>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Stock</span>
                 </div>
                 <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
-            <div id="stockSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                <a href="{{ route('stock.index') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📦 Ver Stock</a>
-                <a href="{{ route('stock.pedido') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📝 Pedido a Proveedor</a>
-                <a href="{{ route('stock.pedidoRealizado') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">✅ Pedidos Realizados</a>
-                <a href="{{ route('stockImprimir') }}" target="_blank" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">🖨️ Imprimir Stock</a>
+            <div id="stockSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                <a href="{{ route('stock.index') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📦 Ver Stock</a>
+                <a href="{{ route('stock.pedido') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📝 Pedido a Proveedor</a>
+                <a href="{{ route('stock.pedidoRealizado') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">✅ Pedidos Realizados</a>
+                <a href="{{ route('stockImprimir') }}" target="_blank" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🖨️ Imprimir Stock</a>
             </div>
         </div>
 
         <!-- Estadísticas -->
         <div class="menu-group">
-            <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="informesSubMenu">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600 dark:text-gray-400 dark:group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="informesSubMenu">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-indigo-600 dark:text-gray-400 dark:group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"></path>
                     </svg>
-                    <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Estadísticas</span>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Estadísticas</span>
                 </div>
                 <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
-            <div id="informesSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                <a href="{{ route('informes.masVendidos') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📊 Más Vendidos</a>
+            <div id="informesSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                <a href="{{ route('informes.masVendidos') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📊 Más Vendidos</a>
             </div>
         </div>
 
         <!-- Operaciones -->
         <div class="menu-group">
-            <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="operacionSubMenu">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-orange-600 dark:text-gray-400 dark:group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="operacionSubMenu">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-orange-600 dark:text-gray-400 dark:group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.22-1.113-.615-1.518a5.25 5.25 0 00-4.224-1.44 5.25 5.25 0 00-4.476 4.825c-.065.545-.1 1.093-.1 1.641v.75"></path>
                     </svg>
-                    <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Operaciones</span>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Operaciones</span>
                 </div>
                 <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
-            <div id="operacionSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                <a href="{{ route('operacion.list') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📋 Operaciones</a>
-                <a href="{{ route('venta.list') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">💰 Ventas</a>
+            <div id="operacionSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                <a href="{{ route('operacion.list') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📋 Operaciones</a>
+                <a href="{{ route('venta.list') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">💰 Ventas</a>
             </div>
         </div>
 
         <!-- Separador Admin -->
         <x-admin>
-            <div class="relative my-5">
+            <div class="relative my-2">
                 <div class="absolute inset-0 flex items-center">
                     <div class="w-full border-t border-gray-200 dark:border-gray-800"></div>
                 </div>
@@ -191,43 +189,43 @@
 
             <!-- Gestión -->
             <div class="menu-group">
-                <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="gestionSubMenu">
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="gestionSubMenu">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"></path>
                         </svg>
-                        <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Gestión</span>
+                        <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Gestión</span>
                     </div>
                     <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </button>
-                <div id="gestionSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                    <a href="{{ route('articulo.articuloGrupo') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">📦 Artículo</a>
-                    <a href="{{ route('gestion.precio.precioCambiar') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">💰 Cambio Precio Artículos</a>
-                    <a href="{{ route('gestion.precio.precioGrupo') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">📊 Cambio Precio Grupo</a>
-                    <a href="{{ route('proveedor.proveedor') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">🏭 Proveedor</a>
-                    <a href="{{ route('admin.gestionUsuario') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">👥 Gestionar Usuarios</a>
+                <div id="gestionSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                    <a href="{{ route('articulo.articuloGrupo') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">📦 Artículo</a>
+                    <a href="{{ route('gestion.precio.precioCambiar') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">💰 Cambio Precio Artículos</a>
+                    <a href="{{ route('gestion.precio.precioGrupo') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">📊 Cambio Precio Grupo</a>
+                    <a href="{{ route('proveedor.proveedor') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">🏭 Proveedor</a>
+                    <a href="{{ route('admin.gestionUsuario') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">👥 Gestionar Usuarios</a>
                 </div>
             </div>
 
             <!-- Ofertas -->
             <div class="menu-group">
-                <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="ofertaSubMenu">
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-gray-500 group-hover:text-purple-600 dark:text-gray-400 dark:group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="ofertaSubMenu">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-gray-500 group-hover:text-purple-600 dark:text-gray-400 dark:group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"></path>
                         </svg>
-                        <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Ofertas</span>
+                        <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Ofertas</span>
                     </div>
                     <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </button>
-                <div id="ofertaSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                    <a href="{{ route('oferta.ofertaList') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">🏷️ Ofertas</a>
-                    <a href="{{ route('oferta.ofertaCreate') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">✨ Crear</a>
-                    <a href="{{ route('oferta.ofertaGestion') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">⚙️ Operaciones</a>
+                <div id="ofertaSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                    <a href="{{ route('oferta.ofertaList') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">🏷️ Ofertas</a>
+                    <a href="{{ route('oferta.ofertaCreate') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">✨ Crear</a>
+                    <a href="{{ route('oferta.ofertaGestion') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">⚙️ Operaciones</a>
                 </div>
             </div>
 
@@ -235,27 +233,27 @@
             
         </x-admin>
         <div class="menu-group">
-                <button class="menu-toggle w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group" data-menu="userSubMenu">
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-gray-500 group-hover:text-cyan-600 dark:text-gray-400 dark:group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="userSubMenu">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-gray-500 group-hover:text-cyan-600 dark:text-gray-400 dark:group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
                         </svg>
-                        <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Usuario</span>
+                        <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Usuario</span>
                     </div>
                     <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </button>
-                <div id="userSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
-                    <a href="{{ route('profile') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base">👥 Cambia Password</a>
+                <div id="userSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                    <a href="{{ route('profile') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">👥 Cambia Password</a>
                 </div>
             </div>
         <!-- Cierre Caja -->
-        <a href="{{ route('cierre.cierreCaja') }}" class="nav-link flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group mt-2">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-red-600 dark:text-gray-400 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <a href="{{ route('cierre.cierreCaja') }}" class="nav-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition-all duration-200 group mt-2">
+            <svg class="w-4 h-4 text-gray-500 group-hover:text-red-600 dark:text-gray-400 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"></path>
             </svg>
-            <span class="text-base font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Cierre Caja</span>
+            <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Cierre Caja</span>
         </a>
     </nav>
 </div>
@@ -266,7 +264,7 @@
     }
 
     function openNav() {
-        document.getElementById("mySidebar").style.width = "300px";
+        document.getElementById("mySidebar").style.width = "260px";
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -589,7 +587,7 @@
 
     // Función para abrir el menú (llamar desde otro lugar)
     function openNav() {
-        document.getElementById("mySidebar").style.width = "300px";
+        document.getElementById("mySidebar").style.width = "260px";
     }
 
     // Funcionalidad de acordeón: al abrir un submenú, se cierran los demás
