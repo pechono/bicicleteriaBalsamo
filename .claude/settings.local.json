@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Get-ChildItem C:\\\\bicicleteriaBalsamo\\\\bicicleteria -Exclude vendor,node_modules,.git | Sort-Object Name | ForEach-Object { if \\($_.PSIsContainer\\) { \"DIR  $\\($_.Name\\)/\" } else { \"FILE $\\($_.Name\\)\" } })"
+      "PowerShell(Get-ChildItem C:\\\\bicicleteriaBalsamo\\\\bicicleteria -Exclude vendor,node_modules,.git | Sort-Object Name | ForEach-Object { if \\($_.PSIsContainer\\) { \"DIR  $\\($_.Name\\)/\" } else { \"FILE $\\($_.Name\\)\" } })",
+      "Bash(dir \"C:\\\\bicicleteriaBalsamo\\\\bicicleteria\\\\database\\\\migrations\")",
+      "Bash(findstr /i \"ingreso\")",
+      "Bash(php artisan *)"
     ]
   }
 }

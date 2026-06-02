@@ -15,7 +15,8 @@ use App\Models\NroIngreso;
 use App\Models\Bici;
 use App\Models\EgresoBici;
 use App\Models\NroEgreso;
-use App\Livewire\Traits\WithWhatsApp; // 👈 AGREGAR
+use App\Livewire\Traits\WithWhatsApp;
+use App\Models\MecanicoItem;
 
 use Carbon\CarbonPeriod;
 use Illuminate\Validation\ValidationException;
@@ -403,11 +404,39 @@ class EgresoTerminar extends Component
      }
 
      
-     public $confirmarOpVenta=false;
+     public $confirmarOpVenta = false;
 
-     public function PreguntaConfirmarVenta(){
-        $this->confirmarOpVenta=true;
-      }
+     // Items del mecánico para esta reparación
+     public $mecanicoItems = []; // [['descripcion'=>'...','monto'=>0], ...]
+     public $itemDesc      = '';
+     public $itemMonto     = '';
+
+     public function PreguntaConfirmarVenta(): void
+     {
+         // Pre-cargar descripción con datos de la bici
+         $this->mecanicoItems = [];
+         $this->itemDesc      = '';
+         $this->itemMonto     = '';
+         $this->confirmarOpVenta = true;
+     }
+
+     public function agregarItemMecanico(): void
+     {
+         if (empty(trim($this->itemDesc)) || !is_numeric($this->itemMonto) || $this->itemMonto <= 0) {
+             return;
+         }
+         $this->mecanicoItems[] = [
+             'descripcion' => trim($this->itemDesc),
+             'monto'       => (float) $this->itemMonto,
+         ];
+         $this->itemDesc  = '';
+         $this->itemMonto = '';
+     }
+
+     public function quitarItemMecanico(int $index): void
+     {
+         array_splice($this->mecanicoItems, $index, 1);
+     }
 
     //  public function cancelarOperacion()
     //  {   $this->cancelarBoton();
@@ -506,11 +535,23 @@ class EgresoTerminar extends Component
         );
     }
 
+    // Guardar ítems del mecánico
+    foreach ($this->mecanicoItems as $item) {
+        MecanicoItem::create([
+            'mecanico_id'   => $this->mecanicoSelect,
+            'descripcion'   => $item['descripcion'],
+            'monto'         => $item['monto'],
+            'nro_egreso_id' => $idegreso,
+            'pagado'        => false,
+        ]);
+    }
+
     Car::where('user_id', auth()->user()->id)->delete();
-    $this->cliente_id = '';
-    $this->tipo_id = '';
+    $this->cliente_id    = '';
+    $this->tipo_id       = '';
+    $this->mecanicoItems = [];
     $this->cancelarBoton();
-    
+
     return redirect()->route('service.egresoBici');
 }
 

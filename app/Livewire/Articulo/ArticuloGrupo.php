@@ -41,6 +41,21 @@ class ArticuloGrupo extends Component
     public $mensajeError = '-';
     public $cargando = false;
 
+    // — Modales —
+    public bool $modalProveedor = false;
+    public bool $modalGrupo     = false;
+    public bool $modalCategoria = false;
+
+    // Proveedor nuevo
+    public $np_nombre = '', $np_telefono = '', $np_rubro = '',
+           $np_direccion = '', $np_localidad = '', $np_mail = '', $np_activo = true;
+
+    // Grupo nuevo
+    public $ng_nombre = '', $ng_porcentaje = 0;
+
+    // Categoria nueva
+    public $nc_nombre = '';
+
     public function mount()
     {
         $this->proveedores = Proveedor::all();
@@ -88,14 +103,99 @@ class ArticuloGrupo extends Component
         }
     }
     
-    public function crearProveedor()
+    // ── PROVEEDOR ──────────────────────────────────────────
+    public function crearProveedor(): void
     {
-        session()->flash('message', 'Abrir modal para agregar proveedor');
+        $this->np_nombre = $this->np_telefono = $this->np_rubro =
+        $this->np_direccion = $this->np_localidad = $this->np_mail = '';
+        $this->np_activo = true;
+        $this->modalProveedor = true;
     }
 
-    public function crearGrupo()
+    public function guardarProveedor(): void
     {
-        session()->flash('message', 'Abrir modal para agregar grupo');
+        $this->validate([
+            'np_nombre'    => 'required|string|min:2',
+            'np_telefono'  => 'nullable|string',
+            'np_rubro'     => 'nullable|string',
+            'np_direccion' => 'nullable|string',
+            'np_localidad' => 'nullable|string',
+            'np_mail'      => 'nullable|email',
+        ], [
+            'np_nombre.required' => 'El nombre es obligatorio.',
+            'np_mail.email'      => 'El mail no es válido.',
+        ]);
+
+        Proveedor::create([
+            'nombre'    => $this->np_nombre,
+            'telefono'  => $this->np_telefono  ?? '',
+            'rubro'     => $this->np_rubro     ?? '',
+            'direccion' => $this->np_direccion ?? '',
+            'localidad' => $this->np_localidad ?? '',
+            'mail'      => $this->np_mail      ?? '',
+            'activo'    => $this->np_activo,
+        ]);
+
+        $this->proveedores   = Proveedor::all();
+        $this->modalProveedor = false;
+        session()->flash('message', 'Proveedor creado correctamente.');
+    }
+
+    // ── GRUPO ──────────────────────────────────────────────
+    public function crearGrupo(): void
+    {
+        $this->ng_nombre = '';
+        $this->ng_porcentaje = 0;
+        $this->modalGrupo = true;
+    }
+
+    public function guardarGrupo(): void
+    {
+        $this->validate([
+            'proveedor_id'  => 'required',
+            'ng_nombre'     => 'required|string|min:2',
+            'ng_porcentaje' => 'required|numeric|min:0',
+        ], [
+            'proveedor_id.required' => 'Primero seleccioná un proveedor.',
+            'ng_nombre.required'    => 'El nombre del grupo es obligatorio.',
+        ]);
+
+        Grupos::create([
+            'proveedor_id' => $this->proveedor_id,
+            'NombreGrupo'  => $this->ng_nombre,
+            'porsentaje'   => $this->ng_porcentaje,
+        ]);
+
+        $this->grupos    = Grupos::where('proveedor_id', $this->proveedor_id)->get();
+        $this->modalGrupo = false;
+        session()->flash('message', 'Grupo creado correctamente.');
+    }
+
+    // ── CATEGORÍA ──────────────────────────────────────────
+    public function crearCategoria(): void
+    {
+        $this->nc_nombre = '';
+        $this->modalCategoria = true;
+    }
+
+    public function guardarCategoria(): void
+    {
+        $this->validate([
+            'nc_nombre' => 'required|string|min:2',
+        ], [
+            'nc_nombre.required' => 'El nombre de la categoría es obligatorio.',
+        ]);
+
+        Categoria::create(['categoria' => $this->nc_nombre]);
+
+        $this->categorias    = Categoria::all();
+        $this->modalCategoria = false;
+        session()->flash('message', 'Categoría creada correctamente.');
+    }
+
+    public function cerrarModales(): void
+    {
+        $this->modalProveedor = $this->modalGrupo = $this->modalCategoria = false;
     }
 
     public function seleccionar()

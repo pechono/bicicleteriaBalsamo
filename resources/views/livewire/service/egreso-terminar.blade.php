@@ -431,20 +431,98 @@
         {{-- ----modal confirmar venta---- --}}
         <x-dialog-modal wire:model.live="confirmarOpVenta" maxWidth="2xl">
             <x-slot name="title">
-                {{ __('Confirmar Venta') }}
+                Confirmar Reparación
             </x-slot>
 
             <x-slot name="content">
-                {{ __('¿Esta seguro de Desea Realizar esta Operacion de Venta') }}
+
+                {{-- Resumen de trabajos realizados --}}
+                <div class="mb-5 bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="px-4 py-2.5 bg-gray-100 border-b border-gray-200">
+                        <h4 class="text-sm font-semibold text-gray-700">📋 Trabajos / Artículos cargados</h4>
+                    </div>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-xs text-gray-500 border-b border-gray-200">
+                                <th class="text-left px-4 py-2">Artículo</th>
+                                <th class="text-center px-3 py-2">Cant.</th>
+                                <th class="text-right px-4 py-2">P. Final</th>
+                                <th class="text-right px-4 py-2">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach($inTheCar as $car)
+                            <tr>
+                                <td class="px-4 py-2 text-gray-700">{{ $car->articulo }}</td>
+                                <td class="px-3 py-2 text-center text-gray-600">{{ $car->cantidad }}</td>
+                                <td class="px-4 py-2 text-right text-gray-600">${{ number_format($car->precioF, 2) }}</td>
+                                <td class="px-4 py-2 text-right font-semibold text-gray-800">
+                                    ${{ number_format($car->cantidad * $car->precioF * (1 - $car->descuento / 100), 2) }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr class="border-t border-gray-200 bg-gray-50">
+                                <td colspan="3" class="px-4 py-2 text-sm font-semibold text-gray-700 text-right">Total cobrado:</td>
+                                <td class="px-4 py-2 text-right font-bold text-green-700">
+                                    ${{ number_format($inTheCar->sum(fn($c) => $c->cantidad * $c->precioF * (1 - $c->descuento / 100)), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                {{-- Sección ítems del mecánico --}}
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-amber-800 mb-3 flex items-center gap-2">
+                        🔧 Ítems a favor del mecánico
+                        <span class="text-xs font-normal text-amber-600">(opcional)</span>
+                    </h4>
+
+                    {{-- Formulario agregar ítem --}}
+                    <div class="flex gap-2 mb-3">
+                        <input wire:model="itemDesc" type="text" placeholder="Descripción (ej: Servis, Parche...)"
+                            class="flex-1 text-sm border-gray-300 rounded-lg focus:ring-amber-400 focus:border-amber-400"
+                            wire:keydown.enter="agregarItemMecanico"/>
+                        <input wire:model="itemMonto" type="number" min="0" step="0.01" placeholder="$ Monto"
+                            class="w-28 text-sm border-gray-300 rounded-lg focus:ring-amber-400 focus:border-amber-400"
+                            wire:keydown.enter="agregarItemMecanico"/>
+                        <button wire:click="agregarItemMecanico" type="button"
+                            class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition">
+                            +
+                        </button>
+                    </div>
+
+                    {{-- Lista de ítems cargados --}}
+                    @if(count($mecanicoItems) > 0)
+                    <div class="space-y-1.5 mb-2">
+                        @foreach($mecanicoItems as $i => $item)
+                        <div class="flex items-center justify-between bg-white border border-amber-200 rounded-lg px-3 py-2 text-sm">
+                            <span class="text-gray-700">{{ $item['descripcion'] }}</span>
+                            <div class="flex items-center gap-3">
+                                <span class="font-semibold text-green-700">${{ number_format($item['monto'], 2) }}</span>
+                                <button wire:click="quitarItemMecanico({{ $i }})" type="button"
+                                    class="text-red-400 hover:text-red-600 text-lg leading-none transition">×</button>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="text-right text-sm font-bold text-amber-800 pt-1">
+                            Total: ${{ number_format(array_sum(array_column($mecanicoItems, 'monto')), 2) }}
+                        </div>
+                    </div>
+                    @else
+                    <p class="text-xs text-amber-600 italic">Sin ítems cargados — podés agregar después desde la cuenta del mecánico.</p>
+                    @endif
+                </div>
             </x-slot>
 
             <x-slot name="footer">
                 <x-danger-button wire:click="$toggle('confirmarOpVenta', false)" wire:loading.attr="disabled">
-                    {{ __('Cancelar') }}
-                </x-danguer-button>
-
+                    Cancelar
+                </x-danger-button>
                 <x-secondary-button class="ms-3" wire:click="ConfirmarVenta()" wire:loading.attr="disabled">
-                    {{ __('Realizar Venta') }}
+                    ✅ Confirmar Reparación
                 </x-secondary-button>
             </x-slot>
         </x-dialog-modal>

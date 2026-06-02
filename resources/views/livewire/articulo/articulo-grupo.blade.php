@@ -23,6 +23,9 @@
                     class="text-xs text-blue-600 hover:underline mt-1 self-start">
                     + Agregar proveedor
                 </button>
+                @if(session('message'))
+                    <span class="text-xs text-green-600 mt-1">{{ session('message') }}</span>
+                @endif
             </div>
 
             <!-- Grupo -->
@@ -50,7 +53,7 @@
             <div class="flex flex-col">
                 <div class="flex flex-col">
                         <label for="categoria" class="text-sm font-medium text-black mb-1">Categoria</label>
-                        <select id="categoria" wire:model="categoria_id" 
+                        <select id="categoria" wire:model="categoria_id"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Seleccionar...</option>
                             @foreach ($categorias as $categoria)
@@ -59,10 +62,14 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('categoria_id') 
+                        @error('categoria_id')
                           <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
-                </div> 
+                </div>
+                <button wire:click="crearCategoria" type="button"
+                    class="text-xs text-purple-600 hover:underline mt-1 self-start">
+                    + Agregar categoría
+                </button>
             </div>
 
             <!-- Botón Seleccionar -->
@@ -291,11 +298,156 @@
 
             <!-- Botón Cargar -->
             <div class="flex justify-end">
-                <button wire:click="cargarArticulo" 
+                <button wire:click="cargarArticulo"
                         class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
                     Cargar Artículo
                 </button>
             </div>
         </div>
     </div>
+
+    {{-- ═══════════════════════════════════════════════════ --}}
+    {{-- MODAL PROVEEDOR                                     --}}
+    {{-- ═══════════════════════════════════════════════════ --}}
+    @if($modalProveedor)
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+         wire:click.self="cerrarModales">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 bg-blue-600 text-white">
+                <h3 class="text-lg font-bold">Nuevo Proveedor</h3>
+                <button wire:click="cerrarModales" class="text-2xl leading-none hover:text-blue-200">×</button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="text-sm font-medium text-gray-700">Nombre *</label>
+                        <input wire:model="np_nombre" type="text" placeholder="Nombre del proveedor"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"/>
+                        @error('np_nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Teléfono</label>
+                        <input wire:model="np_telefono" type="text" placeholder="Teléfono"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Rubro</label>
+                        <input wire:model="np_rubro" type="text" placeholder="Rubro"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Dirección</label>
+                        <input wire:model="np_direccion" type="text" placeholder="Dirección"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Localidad</label>
+                        <input wire:model="np_localidad" type="text" placeholder="Localidad"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-sm font-medium text-gray-700">Mail</label>
+                        <input wire:model="np_mail" type="email" placeholder="correo@ejemplo.com"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                        @error('np_mail') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input wire:model="np_activo" type="checkbox" id="np_activo" class="rounded border-gray-300 text-blue-600"/>
+                        <label for="np_activo" class="text-sm text-gray-700">Activo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
+                <button wire:click="cerrarModales"
+                    class="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button wire:click="guardarProveedor"
+                    class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                    Guardar Proveedor
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- ═══════════════════════════════════════════════════ --}}
+    {{-- MODAL GRUPO                                         --}}
+    {{-- ═══════════════════════════════════════════════════ --}}
+    @if($modalGrupo)
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+         wire:click.self="cerrarModales">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 bg-green-600 text-white">
+                <h3 class="text-lg font-bold">Nuevo Grupo</h3>
+                <button wire:click="cerrarModales" class="text-2xl leading-none hover:text-green-200">×</button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                @if(!$proveedor_id)
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-700">
+                        ⚠️ Primero seleccioná un proveedor en el formulario principal.
+                    </div>
+                @else
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
+                        Proveedor: <strong>{{ $proveedores->firstWhere('id', $proveedor_id)?->nombre }}</strong>
+                    </div>
+                @endif
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Nombre del grupo *</label>
+                    <input wire:model="ng_nombre" type="text" placeholder="Ej: Cadenas, Frenos, Ruedas..."
+                        class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-green-500 focus:border-green-500"/>
+                    @error('ng_nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Porcentaje de ganancia *</label>
+                    <input wire:model="ng_porcentaje" type="number" step="0.01" min="0" placeholder="0.00"
+                        class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-green-500 focus:border-green-500"/>
+                    @error('ng_porcentaje') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
+                <button wire:click="cerrarModales"
+                    class="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button wire:click="guardarGrupo"
+                    class="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold">
+                    Guardar Grupo
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- ═══════════════════════════════════════════════════ --}}
+    {{-- MODAL CATEGORÍA                                     --}}
+    {{-- ═══════════════════════════════════════════════════ --}}
+    @if($modalCategoria)
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+         wire:click.self="cerrarModales">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 bg-purple-600 text-white">
+                <h3 class="text-lg font-bold">Nueva Categoría</h3>
+                <button wire:click="cerrarModales" class="text-2xl leading-none hover:text-purple-200">×</button>
+            </div>
+            <div class="px-6 py-5">
+                <label class="text-sm font-medium text-gray-700">Nombre de la categoría *</label>
+                <input wire:model="nc_nombre" type="text" placeholder="Ej: MdO, Repuestos, Accesorios..."
+                    class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-purple-500 focus:border-purple-500"/>
+                @error('nc_nombre') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
+                <button wire:click="cerrarModales"
+                    class="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button wire:click="guardarCategoria"
+                    class="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold">
+                    Guardar Categoría
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
 </div>

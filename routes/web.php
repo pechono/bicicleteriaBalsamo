@@ -16,6 +16,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Redirigir /register al login (registro deshabilitado)
+Route::redirect('/register', '/login');
+
 
 
 // Agrupa todas las rutas que requieren autenticación y verificación
@@ -117,11 +120,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         
     
     Route::get('/servicio/calendario', fn() => view('service.calendarioServicios'))->name('service.calendarioServicios');
-
-
-
-
-
+    Route::get('/servicio/cuenta-mecanico', fn() => view('service.cuentaMecanico'))->name('service.cuentaMecanico');
 
     Route::get('/gestion/user', function() { return view('admin.gestionUsuario');
             })->name('admin.gestionUsuario');
