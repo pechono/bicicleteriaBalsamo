@@ -34,22 +34,38 @@
 </style>
 <!-- Menú Lateral -->
 <div id="mySidebar" class="fixed inset-y-0 left-0 w-0 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 overflow-x-hidden transition-all duration-500 ease-out z-50 shadow-2xl border-r border-gray-200 dark:border-gray-800">
-    <!-- Header con gradiente suave -->
-    <div class="relative pt-8 pb-6 px-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-        <button class="absolute top-8 right-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all duration-200" onclick="closeNav()">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+    <!-- Header -->
+    <div class="relative border-b border-gray-200 dark:border-gray-800 overflow-hidden">
+        <!-- Fondo degradado verde -->
+        <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-green-700 opacity-90"></div>
+
+        <div class="relative px-5 pt-6 pb-5">
+            <button class="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-all duration-200" onclick="closeNav()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
+            </button>
+
+            <div class="flex items-center space-x-3">
+                <!-- Ícono bici -->
+                <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shadow-lg backdrop-blur-sm text-2xl">
+                    🚲
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-white leading-tight">Bicicletería Balsamo</h2>
+                    <p class="text-xs text-green-100 mt-0.5">Sistema de Gestión</p>
+                </div>
             </div>
-            <div>
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Bicicletería</h2>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Sistema de Gestión</p>
+
+            <!-- Usuario logueado -->
+            <div class="mt-4 flex items-center gap-2 bg-white/15 rounded-xl px-3 py-2">
+                <div class="w-7 h-7 rounded-full bg-white/30 flex items-center justify-center text-white text-xs font-bold">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-white text-xs font-medium truncate">{{ auth()->user()->name ?? '' }}</p>
+                    <p class="text-green-100 text-[10px] truncate">{{ auth()->user()->email ?? '' }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -100,6 +116,7 @@
             <div id="servicioSubMenu" class="submenu pl-10 mt-1 space-y-1 hidden">
                 <a href="{{ route('service.ingresarBike') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">🚲 Ingresar Bicicleta</a>
                 <a href="{{ route('service.egresoBici') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">🔧 Registro Servicio</a>
+                <a href="{{ route('service.calendarioServicios') }}" class="sub-link flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base transition-all duration-200">📅 Calendario</a>
             </div>
         </div>
 
