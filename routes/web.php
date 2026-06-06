@@ -8,6 +8,7 @@ use App\Livewire\Print\ReportVentaO;
 use App\Livewire\Print\ReporIngreso;
 use App\Livewire\Print\StockImprimir;
 use App\Livewire\Print\PrintOperacion;
+use App\Http\Controllers\Api\Mobile\IngresoMobileController;
 
 use App\Livewire\Service\Comprobante;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,13 @@ use App\Http\Livewire\CargarImagenes;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// ── Acceso por QR desde el celular del mecánico ──────────────────
+// URL pública que redirige a la app o muestra una vista mobile-friendly
+Route::get('/mobile/ingreso/{token}', function ($token) {
+    $nro = \App\Models\NroIngreso::where('token_mobile', $token)->firstOrFail();
+    return view('mobile.ingreso-qr', ['nroIngreso' => $nro, 'token' => $token]);
+})->name('mobile.ingreso.qr');
 
 // Redirigir /register al login (registro deshabilitado)
 Route::redirect('/register', '/login');

@@ -6,7 +6,11 @@
       "Bash(findstr /i \"ingreso\")",
       "Bash(php artisan *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(composer show *)",
+      "Bash(composer require *)",
+      "Bash(php -r \"require 'vendor/autoload.php'; \\\\BaconQrCode\\\\Renderer\\\\Image\\\\SvgImageBackEnd::class;\")",
+      "Bash(php -r ' *)"
     ]
   }
 }

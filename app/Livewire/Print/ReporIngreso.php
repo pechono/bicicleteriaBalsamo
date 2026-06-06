@@ -7,7 +7,10 @@ use App\Models\Bici;
 use App\Models\NroIngreso;
 use App\Models\Empresa;
 use Carbon\Carbon;
-
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReporIngreso extends Component
@@ -62,10 +65,35 @@ class ReporIngreso extends Component
             )
             ->get();
             
-        $emp=Empresa::first();
+        $emp = Empresa::first();
 
+        // ── QR para la app móvil ──────────────────────────────────────
+        $nroIngreso = NroIngreso::find($nro);
+        if ($nroIngreso && !$nroIngreso->token_mobile) {
+            $nroIngreso->token_mobile = \Illuminate\Support\Str::random(32);
+            $nroIngreso->save();
+        }
 
-        $pdf=Pdf::loadView('livewire.print.repor-ingreso', compact('bicicleta','emp','procesos')) ->setPaper('a5', 'portrait');;
+        $qrUrl = $nroIngreso?->token_mobile
+            ? url('/mobile/ingreso/' . $nroIngreso->token_mobile)
+            : null;
+
+        $qrSvg = null;
+        if ($qrUrl) {
+            $renderer = new ImageRenderer(
+                new RendererStyle(120),
+                new SvgImageBackEnd()
+            );
+            $writer  = new Writer($renderer);
+            $qrSvg   = $writer->writeString($qrUrl);
+        }
+        // ─────────────────────────────────────────────────────────────
+
+        $pdf = Pdf::loadView(
+            'livewire.print.repor-ingreso',
+            compact('bicicleta', 'emp', 'procesos', 'qrSvg', 'qrUrl')
+        )->setPaper('a5', 'portrait');
+
         return $pdf->stream();
 
     }

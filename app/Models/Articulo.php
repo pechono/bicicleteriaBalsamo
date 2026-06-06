@@ -23,4 +23,9 @@ class Articulo extends Model
         'suelto',
         'activo',
     ];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
 }

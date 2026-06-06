@@ -122,6 +122,34 @@ th, td {
 .datos-cliente > div {
     width: 48%;
 }
+
+/* QR mobile */
+.qr-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 4px 0;
+    border: 1px dotted #555;
+    padding: 4px;
+    border-radius: 3px;
+}
+.qr-block svg {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+}
+.qr-text {
+    font-size: 8px;
+    line-height: 1.4;
+    color: #333;
+    padding-top: 2px;
+}
+.qr-text strong {
+    display: block;
+    font-size: 9px;
+    margin-bottom: 3px;
+    color: #000;
+}
 </style>
 </head>
 
@@ -204,10 +232,24 @@ Nota: {{ $bicicleta->detalles }}
 </div>
 </div>
 
+{{-- ── QR para el mecánico ────────────────────────────────────── --}}
+@if($qrSvg)
+<div class="linea-punteada"></div>
+<div class="qr-block">
+    {!! $qrSvg !!}
+    <div class="qr-text">
+        <strong>📱 Escaneá con la app del taller</strong>
+        Accedé a esta orden de trabajo desde tu celular.<br>
+        Podés ver los procesos a realizar y agregar<br>
+        los artículos que uses en la reparación.<br><br>
+        <span>Ingreso N° {{ $bicicleta->nro_ingreso }}</span>
+    </div>
+</div>
+@endif
+
 <div class="linea-corte">✂️ ······ CORTE ······ ✂️</div>
 
 <div class="footer">
-
 
 </div>
 

@@ -2,6 +2,37 @@
 
 use App\Models\WhatsAppQueue;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Mobile\AuthMobileController;
+use App\Http\Controllers\Api\Mobile\ArticuloMobileController;
+use App\Http\Controllers\Api\Mobile\IngresoMobileController;
+
+// ============================================================
+// 📱 API MOBILE — App de taller de bicicletas
+// ============================================================
+
+// Auth (público)
+Route::prefix('mobile')->group(function () {
+    Route::post('/login', [AuthMobileController::class, 'login']);
+
+    // Acceso público por token QR (solo lectura del detalle)
+    Route::get('/ingresos/token/{token}', [IngresoMobileController::class, 'porToken'])
+        ->middleware('auth:sanctum');
+
+    // Rutas protegidas con Sanctum
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthMobileController::class, 'logout']);
+
+        // Artículos
+        Route::get('/articulos/qr/{codigo}',   [ArticuloMobileController::class, 'porQr']);
+        Route::get('/articulos/buscar',         [ArticuloMobileController::class, 'buscar']);
+
+        // Ingresos / Bicis en taller
+        Route::get('/ingresos',                                [IngresoMobileController::class, 'index']);
+        Route::get('/ingresos/{id}',                           [IngresoMobileController::class, 'show']);
+        Route::post('/ingresos/{id}/articulos',                [IngresoMobileController::class, 'agregarArticulo']);
+        Route::patch('/ingresos/{id}/terminar',                [IngresoMobileController::class, 'terminar']);
+    });
+});
 
 // Endpoints que tu PC local va a consumir
 Route::prefix('whatsapp')->group(function () {
