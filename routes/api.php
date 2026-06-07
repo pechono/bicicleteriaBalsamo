@@ -31,6 +31,9 @@ Route::prefix('mobile')->group(function () {
         Route::get('/ingresos/{id}',                           [IngresoMobileController::class, 'show']);
         Route::post('/ingresos/{id}/articulos',                [IngresoMobileController::class, 'agregarArticulo']);
         Route::patch('/ingresos/{id}/terminar',                [IngresoMobileController::class, 'terminar']);
+
+        // Mecánicos (para selector al terminar)
+        Route::get('/mecanicos',                               [IngresoMobileController::class, 'mecanicos']);
     });
 });
 

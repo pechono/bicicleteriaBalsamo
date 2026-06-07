@@ -10,7 +10,12 @@
       "Bash(composer show *)",
       "Bash(composer require *)",
       "Bash(php -r \"require 'vendor/autoload.php'; \\\\BaconQrCode\\\\Renderer\\\\Image\\\\SvgImageBackEnd::class;\")",
-      "Bash(php -r ' *)"
+      "Bash(php -r ' *)",
+      "Bash(cd .. && ls)",
+      "Bash(npm --version)",
+      "Bash(npx create-expo-app@latest ../bicicleteria-app --template blank --no-install)",
+      "Bash(npm install *)",
+      "Bash(npx expo *)"
     ]
   }
 }

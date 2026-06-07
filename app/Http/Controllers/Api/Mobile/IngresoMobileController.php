@@ -7,6 +7,8 @@ use App\Models\NroIngreso;
 use App\Models\IngresoBici;
 use App\Models\EgresoBici;
 use App\Models\Articulo;
+use App\Models\Mecanico;
+use App\Models\MecanicoItem;
 use Illuminate\Http\Request;
 
 class IngresoMobileController extends Controller
@@ -178,7 +180,15 @@ class IngresoMobileController extends Controller
 
     /**
      * PATCH /api/mobile/ingresos/{id}/terminar
-     * Marca el ingreso como Terminado. SOLO Admin.
+     * Marca el ingreso como Terminado y guarda los montos por mecánico. SOLO Admin.
+     *
+     * Body JSON:
+     * {
+     *   "items": [
+     *     { "mecanico_id": 1, "descripcion": "Cambio de cables", "monto": 2500 },
+     *     { "mecanico_id": 2, "descripcion": "Ajuste frenos",    "monto": 1000 }
+     *   ]
+     * }
      */
     public function terminar(Request $request, $id)
     {
@@ -191,13 +201,49 @@ class IngresoMobileController extends Controller
         if ($nro->estado === 'Terminado') {
             return response()->json(['message' => 'El ingreso ya está marcado como Terminado.'], 422);
         }
-
         if ($nro->estado === 'Entregado') {
             return response()->json(['message' => 'El ingreso ya fue entregado.'], 422);
         }
 
+        // Validar items de mecánico (opcional — puede terminarse sin asignar montos)
+        $request->validate([
+            'items'                => 'nullable|array',
+            'items.*.mecanico_id'  => 'required_with:items|exists:mecanicos,id',
+            'items.*.descripcion'  => 'required_with:items|string|max:255',
+            'items.*.monto'        => 'required_with:items|numeric|min:0',
+        ]);
+
+        // Guardar montos por mecánico
+        foreach ($request->input('items', []) as $item) {
+            MecanicoItem::create([
+                'mecanico_id'  => $item['mecanico_id'],
+                'descripcion'  => $item['descripcion'],
+                'monto'        => $item['monto'],
+                'nro_egreso_id'=> $id,   // usamos el nro_ingreso como referencia
+                'pagado'       => false,
+            ]);
+        }
+
         $nro->update(['estado' => 'Terminado']);
 
-        return response()->json(['message' => 'Bici marcada como Terminada.', 'estado' => 'Terminado']);
+        return response()->json([
+            'message' => 'Bici marcada como Terminada.',
+            'estado'  => 'Terminado',
+            'items_guardados' => count($request->input('items', [])),
+        ]);
+    }
+
+    /**
+     * GET /api/mobile/mecanicos
+     * Lista de mecánicos activos para el selector del admin.
+     */
+    public function mecanicos()
+    {
+        $mecanicos = Mecanico::where('activo', true)
+            ->select('id', 'nombre')
+            ->orderBy('nombre')
+            ->get();
+
+        return response()->json($mecanicos);
     }
 }
