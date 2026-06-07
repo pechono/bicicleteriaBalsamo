@@ -176,6 +176,26 @@
             </div>
         </div>
 
+        <!-- Mayorista -->
+        <div class="menu-group">
+            <button class="menu-toggle w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all duration-200 group" data-menu="mayoristaSubMenu">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-emerald-600 dark:text-gray-400 dark:group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+                    </svg>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">Mayorista</span>
+                </div>
+                <svg class="chevron w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+            <div id="mayoristaSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
+                <a href="{{ route('mayorista.index') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🛒 Venta Mayorista</a>
+                <a href="{{ route('mayorista.clientes') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">👤 Clientes</a>
+                <a href="{{ route('mayorista.cuentaCorriente') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📋 Cuenta Corriente</a>
+            </div>
+        </div>
+
         <!-- Separador Admin -->
         <x-admin>
             <div class="relative my-2">

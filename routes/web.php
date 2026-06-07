@@ -94,6 +94,13 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/masvendidos', fn() => view('informes.masVendidos'))->name('informes.masVendidos');
     });
 
+    // Mayorista
+    Route::prefix('mayorista')->group(function () {
+        Route::get('/', fn() => view('mayorista.index'))->name('mayorista.index');
+        Route::get('/clientes', fn() => view('mayorista.clientes'))->name('mayorista.clientes');
+        Route::get('/cuenta-corriente', fn() => view('mayorista.cuentaCorriente'))->name('mayorista.cuentaCorriente');
+    });
+
     Route::prefix('proveedor')->group(function () {
         Route::get('/', fn() => view('proveedor.proveedor'))->name('proveedor.proveedor');
         Route::get('/creargrupo', fn() => view('proveedor.crearGrupo'))->name('proveedor.crearGrupo');

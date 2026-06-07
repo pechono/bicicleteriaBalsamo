@@ -28,4 +28,17 @@ class Articulo extends Model
     {
         return $this->belongsTo(Categoria::class);
     }
+
+    /**
+     * Calcula el precio mayorista dado un % y si el proveedor incluye IVA.
+     * Fórmula: precioI (+ 21% si no incluye IVA) × (1 + porcentaje/100)
+     */
+    public function calcularPrecioMayorista(float $porcentaje, bool $ivaIncluido): float
+    {
+        $base = $this->precioI;
+        if (!$ivaIncluido) {
+            $base *= 1.21;
+        }
+        return round($base * (1 + $porcentaje / 100), 2);
+    }
 }

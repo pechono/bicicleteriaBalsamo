@@ -36,19 +36,21 @@ class Proveedor extends Component
         'mail'=>'required|string|min:4',
     ];
 
-    public $nombre,$abreviatura, $telefono, $rubro, $direccion, $localidad, $mail, $idPro;
+    public $nombre, $abreviatura, $telefono, $rubro, $direccion, $localidad, $mail, $idPro;
+    public $iva_incluido = false;
     public function saveProveedor()
     {
         $this->validate();
         ModelsProveedor::create([
-            'nombre'=>$this->nombre,
-            'telefono'=>$this->telefono,
-            'abreviatura'=>$this->abreviatura,
-            'rubro'=>$this->rubro,
-            'direccion'=>$this->direccion,
-            'localidad'=>$this->localidad,
-            'mail'=>$this->mail,
-            'activo'=>1
+            'nombre'       => $this->nombre,
+            'telefono'     => $this->telefono,
+            'abreviatura'  => $this->abreviatura,
+            'rubro'        => $this->rubro,
+            'direccion'    => $this->direccion,
+            'localidad'    => $this->localidad,
+            'mail'         => $this->mail,
+            'iva_incluido' => $this->iva_incluido ? 1 : 0,
+            'activo'       => 1,
         ]);
         $this->Mount();
         $this->vaciar();
@@ -59,28 +61,29 @@ class Proveedor extends Component
     public  function editProveedor($id){
         $this->aditModalProveedor=true;
         $proveedorModal=ModelsProveedor::find($id);
-
-            $this->nombre=$proveedorModal->nombre;
-            $this->abreviatura=$proveedorModal->abreviatura;
-            $this->telefono=$proveedorModal->telefono;
-            $this->rubro=$proveedorModal->rubro;
-            $this->direccion=$proveedorModal->direccion;
-            $this->localidad=$proveedorModal->localidad;
-            $this->mail=$proveedorModal->mail;
-            $this->idPro=$id;
+            $this->nombre        = $proveedorModal->nombre;
+            $this->abreviatura   = $proveedorModal->abreviatura;
+            $this->telefono      = $proveedorModal->telefono;
+            $this->rubro         = $proveedorModal->rubro;
+            $this->direccion     = $proveedorModal->direccion;
+            $this->localidad     = $proveedorModal->localidad;
+            $this->mail          = $proveedorModal->mail;
+            $this->iva_incluido  = $proveedorModal->iva_incluido;
+            $this->idPro         = $id;
 
     }
 
     public function editSave(){
         $proveedorModal=ModelsProveedor::find($this->idPro);
         $proveedorModal->update([
-            'nombre'=>$this->nombre,
-            'abreviatura'=>$this->abreviatura,
-            'telefono'=>$this->telefono,
-            'rubro'=>$this->rubro,
-            'direccion'=>$this->direccion,
-            'localidad'=>$this->localidad,
-            'mail'=>$this->mail
+            'nombre'       => $this->nombre,
+            'abreviatura'  => $this->abreviatura,
+            'telefono'     => $this->telefono,
+            'rubro'        => $this->rubro,
+            'direccion'    => $this->direccion,
+            'localidad'    => $this->localidad,
+            'mail'         => $this->mail,
+            'iva_incluido' => $this->iva_incluido ? 1 : 0,
         ]);
         $this->Mount();
         $this->vaciar();
@@ -119,13 +122,14 @@ class Proveedor extends Component
 
     }
     public function vaciar(){
-        $this->nombre='';
-        $this->abreviatura='';
-        $this->telefono='';
-        $this->rubro='';
-        $this->direccion='';
-        $this->localidad='';
-        $this->mail='';
-        $this->idPro='';
+        $this->nombre       = '';
+        $this->abreviatura  = '';
+        $this->telefono     = '';
+        $this->rubro        = '';
+        $this->direccion    = '';
+        $this->localidad    = '';
+        $this->mail         = '';
+        $this->idPro        = '';
+        $this->iva_incluido = false;
     }
 }
