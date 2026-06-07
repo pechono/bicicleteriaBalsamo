@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// ── Descarga de la app móvil ─────────────────────────────────────────
+Route::get('/app', function () {
+    return view('app.download');
+})->name('app.download');
+
 // ── Acceso por QR desde el celular del mecánico ──────────────────
 // URL pública que redirige a la app o muestra una vista mobile-friendly
 Route::get('/mobile/ingreso/{token}', function ($token) {
