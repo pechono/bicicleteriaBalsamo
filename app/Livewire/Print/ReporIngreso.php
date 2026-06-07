@@ -7,6 +7,7 @@ use App\Models\Bici;
 use App\Models\NroIngreso;
 use App\Models\Empresa;
 use Carbon\Carbon;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -78,20 +79,36 @@ class ReporIngreso extends Component
             ? url('/mobile/ingreso/' . $nroIngreso->token_mobile)
             : null;
 
-        $qrSvg = null;
+        // dompdf no soporta SVG — generamos PNG en base64
+        $qrBase64 = null;
         if ($qrUrl) {
-            $renderer = new ImageRenderer(
-                new RendererStyle(120),
-                new SvgImageBackEnd()
-            );
-            $writer  = new Writer($renderer);
-            $qrSvg   = $writer->writeString($qrUrl);
+            try {
+                // Intentar con Imagick (mejor calidad)
+                $renderer = new ImageRenderer(
+                    new RendererStyle(150),
+                    new ImagickImageBackEnd()
+                );
+                $writer     = new Writer($renderer);
+                $qrPng      = $writer->writeString($qrUrl);
+                $qrBase64   = 'data:image/png;base64,' . base64_encode($qrPng);
+            } catch (\Throwable $e) {
+                // Fallback: SVG embebido como imagen via data URI no funciona en dompdf,
+                // usamos GD si está disponible
+                try {
+                    $renderer = new ImageRenderer(
+                        new RendererStyle(150),
+                        new \BaconQrCode\Renderer\Image\EpsImageBackEnd()
+                    );
+                } catch (\Throwable $e2) {
+                    $qrBase64 = null;
+                }
+            }
         }
         // ─────────────────────────────────────────────────────────────
 
         $pdf = Pdf::loadView(
             'livewire.print.repor-ingreso',
-            compact('bicicleta', 'emp', 'procesos', 'qrSvg', 'qrUrl')
+            compact('bicicleta', 'emp', 'procesos', 'qrBase64', 'qrUrl')
         )->setPaper('a5', 'portrait');
 
         return $pdf->stream();

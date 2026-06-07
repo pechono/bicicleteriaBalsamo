@@ -233,15 +233,15 @@ Nota: {{ $bicicleta->detalles }}
 </div>
 
 {{-- ── QR para el mecánico ────────────────────────────────────── --}}
-@if($qrSvg)
+@if(!empty($qrBase64))
 <div class="linea-punteada"></div>
 <div class="qr-block">
-    {!! $qrSvg !!}
+    <img src="{{ $qrBase64 }}" style="width:80px;height:80px;" />
     <div class="qr-text">
-        <strong>📱 Escaneá con la app del taller</strong>
-        Accedé a esta orden de trabajo desde tu celular.<br>
-        Podés ver los procesos a realizar y agregar<br>
-        los artículos que uses en la reparación.<br><br>
+        <strong>Escaneá con la app del taller</strong>
+        Accede a esta orden de trabajo desde tu celular.<br>
+        Podes ver los procesos a realizar y agregar<br>
+        los articulos que uses en la reparacion.<br><br>
         <span>Ingreso N° {{ $bicicleta->nro_ingreso }}</span>
     </div>
 </div>
