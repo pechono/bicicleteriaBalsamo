@@ -1,154 +1,125 @@
-<div class="w-full px-2 py-3">
+<div class="p-2 sm:px-5 bg-white dark:bg-gray-800 dark:bg-gradient-to-bl dark:from-gray-700/50 dark:via-transparent border-b border-gray-200 dark:border-gray-700">
+    <div class="mt-4 text-2xl flex justify-between shadow-inner">
+    <div>Pedidos Realizados</div>
 
-    {{-- ─── Barra de filtros ─── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 mb-3 flex flex-wrap items-center gap-3">
+    </div>
 
-        <div class="flex-1 min-w-[200px]">
-            <input wire:model.live.debounce.300ms='q'
-                   type="search"
-                   placeholder="🔍 Buscar pedido o proveedor…"
-                   class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:ring-indigo-500 focus:border-indigo-500 py-1.5 px-3">
+   <div class="mt-3">
+    <div class="flex justify-between">
+        <div>
+            <input wire:model.live='q' type="search" placeholder="Buscar" class="shadow appearance-none border rounded w-full py-2 px-3
+
+            text-gray-706 leading-tight focus:outline-none focus: shadow-outline placeholder-blue-400" name="">
         </div>
 
-        <span class="text-xs text-gray-400 ml-auto">
-            {{ $pedidos->count() }} {{ $pedidos->count() == 1 ? 'pedido' : 'pedidos' }}
-        </span>
 
     </div>
+    <table class="table-auto w-full">
+        <thead>
+            <tr>
+                <td class="px-4 py-2">
+                    <div class="flex items-center" >
+                       <button wire:click="sortby('id')">Pedido</button>
+                     <x-sort-icon sortFiel='id': sortBy=$sortBy, sortAsc=$sortAsc/>
+                    </div>
+                </td>
+                <td class="px-4 py-2">
+                    <div class="flex items-center">
+                        <Button wire:click="sortby('apellido')">Proveedor</Button>
+                        <x-sort-icon sortFiel='apellido': sort-by='$sortBy' : sort-asc='$sortAsc'>
 
-    {{-- ─── Tabla ─── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">
-                        <button wire:click="sortby('id')" class="hover:text-gray-700 transition">N° Pedido</button>
-                    </th>
-                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        <button wire:click="sortby('apellido')" class="hover:text-gray-700 transition">Proveedor</button>
-                    </th>
-                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-36">
-                        <button wire:click="sortby('nombre')" class="hover:text-gray-700 transition">Fecha</button>
-                    </th>
-                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Acción</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                @forelse ($pedidos as $op)
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
-
-                    {{-- N° Pedido --}}
-                    <td class="px-3 py-2">
-                        <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                            #{{ $op->pedido }}
-                        </span>
-                    </td>
-
-                    {{-- Proveedor --}}
-                    <td class="px-3 py-2">
-                        <div class="font-medium text-gray-800 dark:text-gray-200">{{ $op->nombre }}</div>
-                        @if($op->localidad)
-                            <div class="text-xs text-gray-400">{{ $op->localidad }}</div>
-                        @endif
-                    </td>
-
-                    {{-- Fecha --}}
-                    <td class="px-3 py-2 text-xs text-gray-600 whitespace-nowrap">{{ $op->Fecha }}</td>
-
-                    {{-- Acción --}}
-                    <td class="px-3 py-2 text-center">
-                        <button wire:click='verPed({{ $op->pedido }})'
-                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 transition">
-                            👁 Ver
-                        </button>
-                    </td>
-
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="px-4 py-12 text-center text-gray-400 text-sm">
-                        No hay pedidos realizados.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </td>
+                <td class="px-4 py-2">
+                    <div class="flex items-center">
+                        <Button wire:click="sortby('nombre')">Fecha</Button>
+                        <x-sort-icon sortFiel='nombre': sort-by='$sortBy' : sort-asc='$sortAsc'/>
+                    </div>
+                </td>
+                    <td class="px-4 py-2">
+                    <div class="flex items-center">Accion</div>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($pedidos as $op)
+            <tr>
+                <td class="rounder border px-4 py-2">{{ $op->pedido }}</td>
+                <td class="rounder border px-4 py-2">{{ $op->nombre }}{{ $op->localidad }}</td>
+                <td class="rounder border px-4 py-2">{{ $op->Fecha }}</td>
+                <td class="rounder border px-4 py-2">
+                    <x-secondary-button wire:click='verPed({{ $op->pedido }})'>
+                        Ver
+                    </x-secondary-button>
+                </td>
+            </tr>
+            @empty
+            <h2>No hay registro</h2>
+            @endforelse
 
 
-    {{-- ─── Modal: Ver detalle de pedido ─── --}}
-    <x-dialog-modal wire:model.live="verPedido" maxWidth="2xl">
+        </tbody>
+    </table>
+   </div>
+   {{-- <div class="mt-2">{{ $clientes->links() }}</div> --}}
+
+   <!-- Delete User Confirmation Modal -->
+    <x-dialog-modal wire:model.live="verPedido" class="w-3/5">
         <x-slot name="title">
-            @if ($verPedido && $pedido)
-                Pedido N° {{ $pedido }}
-            @else
-                Ver Pedido
-            @endif
+            <h1>Ver Pedido</h1>
         </x-slot>
 
-        <x-slot name="content">
-            @if ($verPedido)
-            <div class="space-y-3 text-sm">
-
-                {{-- Info del proveedor --}}
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase font-semibold">Empresa</p>
-                        <p class="font-medium text-gray-800 dark:text-gray-200">{{ $proveedor }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase font-semibold">Localidad</p>
-                        <p class="text-gray-700 dark:text-gray-300">{{ $localidad }}</p>
-                    </div>
-                </div>
-
-                {{-- Tabla de artículos del pedido --}}
-                <div class="rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Código</th>
-                                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Artículo</th>
-                                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                            @foreach ($artPedido as $op)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
-                                <td class="px-3 py-2 font-mono text-xs text-gray-500">
-                                    {{ $op->codigo_proveedor }}{{ $op->codigo }}
-                                </td>
-                                <td class="px-3 py-2 text-gray-800 dark:text-gray-200">
-                                    {{ $op->articulo }}
-                                    @if($op->presentacion && $op->presentacion !== '-')
-                                        <span class="text-gray-400"> — {{ $op->presentacion }}</span>
-                                    @endif
-                                    <span class="text-gray-400"> {{ $op->unidad }}</span>
-                                </td>
-                                <td class="px-3 py-2 text-right font-semibold text-gray-800 dark:text-gray-200">
-                                    {{ $op->cantidad }}
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
+        <x-slot name="content" class="w-full">
+            <div class='w-full'>
+            <table class=" table auto w-full border rounded-sm">
+                <thead>
+                 @if ($verPedido)
+                    <tr >
+                        <td class=' text-xl bg-blue-100 mt-4 border' colspan="2"> Pedido a Proveedor N: {{ $pedido }}</td>
+                    </tr>
+                    <tr >
+                        <td class=' text-lg  mt-4 border'> Empresa: </td>
+                        <td class=' text-lg mt-4 '>{{ $proveedor }}</td>
+                    </tr>
+                    <tr >
+                        <td class=' text-lg mt-4 border'> Localidad: </td>
+                        <td class=' text-lg mt-4 '>{{ $localidad }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="h-12"></td>
+                    </tr>
+                    <tr  >
+                        <td class=' text-lg bg-blue-100 mt-6 border'>Codigo</td>
+                        <td class=' text-lg bg-blue-100 mt-6 border'>Articulo</td>
+                        <td class=' text-lg bg-blue-100 mt-6 border'>Cantidad</td>
+                    </tr>
+                    @endif
+                </thead>
+                <tbody>
+                    @foreach ( $artPedido as $op )
+                    <tr>
+                        <td class=' text-lg border mt-4  '>{{ $op->codigo_proveedor }}{{ $op->codigo }}</td>
+                        <td class=' text-lg border mt-4  '>{{ $op->articulo}}  {{ $op->presentacion }} {{ $op->unidad }}</td>
+                        <td class=' text-lg border mt-4  '>{{ $op->cantidad }} </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
             </div>
-            @endif
         </x-slot>
+
 
         <x-slot name="footer">
             @if ($pedido)
-                <a href="{{ route('pedidoImprimir', ['id' => $pedido]) }}" target="_blank"
-                   class="inline-flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm">
-                    🖨️ Imprimir
+                <a href="{{ route('pedidoImprimir',['id'=>$pedido]) }}" target="_blank" class=" px-4 py-2 bg-blue-500 text-white rounded">
+                    Imprimir Comprobante
                 </a>
             @endif
             <x-secondary-button wire:click="$toggle('verPedido', false)" wire:loading.attr="disabled">
-                Cerrar
+                Cancelar
             </x-secondary-button>
         </x-slot>
-    </x-dialog-modal>
 
+</x-dialog-modal>
+    <!--Fin Delete  Confirmation Modal -->
 </div>
