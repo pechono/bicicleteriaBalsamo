@@ -83,7 +83,7 @@ class ArticuloAdd extends Component
             'unidadVenta'=>  $this->unidadVenta,
             'precioF'=>  $this->precioF,
             'precioI'=>  $this->precioI,
-            'caducidad'=>  '-',
+            'caducidad'=>  'No',
             'detalles'=>  $this->detalles ?? '',
             'suelto'=>  $this->suelto ?? 0,
             'activo'=>1
