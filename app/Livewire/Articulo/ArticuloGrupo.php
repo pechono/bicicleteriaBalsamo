@@ -48,7 +48,8 @@ class ArticuloGrupo extends Component
 
     // Proveedor nuevo
     public $np_nombre = '', $np_abreviatura = '', $np_telefono = '', $np_rubro = '',
-           $np_direccion = '', $np_localidad = '', $np_mail = '', $np_activo = true;
+           $np_direccion = '', $np_localidad = '', $np_mail = '',
+           $np_activo = true, $np_iva_incluido = false;
 
     // Grupo nuevo
     public $ng_nombre = '', $ng_porcentaje = 0;
@@ -109,33 +110,42 @@ class ArticuloGrupo extends Component
         $this->np_nombre = $this->np_abreviatura = $this->np_telefono = $this->np_rubro =
         $this->np_direccion = $this->np_localidad = $this->np_mail = '';
         $this->np_activo = true;
+        $this->np_iva_incluido = false;
         $this->modalProveedor = true;
     }
 
     public function guardarProveedor(): void
     {
         $this->validate([
-            'np_nombre'       => 'required|string|min:2',
-            'np_abreviatura'  => 'nullable|string|max:10',
-            'np_telefono'     => 'nullable|string',
-            'np_rubro'        => 'nullable|string',
-            'np_direccion'    => 'nullable|string',
-            'np_localidad'    => 'nullable|string',
-            'np_mail'         => 'nullable|email',
+            'np_nombre'      => 'required|string|min:4',
+            'np_abreviatura' => 'required|string|min:2|max:10',
+            'np_telefono'    => 'required|string|min:4',
+            'np_rubro'       => 'required|string|min:4',
+            'np_direccion'   => 'required|string|min:4',
+            'np_localidad'   => 'required|string|min:4',
+            'np_mail'        => 'required|string|min:4',
         ], [
             'np_nombre.required'      => 'El nombre es obligatorio.',
+            'np_nombre.min'           => 'El nombre debe tener al menos 4 caracteres.',
+            'np_abreviatura.required' => 'La abreviatura es obligatoria.',
+            'np_abreviatura.min'      => 'La abreviatura debe tener al menos 2 caracteres.',
             'np_abreviatura.max'      => 'La abreviatura no puede superar 10 caracteres.',
-            'np_mail.email'           => 'El mail no es válido.',
+            'np_telefono.required'    => 'El teléfono es obligatorio.',
+            'np_rubro.required'       => 'El rubro es obligatorio.',
+            'np_direccion.required'   => 'La dirección es obligatoria.',
+            'np_localidad.required'   => 'La localidad es obligatoria.',
+            'np_mail.required'        => 'El mail es obligatorio.',
         ]);
 
         Proveedor::create([
             'nombre'       => $this->np_nombre,
-            'abreviatura'  => strtoupper($this->np_abreviatura) ?: null,
-            'telefono'     => $this->np_telefono  ?? '',
-            'rubro'        => $this->np_rubro     ?? '',
-            'direccion'    => $this->np_direccion ?? '',
-            'localidad'    => $this->np_localidad ?? '',
-            'mail'         => $this->np_mail      ?? '',
+            'abreviatura'  => strtoupper($this->np_abreviatura),
+            'telefono'     => $this->np_telefono,
+            'rubro'        => $this->np_rubro,
+            'direccion'    => $this->np_direccion,
+            'localidad'    => $this->np_localidad,
+            'mail'         => $this->np_mail,
+            'iva_incluido' => $this->np_iva_incluido ? 1 : 0,
             'activo'       => $this->np_activo,
         ]);
 

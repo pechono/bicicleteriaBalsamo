@@ -291,53 +291,69 @@
                 <h3 class="text-lg font-bold">Nuevo Proveedor</h3>
                 <button wire:click="cerrarModales" class="text-2xl leading-none hover:text-blue-200">×</button>
             </div>
-            <div class="px-6 py-5 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2 flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-sm font-medium text-gray-700">Nombre *</label>
-                            <input wire:model="np_nombre" type="text" placeholder="Nombre del proveedor"
-                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"/>
-                            @error('np_nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="w-28">
-                            <label class="text-sm font-medium text-gray-700">Abreviatura</label>
-                            <input wire:model="np_abreviatura" type="text" placeholder="Ej: SOL"
-                                maxlength="10"
-                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm uppercase focus:ring-blue-500 focus:border-blue-500"/>
-                            @error('np_abreviatura') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                        </div>
+            <div class="px-6 py-4 space-y-3">
+                {{-- Fila 1: Nombre + Abreviatura --}}
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Nombre *</label>
+                        <input wire:model="np_nombre" type="text" placeholder="Nombre del proveedor"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"/>
+                        @error('np_nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Teléfono</label>
+                    <div class="w-28">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Abreviatura *</label>
+                        <input wire:model="np_abreviatura" type="text" placeholder="Ej: SOL" maxlength="10"
+                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm uppercase focus:ring-blue-500 focus:border-blue-500"/>
+                        @error('np_abreviatura') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                {{-- Fila 2: Teléfono + Rubro --}}
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Teléfono *</label>
                         <input wire:model="np_telefono" type="text" placeholder="Teléfono"
                             class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                        @error('np_telefono') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Rubro</label>
+                    <div class="w-1/2">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Rubro *</label>
                         <input wire:model="np_rubro" type="text" placeholder="Rubro"
                             class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                        @error('np_rubro') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Dirección</label>
+                </div>
+                {{-- Fila 3: Dirección + Localidad --}}
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Dirección *</label>
                         <input wire:model="np_direccion" type="text" placeholder="Dirección"
                             class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                        @error('np_direccion') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Localidad</label>
+                    <div class="w-1/2">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Localidad *</label>
                         <input wire:model="np_localidad" type="text" placeholder="Localidad"
                             class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                        @error('np_localidad') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
-                    <div class="col-span-2">
-                        <label class="text-sm font-medium text-gray-700">Mail</label>
-                        <input wire:model="np_mail" type="email" placeholder="correo@ejemplo.com"
-                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
-                        @error('np_mail') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input wire:model="np_activo" type="checkbox" id="np_activo" class="rounded border-gray-300 text-blue-600"/>
-                        <label for="np_activo" class="text-sm text-gray-700">Activo</label>
-                    </div>
+                </div>
+                {{-- Fila 4: Mail --}}
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Mail *</label>
+                    <input wire:model="np_mail" type="text" placeholder="correo@ejemplo.com"
+                        class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm"/>
+                    @error('np_mail') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                {{-- Fila 5: Checkboxes --}}
+                <div class="flex items-center gap-6 pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input wire:model="np_activo" type="checkbox" class="rounded border-gray-300 text-blue-600"/>
+                        <span class="text-sm text-gray-700">Activo</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input wire:model="np_iva_incluido" type="checkbox" class="rounded border-gray-300 text-blue-600"/>
+                        <span class="text-sm text-gray-700">IVA incluido en precio</span>
+                    </label>
                 </div>
             </div>
             <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
