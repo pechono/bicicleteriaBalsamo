@@ -164,126 +164,124 @@
 
         <!-- 🆕 Formulario para agregar artículo -->
         <div class="bg-white rounded-lg shadow-xl p-4">
-            <h2 class="text-lg font-semibold text-black mb-4">
-                Agregar artículo al grupo 
-                @if($mensajeError != '-')
-                    <span class="text-sm font-normal ml-2">{{ $mensajeError }}</span>
-                @endif
-            </h2>
-            
-            <div class="col-span-6 sm:col-span-4 flex gap-4 mb-4">
-                <!-- Campo Código (30%) -->
-                <div class="w-[30%]">
-                    <label for="codigo" class="text-sm font-medium text-black mb-1">Código Proveedor</label>
-                    <x-input id="codigo" type="text" class="mt-1 block w-full bg-white" 
-                             wire:model="codigo" wire:change="comprobarCodigo" placeholder="Código"/>
-                    <x-input-error for="codigo" class="mt-2" />
+
+            <h2 class="text-lg font-semibold text-black mb-1">Agregar artículo al grupo</h2>
+
+            {{-- Mensajes de éxito / error --}}
+            @if(session('message'))
+                <div class="mb-3 px-3 py-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                    ✅ {{ session('message') }}
                 </div>
-                
-                <!-- Campo Artículo (70%) -->
-                <div class="flex-grow">
-                    <label for="articulo" class="text-sm font-medium text-black mb-1">Artículo</label>
-                    <x-input id="articulo" type="text" class="mt-1 block w-full" 
-                             wire:model="articulo" placeholder="Artículo"/>
-                    <x-input-error for="articulo" class="mt-2" />
+            @endif
+            @if(session('error'))
+                <div class="mb-3 px-3 py-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                    ❌ {{ session('error') }}
+                </div>
+            @endif
+            @if($mensajeError != '-')
+                <p class="mb-3 text-sm {{ str_contains($mensajeError,'✅') ? 'text-green-600' : 'text-red-600' }}">
+                    {{ $mensajeError }}
+                </p>
+            @endif
+
+            {{-- Fila 1: Código + Artículo --}}
+            <div class="flex gap-3 mb-3">
+                <div class="w-[28%]">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Código Prov.</label>
+                    <x-input type="text" class="mt-1 block w-full text-sm"
+                             wire:model="codigo" wire:change="comprobarCodigo" placeholder="Código"/>
+                    <x-input-error for="codigo" class="mt-1" />
+                </div>
+                <div class="flex-1">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Artículo *</label>
+                    <x-input type="text" class="mt-1 block w-full text-sm"
+                             wire:model="articulo" placeholder="Nombre del artículo"/>
+                    <x-input-error for="articulo" class="mt-1" />
                 </div>
             </div>
 
-            <!-- Unidad -->
-            <div class="flex gap-4 mb-4">
+            {{-- Fila 2: Unidad de medida + Unidad de Venta --}}
+            <div class="flex gap-3 mb-3">
                 <div class="w-1/2">
-                    <label for="unidad" class="text-sm font-medium text-black mb-1">Unidad</label>
-                    <select id="unidad" wire:model="unidad_id" class="mt-1 block w-full rounded border-gray-300">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Unidad de medida *</label>
+                    <select wire:model="unidad_id" class="mt-1 block w-full text-sm rounded border-gray-300 shadow-sm">
                         <option value="">Seleccionar...</option>
                         @foreach ($unidades as $unidad)
                             <option value="{{ $unidad->id }}">{{ $unidad->unidad }}</option>
                         @endforeach
                     </select>
-                    <x-input-error for="unidad_id" class="mt-2" />
+                    <x-input-error for="unidad_id" class="mt-1" />
+                </div>
+                <div class="w-1/2">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Unidad de Venta *</label>
+                    <x-input type="text" class="mt-1 block w-full text-sm"
+                             wire:model="unidadVenta" placeholder="Unidad / Pack"/>
+                    <x-input-error for="unidadVenta" class="mt-1" />
                 </div>
             </div>
 
-            <!-- Descuento y Unidad Venta -->
-            <div class="flex gap-4 mb-4">
-                <div class="w-1/2">
-                    <label for="descuento" class="text-sm font-medium text-black mb-1">Descuento (%)</label>
-                    <x-input id="descuento" type="number" class="mt-1 block w-full" 
-                             wire:model="descuento" placeholder="0"/>
-                    <x-input-error for="descuento" class="mt-2" />
-                </div>
-                <div class="w-1/2">
-                    <label for="unidadVenta" class="text-sm font-medium text-black mb-1">Unidad de Venta</label>
-                    <x-input id="unidadVenta" type="text" class="mt-1 block w-full" 
-                             wire:model="unidadVenta" placeholder="Unidad/Pack"/>
-                    <x-input-error for="unidadVenta" class="mt-2" />
-                </div>
-            </div>
-
-            <!-- Precios y Porcentaje -->
-            <div class="flex gap-4 mb-4 items-end">
-                <div class="w-1/4">
-                    <label for="precioI" class="text-sm font-medium text-black mb-1">Precio Inicial</label>
-                    <x-input id="precioI" type="number" step="0.01" class="mt-1 block w-full" 
+            {{-- Fila 3: Precio Inicial + % + Calcular + Precio Final --}}
+            <div class="flex gap-3 mb-3 items-end">
+                <div class="flex-1">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio Inicial *</label>
+                    <x-input type="number" step="0.01" class="mt-1 block w-full text-sm"
                              wire:model="precioI" placeholder="0.00"/>
-                    <x-input-error for="precioI" class="mt-2" />
+                    <x-input-error for="precioI" class="mt-1" />
                 </div>
-                <div class="w-1/4">
-                    <label for="precioF" class="text-sm font-medium text-black mb-1">Precio Final</label>
-                    <x-input id="precioF" type="number" step="0.01" class="mt-1 block w-full" 
-                             wire:model="precioF" placeholder="0.00"/>
-                    <x-input-error for="precioF" class="mt-2" />
-                </div>
-                <div class="w-1/4">
-                    <label for="porcentaje" class="text-sm font-medium text-black mb-1">Porcentaje</label>
-                    <x-input id="porcentaje" type="number" step="0.01" class="mt-1 block w-full" 
+                <div class="w-24">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">% Ganancia</label>
+                    <x-input type="number" step="0.01" class="mt-1 block w-full text-sm"
                              wire:model="porcentaje" placeholder="0"/>
-                    <x-input-error for="porcentaje" class="mt-2" />
                 </div>
-
-                <div class="px-5">
-                    <div>
-                        <input wire:model='suelto' id="Suelto" type="checkbox" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="Suelto" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Suelto</label>
-                    </div>
-                </div>
-
-
-                <div class="w-1/4">
-                    <button wire:click="calcular" 
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
-                        Calcular
+                <div class="pb-0.5">
+                    <button wire:click="calcular"
+                            class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded shadow">
+                        Calcular →
                     </button>
                 </div>
+                <div class="flex-1">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio Final *</label>
+                    <x-input type="number" step="0.01" class="mt-1 block w-full text-sm bg-green-50"
+                             wire:model="precioF" placeholder="0.00"/>
+                    <x-input-error for="precioF" class="mt-1" />
+                </div>
             </div>
 
-            <!-- Stock -->
-            <div class="flex gap-4 mb-4">
-                <div class="w-1/2">
-                    <label for="stockMinimo" class="text-sm font-medium text-black mb-1">Stock Mínimo</label>
-                    <x-input id="stockMinimo" type="number" class="mt-1 block w-full" 
+            {{-- Fila 4: Descuento + Stock Mínimo + Stock Actual --}}
+            <div class="flex gap-3 mb-3">
+                <div class="w-1/3">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Descuento (%) *</label>
+                    <x-input type="number" class="mt-1 block w-full text-sm"
+                             wire:model="descuento" placeholder="0"/>
+                    <x-input-error for="descuento" class="mt-1" />
+                </div>
+                <div class="w-1/3">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock Mínimo *</label>
+                    <x-input type="number" class="mt-1 block w-full text-sm"
                              wire:model="stockMinimo" placeholder="0"/>
-                    <x-input-error for="stockMinimo" class="mt-2" />
+                    <x-input-error for="stockMinimo" class="mt-1" />
                 </div>
-                <div class="w-1/2">
-                    <label for="stock" class="text-sm font-medium text-black mb-1">Stock Actual</label>
-                    <x-input id="stock" type="number" class="mt-1 block w-full" 
+                <div class="w-1/3">
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock Actual *</label>
+                    <x-input type="number" class="mt-1 block w-full text-sm"
                              wire:model="stock" placeholder="0"/>
-                    <x-input-error for="stock" class="mt-2" />
+                    <x-input-error for="stock" class="mt-1" />
                 </div>
             </div>
 
-            <!-- Detalles -->
+            {{-- Fila 5: Detalles --}}
             <div class="mb-4">
-                <x-label for="detalles" value="Detalles" />
-                <x-input id="detalles" type="text" class="mt-1 block w-full" wire:model="detalles" />
-                <x-input-error for="detalles" class="mt-2" />
+                <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Detalles</label>
+                <x-input type="text" class="mt-1 block w-full text-sm"
+                         wire:model="detalles" placeholder="Descripción adicional (opcional)"/>
             </div>
 
-            <!-- Botón Cargar -->
+            {{-- Botón --}}
             <div class="flex justify-end">
-                <button wire:click="cargarArticulo"
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
-                    Cargar Artículo
+                <button wire:click="cargarArticulo" wire:loading.attr="disabled"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded shadow transition">
+                    <span wire:loading.remove wire:target="cargarArticulo">💾 Cargar Artículo</span>
+                    <span wire:loading wire:target="cargarArticulo">Guardando...</span>
                 </button>
             </div>
         </div>

@@ -220,28 +220,30 @@ class ArticuloGrupo extends Component
         
         
         $this->validate([
-            'articulo' => 'required|string|min:4',
-            'unidad_id' => 'required',
-            'descuento' => 'required|numeric',
+            'articulo'    => 'required|string|min:4',
+            'unidad_id'   => 'required',
+            'descuento'   => 'required|numeric',
             'unidadVenta' => 'required|string|min:1',
-            'precioI' => 'required|numeric|min:1',
-            'precioF' => 'required|numeric|min:1',
-            'detalles' => 'nullable|string',
-            'suelto' => 'boolean',
-            'stock' => 'required|numeric|min:1',
+            'precioI'     => 'required|numeric|min:1',
+            'precioF'     => 'required|numeric|min:1',
+            'detalles'    => 'nullable|string',
+            'stock'       => 'required|numeric|min:1',
             'stockMinimo' => 'required|integer|min:1',
-            'categoria_id' => 'required',
-            'grupo' => 'required',
-            'proveedor_id' => 'required',
-            'codigo' => [
+            'categoria_id'=> 'required',
+            'grupo'       => 'required',
+            'proveedor_id'=> 'required',
+            'codigo'      => [
                 'nullable',
                 'unique:articulos,codigo',
                 'regex:/^[A-Za-z0-9\-\/\.]+$/'
             ],
         ], [
-            'categoria_id.required' => 'Debe seleccionar una categoría.',
-            'grupo.required' => 'Debe seleccionar un grupo.',
-            'proveedor_id.required' => 'Debe seleccionar un proveedor.'
+            'articulo.min'           => 'El artículo debe tener al menos 4 caracteres.',
+            'categoria_id.required'  => 'Debe seleccionar una categoría.',
+            'grupo.required'         => 'Debe seleccionar un grupo en la parte superior.',
+            'proveedor_id.required'  => 'Debe seleccionar un proveedor en la parte superior.',
+            'precioI.min'            => 'El precio inicial debe ser mayor a 0.',
+            'precioF.min'            => 'El precio final debe ser mayor a 0.',
         ]);
 
         DB::beginTransaction();
@@ -252,15 +254,15 @@ class ArticuloGrupo extends Component
                 'codigo' => $this->codigo ?: null,
                 'categoria_id' => $this->categoria_id,
                 'presentacion' => '-',
-                'unidad_id' => $this->unidad_id,
-                'descuento' => $this->descuento,
+                'unidad_id'   => $this->unidad_id,
+                'descuento'   => $this->descuento,
                 'unidadVenta' => $this->unidadVenta,
-                'precioF' => $this->precioF,
-                'precioI' => $this->precioI,
-                'caducidad' => 'No',
-                'detalles' => $this->detalles ?? '',
-                'suelto' => $this->suelto ?? 0,
-                'activo' => 1
+                'precioF'     => $this->precioF,
+                'precioI'     => $this->precioI,
+                'caducidad'   => 'No',
+                'detalles'    => $this->detalles ?? '',
+                'suelto'      => 0,
+                'activo'      => 1
             ]);
 
             $qrData = (string) $articulo->id;
@@ -273,7 +275,7 @@ class ArticuloGrupo extends Component
             $articulo->qr_code = $fileName;
             $articulo->save();
 
-            $this->codigo_proveedor = Proveedor::find($this->proveedor_id)->abreviatura ?? null;
+            $this->codigo_proveedor = Proveedor::find($this->proveedor_id)?->abreviatura ?? null;
 
             Stock::create([
                 'articulo_id' => $articulo->id,
