@@ -16,45 +16,54 @@ class StockLivewire extends Component
 {
     use WithPagination;
 
-    public $active=1;
-    public $q;
-
-    public $sortBy='id';
-    public $sortAsc=true;
-    public $f;
-
-    public $a;
-    public $suel=0;
-    public $cad='No';
+    public $active   = 1;
+    public $q        = '';
+    public $categoria_id = '';
+    public $sortBy   = 'articulo';
+    public $sortAsc  = true;
 
     protected $queryString = [
-        'q'=>['except'=>''],
-        'sortBy'=>['except'=>'id'],
-        'sortAsc'=>['except'=>true],
+        'q'          => ['except' => ''],
+        'categoria_id'=> ['except' => ''],
+        'sortBy'     => ['except' => 'articulo'],
+        'sortAsc'    => ['except' => true],
     ];
+
+    public function updatingQ()        { $this->resetPage(); }
+    public function updatingCategoriaId() { $this->resetPage(); }
+    public function updatingActive()   { $this->resetPage(); }
+
     public function render()
     {
-        $articulos=Articulo::where('activo',$this->active)
-            ->when($this->q, function ($query){
-                               return $query->where( function($query){
-                                            $query->where('articulo','like','%'.$this->q.'%')
-                                                    ->orwhere('detalles','like','%'. $this->q .'%')
-                                                    ->orwhere('categoria','like','%'.$this->q.'%');
-                                        });
-                                    })
+        $articulos = Articulo::where('articulos.activo', $this->active)
+            ->when($this->q, fn($q) =>
+                $q->where(fn($q) =>
+                    $q->where('articulos.articulo', 'like', '%'.$this->q.'%')
+                      ->orWhere('articulos.detalles',  'like', '%'.$this->q.'%')
+                      ->orWhere('articulos.codigo',    'like', '%'.$this->q.'%')
+                )
+            )
+            ->when($this->categoria_id, fn($q) =>
+                $q->where('articulos.categoria_id', $this->categoria_id)
+            )
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
-            ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'articulos.codigo','categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo','stocks.codigo_proveedor' )
+            ->select(
+                'articulos.id', 'articulos.codigo', 'articulos.articulo',
+                'categorias.categoria', 'articulos.categoria_id',
+                'articulos.descuento', 'articulos.unidadVenta',
+                'articulos.precioF', 'articulos.precioI',
+                'articulos.detalles', 'articulos.suelto', 'articulos.activo',
+                'stocks.stock', 'stocks.stockMinimo', 'stocks.codigo_proveedor'
+            )
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
-            ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-            ->join('stocks', 'stocks.articulo_id','=','articulos.id');
+            ->join('unidads',    'unidads.id',    '=', 'articulos.unidad_id')
+            ->join('stocks',     'stocks.articulo_id', '=', 'articulos.id')
+            ->paginate(20);
 
-        $articulos=$articulos->paginate(10);
-        $categorias=Categoria::All();
-        $unidades=Unidad::all();
-        $proveedores=Proveedor::all();
-        return view('livewire.stock.stock-livewire',compact('articulos','categorias','unidades', 'proveedores'));
+        $categorias = Categoria::orderBy('categoria')->get();
+        $proveedores = Proveedor::where('activo', 1)->orderBy('nombre')->get();
+
+        return view('livewire.stock.stock-livewire', compact('articulos', 'categorias', 'proveedores'));
     }
     public function sortby($field)
     {
