@@ -1,368 +1,289 @@
-<div class="w-full p-2 sm:px-5 bg-white dark:bg-gray-800 dark:bg-gradient-to-bl dark:from-gray-700/50 dark:via-transparent border-b border-gray-200 dark:border-gray-700">
-    <div class="mt-4 text-2xl flex justify-between shadow-inner">
-        <div>Generar Pedido a Proveedores</div>
-        <div class="mr-2">
+<div class="w-full px-2 py-3">
 
-            {{-- <x-button wire:click='confirmarArticuloAdd' class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Crear Nuevo articulo
-            </x-button> --}}
+    {{-- ─── Barra de filtros ─── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 mb-3 flex flex-wrap items-center gap-3">
+
+        <div class="flex-1 min-w-[200px]">
+            <input wire:model.live.debounce.300ms='q'
+                   type="search"
+                   placeholder="🔍 Buscar artículo, código…"
+                   class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:ring-indigo-500 focus:border-indigo-500 py-1.5 px-3">
         </div>
+
+        <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer select-none">
+            <input type="checkbox" wire:model.live='active' value="1"
+                   class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            Solo activos
+        </label>
+
+        @if ($hasRecords > 0)
+            <div class="flex items-center gap-2 ml-auto">
+                <span class="text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-full px-2.5 py-0.5">
+                    {{ $hasRecords }} {{ $hasRecords == 1 ? 'artículo' : 'artículos' }} en pedido
+                </span>
+                <button wire:click='borrarCar()'
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 text-sm font-medium transition">
+                    🗑 Borrar Pedido
+                </button>
+                <a href="{{ route('stock.confirmarPedido') }}"
+                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-sm font-medium transition shadow-sm">
+                    ✔ Realizar Pedido
+                </a>
+            </div>
+        @endif
+
     </div>
 
-    <div class="mt-3 w-full ">
-        <div class="flex justify-between">
-            <div>
-                <input wire:model.live='q' type="search" placeholder="Buscar" class="shadow appearance-none border rounded w-full py-2 px-3
-
-                text-gray-706 leading-tight focus:outline-none focus: shadow-outline placeholder-blue-400" name="">
-            </div>
-            <div class="mr-2">
-                <input class="mr-2 leading-tight" type="checkbox" wire:model.live ='active'/ value="1" checked>Articulos Activos
-                @if ($hasRecords>0)
-                    <button wire:click='borrarCar()' class=" rounded bg-sky-600 hover:bg-sky-400 text-white hover:text h-8 p-2 ml-4"> Borrar Pedido</button>
-                    <a href="{{ route('stock.confirmarPedido') }}"  class=" rounded bg-sky-600 hover:bg-sky-400 text-white h-8 p-2 ml-4">Realizar Pedido</a>
-                @endif
-
-            </div>
-
-        </div>
-
-        <table class="table-auto w-full">
+    {{-- ─── Tabla ─── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
+        <table class="w-full text-sm">
             <thead>
-                <tr>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center" >
-                        <button wire:click="sortby('id')">Id</button>
-                        <x-sort-icon sortFiel='id': sortBy=$sortBy, sortAsc=$sortAsc/>
-                        </div>
-                    </td>
-                     <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('Cadigo')">Cadigo</Button>
-                            <x-sort-icon sortFiel='Cadigo': sort-by='$sortBy' : sort-asc='$sortAsc'>
-
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('articulo')">Articulo</Button>
-                            <x-sort-icon sortFiel='apellido': sort-by='$sortBy' : sort-asc='$sortAsc'>
-
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('categoria_id')">Categoria</Button>
-                            <x-sort-icon sortFiel='nombre': sort-by='$sortBy' : sort-asc='$sortAsc'/>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button >Presentacion</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('unidadVenta')">Unidad Cantidad</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('precioI')">Precio Inicial</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('precioF')">Precio Final</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('caducidad')">Cadc.</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('detalles')">Detalles</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('stockMinimo')">Stock Minimo</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('stock')">Stock
-                                <div class="w-15 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">suelto</div>
-
-                            </Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('nombre')">Proveedor</Button>
-                            <x-sort-icon sortFiel='nombre': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                           Solicitar
-                        </div>
-                    </td>
-                    <td class="px-4 py-2" colspan="3">
-                        <div class="flex items-center" >Accion</div>
-
-                    </td>
-
-
+                <tr class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('codigo')" class="hover:text-gray-700 transition">Código</button>
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('articulo')" class="hover:text-gray-700 transition">Artículo</button>
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Venta</th>
+                    <th class="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('precioI')" class="hover:text-gray-700 transition">Precio I</button>
+                    </th>
+                    <th class="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('precioF')" class="hover:text-gray-700 transition">Precio F</button>
+                    </th>
+                    <th class="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('stockMinimo')" class="hover:text-gray-700 transition">Mín</button>
+                    </th>
+                    <th class="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('stock')" class="hover:text-gray-700 transition">Stock</button>
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <button wire:click="sortby('nombre')" class="hover:text-gray-700 transition">Proveedor</button>
+                    </th>
+                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">Cant.</th>
+                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-36">Acción</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                @forelse ($articulos as $articulo)
+                @php $car = $inTheCar->firstWhere('articulo_id', $articulo->id); @endphp
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition {{ $car ? 'bg-indigo-50/50' : '' }}">
 
-                @foreach ($articulos as $articulo)
-                <tr>
-                    <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</td>
-
-                    <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
-
-                    <td class="rounder border px-4 py-2">{{ $articulo->unidadVenta }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->precioI }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->precioF }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->caducidad }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->detalles }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->stockMinimo }}</td>
-                    <td class="rounder border px-4 py-2">
-                        @if ($articulo->suelto==1)
-                            <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
+                    {{-- Código --}}
+                    <td class="px-3 py-2 font-mono text-xs text-gray-500 whitespace-nowrap">
+                        @if($articulo->codigo_proveedor || $articulo->codigo)
+                            {{ $articulo->codigo_proveedor }}{{ ($articulo->codigo_proveedor && $articulo->codigo) ? '-' : '' }}{{ $articulo->codigo }}
                         @else
-                            {{ $articulo->stock }}
+                            <span class="text-gray-300">—</span>
                         @endif
                     </td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->nombre }}</td>
-                    @php
-                       $sta=false;
-                    @endphp
-                  
-                @php
-                    // Busca si el artículo está en el carrito
-                    $car = $inTheCar->firstWhere('articulo_id', $articulo->id);
-                @endphp
 
-                <td class="rounder border px-4 py-2">
-                    {{ $car ? $car->cantidad : '-' }}
-                </td>
+                    {{-- Artículo --}}
+                    <td class="px-3 py-2 max-w-[180px]">
+                        <div class="font-medium text-gray-800 dark:text-gray-200 leading-tight">{{ $articulo->articulo }}</div>
+                        @if($articulo->detalles)
+                            <div class="text-xs text-gray-400 truncate">{{ $articulo->detalles }}</div>
+                        @endif
+                    </td>
 
-                @if ($car)
-                    <td class="rounder border-t border-b px-4 py-2">
-                        <x-button wire:click="ModCar({{ $articulo->id }})" wire:loading.attr="disabled" class="bg-blue-700 hover:bg-blue-500">
-                            Modificar
-                        </x-button>
-                    </td>
-                    <td class="rounder border-t border-b border-r px-4 py-2">
-                        <x-danger-button wire:click="elimCar({{ $articulo->id }})" wire:loading.attr="disabled" class="bg-green-700 hover:bg-green-500">
-                            Quitar
-                        </x-danger-button>
-                    </td>
-                @else
-                    <td class="rounder border px-4 py-2 content-center" colspan="3">
-                        <x-secondary-button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="bg-green-700 hover:bg-green-500 text-white">
-                            Solicitar
-                        </x-secondary-button>
-                    </td>
-                @endif
+                    {{-- Unidad Venta --}}
+                    <td class="px-3 py-2 text-xs text-gray-600 whitespace-nowrap">{{ $articulo->unidadVenta }}</td>
 
+                    {{-- Precio I --}}
+                    <td class="px-3 py-2 text-xs text-gray-500 text-right whitespace-nowrap">
+                        ${{ number_format($articulo->precioI, 0, ',', '.') }}
+                    </td>
+
+                    {{-- Precio F --}}
+                    <td class="px-3 py-2 text-xs font-semibold text-gray-800 dark:text-gray-200 text-right whitespace-nowrap">
+                        ${{ number_format($articulo->precioF, 0, ',', '.') }}
+                    </td>
+
+                    {{-- Stock Mínimo --}}
+                    <td class="px-3 py-2 text-xs text-gray-500 text-right">{{ $articulo->stockMinimo }}</td>
+
+                    {{-- Stock actual --}}
+                    <td class="px-3 py-2 text-right">
+                        @if ($articulo->stock <= $articulo->stockMinimo)
+                            <span class="inline-flex items-center justify-center min-w-[2rem] px-1.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                                {{ $articulo->stock }}
+                            </span>
+                        @else
+                            <span class="text-xs text-gray-700">{{ $articulo->stock }}</span>
+                        @endif
+                    </td>
+
+                    {{-- Proveedor --}}
+                    <td class="px-3 py-2 text-xs text-gray-600 whitespace-nowrap">{{ $articulo->nombre }}</td>
+
+                    {{-- Cantidad en pedido --}}
+                    <td class="px-3 py-2 text-center">
+                        @if ($car)
+                            <span class="inline-flex items-center justify-center min-w-[2rem] px-1.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                {{ $car->cantidad }}
+                            </span>
+                        @else
+                            <span class="text-gray-300 text-xs">—</span>
+                        @endif
+                    </td>
+
+                    {{-- Acción --}}
+                    <td class="px-3 py-2 text-center whitespace-nowrap">
+                        @if ($car)
+                            <button wire:click="ModCar({{ $articulo->id }})" wire:loading.attr="disabled"
+                                    title="Modificar cantidad"
+                                    class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition mr-1">
+                                ✏ Mod.
+                            </button>
+                            <button wire:click="elimCar({{ $articulo->id }})" wire:loading.attr="disabled"
+                                    title="Quitar del pedido"
+                                    class="inline-flex items-center px-2 py-1 rounded text-xs bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition">
+                                ✕
+                            </button>
+                        @else
+                            <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled"
+                                    title="Agregar al pedido"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">
+                                + Solicitar
+                            </button>
+                        @endif
+                    </td>
 
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="10" class="px-4 py-12 text-center text-gray-400 text-sm">
+                        No hay artículos para mostrar.
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
-   </div>
-
-    <div class="mt-2">
-    {{--   {{ $articulos->links() }} --}}
     </div>
 
-
-       {{-- ----modal confirmar venta---- --}}
-    <x-dialog-modal wire:model.live="eliminar" maxWidth="2xl">
-            <x-slot name="title">
-                {{ __('Eliminar articulo') }}
-            </x-slot>
-
-            <x-slot name="content">
-                <div class="rounded-t-lg" >
-                    <table class="table-auto rounded">
-                        <thead>
-                            <th>
-                                <td colspan="4" class="text-lg font-semibold">Venta</td>
-                            </th>
-                        </thead>
-                        <tbody>
-                        <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Codigo</td>
-
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Descripcion</td>
-
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 border">{{ $id }} </td>
-                                <td class="px-4 py-2 border">{{ $codigo_proveedor }}-{{ $codigo }}</td>
-
-                                <td class="px-4 py-2 border">{{ $art }}</td>
-                                <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
-
-                            </tr>
-                            <tr  >
-
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Minimo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Actual</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Proveedor</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 border">{{ $stockMinimo }}</td>
-                                <td class="px-4 py-2 border">{{ $stock }}</td>
-                                <td class="px-4 py-2 border">{{ $proveedor }}</td>
-                            </tr>
-                        </tbody>
-
-                        <tfoot >
-                            <tr >
-                                <td colspan="2" class=" px-4 py-2 border border-slate-300 bg-sky-400/50  text-4xl font-semibold">
-                               Eliminar
-                                </td>
-                                <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-sky-400/50   font-semibold">
-                                    <input disabled id="pedido" wire:model='pedido' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
-                                    <x-input-error for="pedido" class="mt-2" />
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </x-slot>
-
-            <x-slot name="footer">
-                <x-danger-button wire:click="$toggle('eliminar', false)" wire:loading.attr="disabled">
-                    {{ __('Cancelar') }}
-                </x-danguer-button>
-
-                <x-danger-button class="ms-3" wire:click="eliminarElementCar({{ $id }})" wire:loading.attr="disabled">
-                    {{ __('Quitar del Pedido') }}
-                </x-danger-button>
-            </x-slot>
-    </x-dialog-modal>
-     {{-- ---- Fin modal confirmar venta---- --}}
+    {{-- Paginación (descomentar si se activa) --}}
+    {{-- <div class="mt-3">{{ $articulos->links() }}</div> --}}
 
 
-     {{-- modal------------------------------------------------------------------------------- --}}
-     <x-dialog-modal wire:model.live="agregarCar" maxWidth="2xl">
-        <x-slot name="title">
-            {{ __('Solicitar a Proveedores') }}
-        </x-slot>
+    {{-- ─── Modal: Quitar del pedido ─── --}}
+    <x-dialog-modal wire:model.live="eliminar" maxWidth="lg">
+        <x-slot name="title">Quitar del Pedido</x-slot>
+
         <x-slot name="content">
-            <div class="rounded-t-lg" >
-                <table class="table-auto rounded">
-                    <thead>
-                        <th>
-                            <td colspan="4" class="text-lg font-semibold">Venta</td>
-                        </th>
-                    </thead>
-                    <tbody>
-                    <tr  >
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Codigo</td>
-
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Descripcion</td>
-
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-2 border">{{ $id }} </td>
-                            <td class="px-4 py-2 border">{{ $codigo_proveedor }}-{{ $codigo }}</td>
-
-                            <td class="px-4 py-2 border">{{ $art }}</td>
-                            <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
-
-                        </tr>
-                        <tr  >
-
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Minimo</td>
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Actual</td>
-                            <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Proveedor</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-2 border">{{ $stockMinimo }}</td>
-                            <td class="px-4 py-2 border">{{ $stock }}</td>
-                            <td class="px-4 py-2 border">{{ $proveedor }}</td>
-                        </tr>
-                    </tbody>
-
-                    <tfoot >
-                        <tr >
-                            <td colspan="2" class=" px-4 py-2 border border-slate-300 bg-sky-400/50  text-4xl font-semibold">
-                           {{ $msj }}
-                            </td>
-                            <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-sky-400/50   font-semibold">
-                                <input id="pedido" wire:model='pedido' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
-                                <x-input-error for="pedido" class="mt-2" />
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="space-y-3 text-sm">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Código</p>
+                        <p class="font-mono font-medium text-gray-800">{{ $codigo_proveedor }}-{{ $codigo }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Artículo</p>
+                        <p class="font-medium text-gray-800">{{ $art }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Stock Mínimo</p>
+                        <p class="text-gray-700">{{ $stockMinimo }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Stock Actual</p>
+                        <p class="text-gray-700">{{ $stock }}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Proveedor</p>
+                        <p class="text-gray-700">{{ $proveedor }}</p>
+                    </div>
+                </div>
+                <p class="text-gray-600">¿Confirma que desea quitar este artículo del pedido?</p>
             </div>
         </x-slot>
-        <x-slot name="footer">
-            <x-danger-button wire:click="$toggle('agregarCar', false)" wire:loading.attr="disabled">
-                {{ __('Cancelar') }}
-            </x-danger-button>
-            @if ($var==1)
-            <x-secondary-button class="ms-3" wire:click="crearPedido({{ $id }})" wire:loading.attr="disabled">
-                {{ __('Agregar') }}
-            </x-secondary-button>
-            @else
-            <x-secondary-button class="ms-3" wire:click="modPedido({{ $id }})" wire:loading.attr="disabled">
-                {{ __('Modificar') }}
-            </x-secondary-button>
-            @endif
 
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('eliminar', false)" wire:loading.attr="disabled">
+                Cancelar
+            </x-secondary-button>
+            <x-danger-button class="ms-3" wire:click="eliminarElementCar({{ $id }})" wire:loading.attr="disabled">
+                Quitar del Pedido
+            </x-danger-button>
         </x-slot>
     </x-dialog-modal>
-    {{-- modal---------------------------------------fin---------------------------------------- --}}
 
-    <x-dialog-modal wire:model.live="borrar">
-        <x-slot name="title">
-            {{ __('Eliminar articulo') }}
-        </x-slot>
+
+    {{-- ─── Modal: Agregar / Modificar cantidad ─── --}}
+    <x-dialog-modal wire:model.live="agregarCar" maxWidth="lg">
+        <x-slot name="title">{{ $msj }}</x-slot>
 
         <x-slot name="content">
-            {{ __('¿Esta seguro de Desea cancelar el Pedido?') }}
+            <div class="space-y-3 text-sm">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Código</p>
+                        <p class="font-mono font-medium text-gray-800">{{ $codigo_proveedor }}-{{ $codigo }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Artículo</p>
+                        <p class="font-medium text-gray-800">{{ $art }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Stock Mínimo</p>
+                        <p class="text-gray-700">{{ $stockMinimo }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Stock Actual</p>
+                        <p class="text-gray-700">{{ $stock }}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Proveedor</p>
+                        <p class="text-gray-700">{{ $proveedor }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="pedido" class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                        Cantidad a solicitar
+                    </label>
+                    <input id="pedido" wire:model='pedido' type="number" min="1" placeholder="0"
+                           class="text-center text-2xl border-gray-300 rounded-lg shadow-sm w-full py-3 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    <x-input-error for="pedido" class="mt-2" />
+                </div>
+            </div>
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('agregarCar', false)" wire:loading.attr="disabled">
+                Cancelar
+            </x-secondary-button>
+            @if ($var == 1)
+                <x-button class="ms-3" wire:click="crearPedido({{ $id }})" wire:loading.attr="disabled">
+                    Agregar al Pedido
+                </x-button>
+            @else
+                <x-button class="ms-3" wire:click="modPedido({{ $id }})" wire:loading.attr="disabled">
+                    Modificar Cantidad
+                </x-button>
+            @endif
+        </x-slot>
+    </x-dialog-modal>
+
+
+    {{-- ─── Modal: Confirmar borrar pedido completo ─── --}}
+    <x-dialog-modal wire:model.live="borrar">
+        <x-slot name="title">Cancelar Pedido Completo</x-slot>
+
+        <x-slot name="content">
+            <p class="text-sm text-gray-600">
+                ¿Está seguro de que desea cancelar el pedido completo? Se eliminarán todos los artículos del carrito. Esta acción no se puede deshacer.
+            </p>
         </x-slot>
 
         <x-slot name="footer">
             <x-secondary-button wire:click="$toggle('borrar', false)" wire:loading.attr="disabled">
-                {{ __('Cancelar') }}
+                No, mantener
             </x-secondary-button>
-
             <x-danger-button class="ms-3" wire:click="confirmarElimin()" wire:loading.attr="disabled">
-                {{ __('Eliminar') }}
+                Sí, borrar pedido
             </x-danger-button>
         </x-slot>
     </x-dialog-modal>
 
-
-
-</div>>
+</div>

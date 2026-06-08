@@ -1,17 +1,13 @@
 <x-app-layout>
     <div class="pt-20">
-        <div class="w-3/5 mx-auto sm:px-6 lg:px-8">
-            {{-- --------MENU--------- --}}
+        <div class="w-11/12 mx-auto sm:px-6 lg:px-8">
             @include('components.menu-stock')
-            {{-- ----------------- --}}
         </div>
     </div>
 
-     <div class="mt-2">
-         <div class="  w-3/5 mx-auto sm:px-6 lg:px-8">
-             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg ">
-               <livewire:stock.pedido-realizados/>
-             </div>
-         </div>
-     </div>
- </x-app-layout>
+    <div class="mt-2">
+        <div class="w-full px-2 sm:px-4">
+            <livewire:stock.pedido-realizados/>
+        </div>
+    </div>
+</x-app-layout>
