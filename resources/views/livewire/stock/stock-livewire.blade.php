@@ -1,14 +1,5 @@
 <div class="w-full px-2 py-3">
 
-    {{-- ── ENCABEZADO ─────────────────────────────────────────── --}}
-    <div class="flex items-center justify-between mb-3">
-        <h1 class="text-xl font-bold text-gray-800 dark:text-white">📦 Stock Actual</h1>
-        <a href="{{ route('stockImprimir') }}" target="_blank"
-           class="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition">
-            🖨️ Imprimir
-        </a>
-    </div>
-
     {{-- ── FILTROS ─────────────────────────────────────────────── --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 mb-3">
         <div class="flex flex-wrap gap-2 items-center">

@@ -1,36 +1,33 @@
-<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg ">
-    {{-- <x-nav-link class="ml-4 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-        href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-        Dashboard
-    </x-nav-link> --}}
-    {{-- --------MENU--------- --}}
-    <x-nav-link class="mt-2 mb-2 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-    href="{{ route('stock.index') }}" :active="request()->routeIs('venta.index')">
-        Stock
-     </x-nav-link>
-    <x-nav-link class="mt-2 mb-2 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-        href="{{ route('stock.pedido') }}" :active="request()->routeIs('stock.pedido')">
-        Pedido
-     </x-nav-link>
-    <x-nav-link class="mt-2 mb-2 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-        href="{{ route('stock.pedidoRealizado') }}" :active="request()->routeIs('cliente.index')">
-       Pedido Relaizados
-    </x-nav-link>
-{{--
-   <x-nav-link class="mt-2 mb-2 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-        href="{{ route('operacion.list') }}" :active="request()->routeIs('operacion.list')">
-       Operacion
-     </x-nav-link>
+<nav class="bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex flex-wrap items-center gap-1">
 
-    <x-nav-link class="mt-2 mb-2 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-        href="{{ route('venta.list') }}" :active="request()->routeIs('venta.list')">
-        Venta
+    <a href="{{ route('stock.index') }}"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
+              {{ request()->routeIs('stock.index')
+                 ? 'bg-indigo-600 text-white shadow-sm'
+                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
+        📦 Stock
+    </a>
 
-      </x-nav-link>
+    <a href="{{ route('stock.pedido') }}"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
+              {{ request()->routeIs('stock.pedido')
+                 ? 'bg-indigo-600 text-white shadow-sm'
+                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
+        🛒 Pedido a Proveedor
+    </a>
 
-     <x-nav-link class="mt-2 mb-2 h-8 px-2 bg-sky-400 hover:bg-sky-200 text-white hover:text-gray-400 rounded-lg"
-        href="{{ route('stock.index') }}" :active="request()->routeIs('stock.index')">
-        Stock
+    <a href="{{ route('stock.pedidoRealizado') }}"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
+              {{ request()->routeIs('stock.pedidoRealizado')
+                 ? 'bg-indigo-600 text-white shadow-sm'
+                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
+        📋 Pedidos Realizados
+    </a>
 
-      </x-nav-link>  --}}
-</div>
+    <a href="{{ route('stockImprimir') }}" target="_blank"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
+              text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+        🖨️ Imprimir Stock
+    </a>
+
+</nav>
