@@ -198,11 +198,6 @@ class ArticuloGrupo extends Component
         $this->modalProveedor = $this->modalGrupo = $this->modalCategoria = false;
     }
 
-    public function seleccionar()
-    {
-        session()->flash('message', "Seleccionado proveedor: $this->proveedor, grupo: $this->grupo");
-    }
-    
     public function calcular()
     {
         $this->precioF = (($this->precioI * $this->porcentaje) / 100) + $this->precioI;

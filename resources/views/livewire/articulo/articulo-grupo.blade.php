@@ -72,13 +72,6 @@
                 </button>
             </div>
 
-            <!-- Botón Seleccionar -->
-            <div class="flex flex-col justify-end pt-[28px]">
-                <button wire:click="seleccionar" type="button"
-                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 shadow w-full">
-                    Seleccionar
-                </button>
-            </div>
         </div>
     </div>
    
