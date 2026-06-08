@@ -225,8 +225,9 @@ class ArticuloGrupo extends Component
     
     public function cargarArticulo()
     {
-        
-        
+        if ($this->cargando) return;
+        $this->cargando = true;
+
         $this->validate([
             'articulo'    => 'required|string|min:4',
             'unidad_id'   => 'required',
@@ -285,13 +286,15 @@ class ArticuloGrupo extends Component
 
             $this->codigo_proveedor = Proveedor::find($this->proveedor_id)?->abreviatura ?? null;
 
-            Stock::create([
-                'articulo_id' => $articulo->id,
-                'stockMinimo' => $this->stockMinimo,
-                'stock' => $this->stock,
-                'proveedor_id' => $this->proveedor_id,
-                'codigo_proveedor' => $this->codigo_proveedor
-            ]);
+            Stock::firstOrCreate(
+                ['articulo_id' => $articulo->id],
+                [
+                    'stockMinimo'      => $this->stockMinimo,
+                    'stock'            => $this->stock,
+                    'proveedor_id'     => $this->proveedor_id,
+                    'codigo_proveedor' => $this->codigo_proveedor,
+                ]
+            );
 
             if ($this->suelto == 1) {
                 Suelto::create(['articulo_id' => $articulo->id]);
@@ -313,10 +316,12 @@ class ArticuloGrupo extends Component
             session()->flash('message', 'Artículo creado exitosamente.');
             $this->borrarCampos();
             $this->resetPage();
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             session()->flash('error', 'Error al crear artículo: ' . $e->getMessage());
+        } finally {
+            $this->cargando = false;
         }
     }
     
