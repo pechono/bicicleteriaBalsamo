@@ -114,7 +114,6 @@
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-black">ID</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-black">Código Prov</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-black">Artículo</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-black">Presentación</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-black">Unidad/Venta</th>
                             </tr>
                         </thead>
@@ -129,9 +128,6 @@
                                     </td>
                                     <td class="px-4 py-2 text-sm font-medium text-black">
                                         {{ $articulo->articulo }}
-                                    </td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">
-                                        {{ $articulo->presentacion }}
                                     </td>
                                     <td class="px-4 py-2 text-sm text-gray-700">
                                         {{ $articulo->unidadVenta }}
@@ -193,14 +189,8 @@
                 </div>
             </div>
 
-            <!-- Presentación y Unidad -->
+            <!-- Unidad -->
             <div class="flex gap-4 mb-4">
-                <div class="w-1/2">
-                    <label for="presentacion" class="text-sm font-medium text-black mb-1">Presentación</label>
-                    <x-input id="presentacion" type="text" class="mt-1 block w-full" 
-                             wire:model="presentacion" placeholder="Presentación"/>
-                    <x-input-error for="presentacion" class="mt-2" />
-                </div>
                 <div class="w-1/2">
                     <label for="unidad" class="text-sm font-medium text-black mb-1">Unidad</label>
                     <select id="unidad" wire:model="unidad_id" class="mt-1 block w-full rounded border-gray-300">
@@ -251,14 +241,7 @@
                 </div>
 
                 <div class="px-5">
-                    <div >
-                        <x-label for="Caducidad" value="Selecionar" />
-                        <input wire:model='cad' id="caducidad" type="checkbox" value="Si" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="caducidad" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Caducidad</label>
-                       
-
-                    </div>
-                    <div >
+                    <div>
                         <input wire:model='suelto' id="Suelto" type="checkbox" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label for="Suelto" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Suelto</label>
                     </div>

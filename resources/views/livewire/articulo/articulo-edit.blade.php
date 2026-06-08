@@ -34,19 +34,11 @@
 
             <div class="col-span-6 sm:col-span-4 mt-2 rounded grid grid-flow-col justify-stretch">
                 <div>
-                    <x-label for="presentacion" value="{{ __('Presentacion ') }}" />
-                    <x-input id="presentacion" type="text" class="mt-1 block w-full" wire:model='presentacion' placeholder="Presentacion"  />
-                    <x-input-error for="presentacion" class="mt-2" />
-
-                </div>
-                <div >
-                    <x-label for="unidad" value="       (Ejemplo: 500-gm)" />
-                    <select  id="inidad"  class="block mt-1 w-full" name="unidad" wire:model='unidad_id' class="rounded"/>
-                         <option value="">Seleccionar...</option>
-                         @foreach ($unidades as $unidad)
-                            <option value="{{ $unidad->id}}"  >
-                                    {{ $unidad->unidad}}
-                            </option>
+                    <x-label for="unidad" value="Unidad (Ejemplo: 500-gm)" />
+                    <select id="unidad" class="block mt-1 w-full" name="unidad" wire:model='unidad_id'>
+                        <option value="">Seleccionar...</option>
+                        @foreach ($unidades as $unidad)
+                            <option value="{{ $unidad->id}}">{{ $unidad->unidad}}</option>
                         @endforeach
                     </select>
                     <x-input-error for="unidad" class="mt-2" />

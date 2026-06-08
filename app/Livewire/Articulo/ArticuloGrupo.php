@@ -221,14 +221,12 @@ class ArticuloGrupo extends Component
         
         $this->validate([
             'articulo' => 'required|string|min:4',
-            'presentacion' => 'required|string|min:1',
             'unidad_id' => 'required',
             'descuento' => 'required|numeric',
             'unidadVenta' => 'required|string|min:1',
             'precioI' => 'required|numeric|min:1',
             'precioF' => 'required|numeric|min:1',
-            'caducidad' => 'required|string|min:2',
-            'detalles' => 'required|string',
+            'detalles' => 'nullable|string',
             'suelto' => 'boolean',
             'stock' => 'required|numeric|min:1',
             'stockMinimo' => 'required|integer|min:1',
@@ -253,15 +251,15 @@ class ArticuloGrupo extends Component
                 'articulo' => $this->articulo,
                 'codigo' => $this->codigo ?: null,
                 'categoria_id' => $this->categoria_id,
-                'presentacion' => $this->presentacion,
+                'presentacion' => '-',
                 'unidad_id' => $this->unidad_id,
                 'descuento' => $this->descuento,
                 'unidadVenta' => $this->unidadVenta,
                 'precioF' => $this->precioF,
                 'precioI' => $this->precioI,
-                'caducidad' => $this->caducidad,
-                'detalles' => $this->detalles,
-                'suelto' => $this->suelto,
+                'caducidad' => '-',
+                'detalles' => $this->detalles ?? '',
+                'suelto' => $this->suelto ?? 0,
                 'activo' => 1
             ]);
 

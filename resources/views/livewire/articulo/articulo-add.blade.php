@@ -60,19 +60,11 @@
             </div>
             <div class="col-span-6 sm:col-span-4 mt-2 rounded grid grid-flow-col justify-stretch">
                 <div>
-                    <x-label for="presentacion" value="{{ __('Presentacion ') }}" />
-                    <x-input id="presentacion" type="text" class="mt-1 block w-full" wire:model='presentacion' placeholder="Presentacion"  />
-                    <x-input-error for="presentacion" class="mt-2" />
-
-                </div>
-                <div >
-                    <x-label for="unidad" value="       (Ejemplo: 500-gm)" />
-                    <select  id="inidad"  class="block mt-1 w-full" name="unidad" wire:model='unidad_id' class="rounded"/>
-                         <option value="">Seleccionar...</option>
-                         @foreach ($unidades as $unidad)
-                            <option value="{{ $unidad->id}}"  >
-                                    {{ $unidad->unidad}}
-                            </option>
+                    <x-label for="unidad" value="Unidad (Ejemplo: 500-gm)" />
+                    <select id="unidad" class="block mt-1 w-full" name="unidad" wire:model='unidad_id'>
+                        <option value="">Seleccionar...</option>
+                        @foreach ($unidades as $unidad)
+                            <option value="{{ $unidad->id}}">{{ $unidad->unidad}}</option>
                         @endforeach
                     </select>
                     <x-input-error for="unidad" class="mt-2" />
@@ -120,14 +112,7 @@
                     <x-input-error for="detalles" class="mt-2" />
                 </div>
                 <div class="px-5">
-                    <div >
-                        <x-label for="Caducidad" value="Selecionar" />
-                        <input wire:model='cad' id="caducidad" type="checkbox" value="Si" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="caducidad" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Caducidad</label>
-                        {{ $a }}
-
-                    </div>
-                    <div >
+                    <div>
                         <input wire:model='suelto' id="Suelto" type="checkbox" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label for="Suelto" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Suelto</label>
                     </div>
