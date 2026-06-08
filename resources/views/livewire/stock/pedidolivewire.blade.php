@@ -9,21 +9,45 @@
         </div>
     </div>
 
-    <div class="mt-3 w-full ">
-        <div class="flex justify-between">
-            <div>
-                <input wire:model.live='q' type="search" placeholder="Buscar" class="shadow appearance-none border rounded w-full py-2 px-3
+    <div class="mt-3 w-full">
 
-                text-gray-706 leading-tight focus:outline-none focus: shadow-outline placeholder-blue-400" name="">
-            </div>
-            <div class="mr-2">
-                <input class="mr-2 leading-tight" type="checkbox" wire:model.live ='active'/ value="1" checked>Articulos Activos
-                @if ($hasRecords>0)
-                    <button wire:click='borrarCar()' class=" rounded bg-sky-600 hover:bg-sky-400 text-white hover:text h-8 p-2 ml-4"> Borrar Pedido</button>
-                    <a href="{{ route('stock.confirmarPedido') }}"  class=" rounded bg-sky-600 hover:bg-sky-400 text-white h-8 p-2 ml-4">Realizar Pedido</a>
-                @endif
+        {{-- ── Barra de filtros ── --}}
+        <div class="flex flex-wrap items-center gap-2 mb-3">
 
-            </div>
+            <input wire:model.live='q' type="search" placeholder="Buscar…"
+                   class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-blue-400 w-48">
+
+            <select wire:model.live='categoria_id' class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none">
+                <option value="">Todas las categorías</option>
+                @foreach($categorias as $cat)
+                    <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
+                @endforeach
+            </select>
+
+            <select wire:model.live='proveedor_id_filter' class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none">
+                <option value="">Todos los proveedores</option>
+                @foreach($proveedores as $prov)
+                    <option value="{{ $prov->id }}">{{ $prov->nombre }}</option>
+                @endforeach
+            </select>
+
+            @if($proveedor_id_filter)
+            <select wire:model.live='grupo_id' class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none">
+                <option value="">Todos los grupos</option>
+                @foreach($grupos as $grp)
+                    <option value="{{ $grp->id }}">{{ $grp->NombreGrupo }}</option>
+                @endforeach
+            </select>
+            @endif
+
+            <label class="flex items-center gap-1 text-gray-700">
+                <input type="checkbox" wire:model.live='active' value="1" class="mr-1">Activos
+            </label>
+
+            @if ($hasRecords > 0)
+                <button wire:click='borrarCar()' class="rounded bg-sky-600 hover:bg-sky-400 text-white h-9 px-4 ml-auto">Borrar Pedido</button>
+                <a href="{{ route('stock.confirmarPedido') }}" class="rounded bg-sky-600 hover:bg-sky-400 text-white h-9 px-4 flex items-center">Realizar Pedido</a>
+            @endif
 
         </div>
 
@@ -48,12 +72,6 @@
                             <Button wire:click="sortby('articulo')">Articulo</Button>
                             <x-sort-icon sortFiel='apellido': sort-by='$sortBy' : sort-asc='$sortAsc'>
 
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('categoria_id')">Categoria</Button>
-                            <x-sort-icon sortFiel='nombre': sort-by='$sortBy' : sort-asc='$sortAsc'/>
                         </div>
                     </td>
                     <td class="px-4 py-2">
@@ -135,7 +153,6 @@
                     <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</td>
 
                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
 
                     <td class="rounder border px-4 py-2">{{ $articulo->unidadVenta }}</td>

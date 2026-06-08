@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use App\Models\Articulo;
 use App\Models\Categoria;
+use App\Models\Grupos;
 use App\Models\HistoriasPrecio;
 use App\Models\PedidoCar;
 use App\Models\Proveedor;
@@ -22,16 +23,19 @@ class PedidoLivewire extends Component
 {
     use WithPagination;
 
-    public $active=1;
+    public $active = 1;
     public $q;
+    public $categoria_id = '';
+    public $proveedor_id_filter = '';
+    public $grupo_id = '';
 
-    public $sortBy='id';
-    public $sortAsc=true;
+    public $sortBy = 'id';
+    public $sortAsc = true;
     public $f;
 
     public $a;
-    public $suel=0;
-    public $cad='No';
+    public $suel = 0;
+    public $cad = 'No';
 
     protected $queryString = [
         'q'=>['except'=>''],
@@ -42,27 +46,50 @@ class PedidoLivewire extends Component
     {
         $this->hasRecords = PedidoCar::count();
 
-        $articulos=Articulo::where('articulos.activo',$this->active)
-            ->when($this->q, function ($query){
-                               return $query->where( function($query){
-                                            $query->where('articulo','like','%'.$this->q.'%')
-                                                  ->orwhere('nombre','like','%'.$this->q.'%')
-                                                  ->orwhere('categoria','like','%'.$this->q.'%');
-                                        });
-                                    })
+        $articulos = Articulo::where('articulos.activo', $this->active)
+            ->when($this->q, fn($query) =>
+                $query->where(fn($q) =>
+                    $q->where('articulos.articulo', 'like', '%'.$this->q.'%')
+                      ->orWhere('proveedors.nombre', 'like', '%'.$this->q.'%')
+                      ->orWhere('categorias.categoria', 'like', '%'.$this->q.'%')
+                )
+            )
+            ->when($this->categoria_id, fn($q) =>
+                $q->where('articulos.categoria_id', $this->categoria_id)
+            )
+            ->when($this->proveedor_id_filter, fn($q) =>
+                $q->where('stocks.proveedor_id', $this->proveedor_id_filter)
+            )
+            ->when($this->grupo_id, fn($q) =>
+                $q->join('grupos_articulos', 'grupos_articulos.articulo_id', '=', 'articulos.id')
+                  ->where('grupos_articulos.grupo_id', $this->grupo_id)
+            )
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
-            ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo', 'proveedors.nombre' ,'stocks.codigo_proveedor')
+            ->select('articulos.id', 'articulos.codigo', 'articulos.articulo', 'categorias.categoria',
+                'articulos.categoria_id', 'articulos.presentacion', 'unidads.unidad',
+                'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI',
+                'articulos.caducidad', 'articulos.detalles', 'articulos.suelto', 'articulos.activo',
+                'stocks.stock', 'stocks.stockMinimo', 'stocks.proveedor_id',
+                'proveedors.nombre', 'stocks.codigo_proveedor')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
-            ->join('stocks', 'stocks.articulo_id','=','articulos.id')
+            ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
             ->join('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
             ->get();
 
-            $inTheCar=PedidoCar::all();
+        $inTheCar   = PedidoCar::all();
+        $categorias = Categoria::orderBy('categoria')->get();
+        $proveedores = Proveedor::where('activo', 1)->orderBy('nombre')->get();
+        $grupos     = $this->proveedor_id_filter
+            ? Grupos::where('proveedor_id', $this->proveedor_id_filter)->orderBy('NombreGrupo')->get()
+            : collect();
 
-        return view('livewire.stock.pedidolivewire',compact('articulos','inTheCar'));
+        return view('livewire.stock.pedidolivewire', compact('articulos', 'inTheCar', 'categorias', 'proveedores', 'grupos'));
+    }
+
+    public function updatingProveedorIdFilter()
+    {
+        $this->grupo_id = '';
     }
     public function sortby($field)
     {
