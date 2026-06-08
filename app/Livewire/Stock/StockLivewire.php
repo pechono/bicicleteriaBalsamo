@@ -83,7 +83,7 @@ class StockLivewire extends Component
         $this->resetPage();
 
     }
-    public $idArt,$codigo, $articulo, $categoria_id, $presentacion, $unidad_id, $descuento, $unidadVenta, 
+    public $idArt, $codigo, $articulo, $presentacion, $unidad_id, $descuento, $unidadVenta,
             $precioF, $precioI, $caducidad, $detalles, $suelto, $porcentaje, $proveedor_id, $stock, $stockMinimo;
 
     public $confirmingArticuloEdit=false;
