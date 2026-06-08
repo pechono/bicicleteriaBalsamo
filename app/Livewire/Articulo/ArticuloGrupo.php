@@ -47,7 +47,7 @@ class ArticuloGrupo extends Component
     public bool $modalCategoria = false;
 
     // Proveedor nuevo
-    public $np_nombre = '', $np_telefono = '', $np_rubro = '',
+    public $np_nombre = '', $np_abreviatura = '', $np_telefono = '', $np_rubro = '',
            $np_direccion = '', $np_localidad = '', $np_mail = '', $np_activo = true;
 
     // Grupo nuevo
@@ -106,7 +106,7 @@ class ArticuloGrupo extends Component
     // ── PROVEEDOR ──────────────────────────────────────────
     public function crearProveedor(): void
     {
-        $this->np_nombre = $this->np_telefono = $this->np_rubro =
+        $this->np_nombre = $this->np_abreviatura = $this->np_telefono = $this->np_rubro =
         $this->np_direccion = $this->np_localidad = $this->np_mail = '';
         $this->np_activo = true;
         $this->modalProveedor = true;
@@ -115,25 +115,28 @@ class ArticuloGrupo extends Component
     public function guardarProveedor(): void
     {
         $this->validate([
-            'np_nombre'    => 'required|string|min:2',
-            'np_telefono'  => 'nullable|string',
-            'np_rubro'     => 'nullable|string',
-            'np_direccion' => 'nullable|string',
-            'np_localidad' => 'nullable|string',
-            'np_mail'      => 'nullable|email',
+            'np_nombre'       => 'required|string|min:2',
+            'np_abreviatura'  => 'nullable|string|max:10',
+            'np_telefono'     => 'nullable|string',
+            'np_rubro'        => 'nullable|string',
+            'np_direccion'    => 'nullable|string',
+            'np_localidad'    => 'nullable|string',
+            'np_mail'         => 'nullable|email',
         ], [
-            'np_nombre.required' => 'El nombre es obligatorio.',
-            'np_mail.email'      => 'El mail no es válido.',
+            'np_nombre.required'      => 'El nombre es obligatorio.',
+            'np_abreviatura.max'      => 'La abreviatura no puede superar 10 caracteres.',
+            'np_mail.email'           => 'El mail no es válido.',
         ]);
 
         Proveedor::create([
-            'nombre'    => $this->np_nombre,
-            'telefono'  => $this->np_telefono  ?? '',
-            'rubro'     => $this->np_rubro     ?? '',
-            'direccion' => $this->np_direccion ?? '',
-            'localidad' => $this->np_localidad ?? '',
-            'mail'      => $this->np_mail      ?? '',
-            'activo'    => $this->np_activo,
+            'nombre'       => $this->np_nombre,
+            'abreviatura'  => strtoupper($this->np_abreviatura) ?: null,
+            'telefono'     => $this->np_telefono  ?? '',
+            'rubro'        => $this->np_rubro     ?? '',
+            'direccion'    => $this->np_direccion ?? '',
+            'localidad'    => $this->np_localidad ?? '',
+            'mail'         => $this->np_mail      ?? '',
+            'activo'       => $this->np_activo,
         ]);
 
         $this->proveedores   = Proveedor::all();

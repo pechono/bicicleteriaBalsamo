@@ -293,11 +293,20 @@
             </div>
             <div class="px-6 py-5 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="text-sm font-medium text-gray-700">Nombre *</label>
-                        <input wire:model="np_nombre" type="text" placeholder="Nombre del proveedor"
-                            class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"/>
-                        @error('np_nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <div class="col-span-2 flex gap-3">
+                        <div class="flex-1">
+                            <label class="text-sm font-medium text-gray-700">Nombre *</label>
+                            <input wire:model="np_nombre" type="text" placeholder="Nombre del proveedor"
+                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"/>
+                            @error('np_nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="w-28">
+                            <label class="text-sm font-medium text-gray-700">Abreviatura</label>
+                            <input wire:model="np_abreviatura" type="text" placeholder="Ej: SOL"
+                                maxlength="10"
+                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm uppercase focus:ring-blue-500 focus:border-blue-500"/>
+                            @error('np_abreviatura') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                     <div>
                         <label class="text-sm font-medium text-gray-700">Teléfono</label>
