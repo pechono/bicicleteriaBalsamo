@@ -29,9 +29,8 @@ class StockLivewire extends Component
         'sortAsc'    => ['except' => true],
     ];
 
-    public function updatingQ()        { $this->resetPage(); }
+    public function updatingQ()           { $this->resetPage(); }
     public function updatingCategoriaId() { $this->resetPage(); }
-    public function updatingActive()   { $this->resetPage(); }
 
     public function render()
     {
