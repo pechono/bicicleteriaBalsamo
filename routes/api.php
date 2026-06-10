@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Mobile\AuthMobileController;
 use App\Http\Controllers\Api\Mobile\ArticuloMobileController;
 use App\Http\Controllers\Api\Mobile\IngresoMobileController;
+use App\Http\Controllers\Api\Mobile\VentaMobileController;
 
 // ============================================================
 // 📱 API MOBILE — App de taller de bicicletas
@@ -34,6 +35,12 @@ Route::prefix('mobile')->group(function () {
 
         // Mecánicos (para selector al terminar)
         Route::get('/mecanicos',                               [IngresoMobileController::class, 'mecanicos']);
+
+        // Venta (punto de venta)
+        Route::get('/venta/articulos',                         [VentaMobileController::class, 'buscarArticulo']);
+        Route::get('/venta/clientes',                          [VentaMobileController::class, 'buscarCliente']);
+        Route::get('/venta/tipos',                             [VentaMobileController::class, 'tiposVenta']);
+        Route::post('/venta/procesar',                         [VentaMobileController::class, 'procesarVenta']);
     });
 });
 

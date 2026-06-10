@@ -179,5 +179,16 @@
             <p>&copy; 2026 Bicicleteria Balsamo. Todos los derechos reservados.</p>
         </footer>
     </div>
+
+    <div class="no-print" style="text-align:center; margin: 20px 0;">
+        <button onclick="window.print()"
+            style="background:#007bff; color:white; border:none; padding:12px 32px;
+                   font-size:16px; border-radius:6px; cursor:pointer;">
+            🖨️ Imprimir comprobante
+        </button>
+    </div>
+    <style>
+        @media print { .no-print { display: none; } }
+    </style>
 </body>
 </html>

@@ -22,6 +22,14 @@ Route::get('/app', function () {
     return view('app.download');
 })->name('app.download');
 
+// ── Comprobante público (desde app móvil) ────────────────────────
+// hash = sha256(operacion_id . APP_KEY) – sin auth, solo lectura del PDF
+Route::get('/comprobante/mobile/{operacion}/{hash}', function ($operacion, $hash) {
+    $expected = hash('sha256', $operacion . config('app.key'));
+    abort_unless(hash_equals($expected, $hash), 403);
+    return app(\App\Livewire\Print\ReportVentaO::class)->generateReport($operacion);
+})->name('comprobante.mobile');
+
 // ── Acceso por QR desde el celular del mecánico ──────────────────
 // URL pública que redirige a la app o muestra una vista mobile-friendly
 Route::get('/mobile/ingreso/{token}', function ($token) {
