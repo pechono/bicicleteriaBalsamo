@@ -53,7 +53,7 @@
 
                 {{-- Botón de descarga --}}
                 @php
-                    $apkPath = public_path('bicicleteria.apk');
+                    $apkPath = base_path('../../../public_html/bicicleteria.apk');
                     $apkExists = file_exists($apkPath);
                     $apkSize = $apkExists ? round(filesize($apkPath) / 1024 / 1024, 1) . ' MB' : null;
                 @endphp
