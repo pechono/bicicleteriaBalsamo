@@ -52,7 +52,7 @@
                 <hr class="border-gray-100" />
 
                 {{-- Botón de descarga --}}
-                <a href="https://app.bicicleteriabalsamo.xyz/bicicleteria.apk"
+                <a href="https://app.bicicleteriabalsamo.xyz/downloads/bicicleteria.apk"
                     class="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-xl transition shadow-lg w-full text-center">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
