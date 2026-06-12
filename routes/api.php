@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Mobile\ArticuloMobileController;
 use App\Http\Controllers\Api\Mobile\IngresoMobileController;
 use App\Http\Controllers\Api\Mobile\VentaMobileController;
 use App\Http\Controllers\Api\Mobile\MayoristaMobileController;
+use App\Http\Controllers\Api\Mobile\IngresoAltaMobileController;
 
 // ============================================================
 // 📱 API MOBILE — App de taller de bicicletas
@@ -39,6 +40,17 @@ Route::prefix('mobile')->group(function () {
 
         // Mecánicos (para selector al terminar)
         Route::get('/mecanicos',                               [IngresoMobileController::class, 'mecanicos']);
+
+        // Alta de ingreso de bici (espeja IngresarBike + IngresoImp de la web)
+        Route::get('/ingreso-bici/cliente',                    [IngresoAltaMobileController::class, 'buscarCliente']);
+        Route::post('/ingreso-bici/cliente',                   [IngresoAltaMobileController::class, 'crearCliente']);
+        Route::get('/ingreso-bici/datos',                      [IngresoAltaMobileController::class, 'datos']);
+        Route::post('/ingreso-bici/marca',                     [IngresoAltaMobileController::class, 'crearMarca']);
+        Route::post('/ingreso-bici/tipo',                      [IngresoAltaMobileController::class, 'crearTipo']);
+        Route::post('/ingreso-bici/color',                     [IngresoAltaMobileController::class, 'crearColor']);
+        Route::get('/ingreso-bici/procesos',                   [IngresoAltaMobileController::class, 'procesos']);
+        Route::post('/ingreso-bici',                           [IngresoAltaMobileController::class, 'guardarIngreso']);
+        Route::post('/ingreso-bici/{id}/notificar',            [IngresoAltaMobileController::class, 'notificar']);
 
         // Venta (punto de venta) — solo Admin (validado en el controller)
         Route::get('/venta/articulos',                         [VentaMobileController::class, 'buscarArticulo']);

@@ -30,6 +30,14 @@ Route::get('/comprobante/mobile/{operacion}/{hash}', function ($operacion, $hash
     return app(\App\Livewire\Print\ReportVentaO::class)->generateReport($operacion);
 })->name('comprobante.mobile');
 
+// ── Comprobante de ingreso de bici (desde app móvil) ─────────────
+// hash = sha256('ingreso' . nro_ingreso . APP_KEY) – sin auth, solo lectura del PDF
+Route::get('/comprobante-ingreso/mobile/{nro}/{hash}', function ($nro, $hash) {
+    $expected = hash('sha256', 'ingreso' . $nro . config('app.key'));
+    abort_unless(hash_equals($expected, $hash), 403);
+    return app(\App\Livewire\Print\ReporIngreso::class)->generateReport($nro);
+})->name('comprobante.ingreso.mobile');
+
 // ── Acceso por QR desde el celular del mecánico ──────────────────
 // URL pública que redirige a la app o muestra una vista mobile-friendly
 Route::get('/mobile/ingreso/{token}', function ($token) {
