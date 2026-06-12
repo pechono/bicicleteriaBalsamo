@@ -97,24 +97,32 @@ class IngresoMobileController extends Controller
                 'detalles'  => $item->detalles,
             ]);
 
-        // Artículos aplicados (egreso_bicis) – con precios según rol
-        $egresosQuery = EgresoBici::whereHas('ingresoBici', fn($q) => $q->where('nro_ingreso', $id))
-            ->with('articulo:id,articulo,presentacion');
-
-        $egresos = $egresosQuery->get()->map(function ($eg) use ($isAdmin) {
-            $data = [
-                'id'          => $eg->id,
-                'articulo'    => $eg->articulo?->articulo,
-                'presentacion'=> $eg->articulo?->presentacion,
-                'cantidad'    => $eg->cantidad,
-                'precio_final'=> $eg->precio_final,
-                'detalles'    => $eg->detalles,
-            ];
-            if ($isAdmin) {
-                $data['precio_inicial'] = $eg->precio_inicial;
-            }
-            return $data;
-        });
+        // Artículos aplicados (egreso_bicis) – con precios según rol.
+        // Mismo join que la web: ingreso_bici_id guarda bicis.id
+        $egresos = EgresoBici::join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->where('ingreso_bicis.nro_ingreso', $id)
+            ->select(
+                'egreso_bicis.id', 'articulos.articulo', 'articulos.presentacion',
+                'egreso_bicis.cantidad', 'egreso_bicis.precio_final',
+                'egreso_bicis.precio_inicial', 'egreso_bicis.detalles'
+            )
+            ->distinct()
+            ->get()
+            ->map(function ($eg) use ($isAdmin) {
+                $data = [
+                    'id'          => $eg->id,
+                    'articulo'    => $eg->articulo,
+                    'presentacion'=> $eg->presentacion,
+                    'cantidad'    => $eg->cantidad,
+                    'precio_final'=> $eg->precio_final,
+                    'detalles'    => $eg->detalles,
+                ];
+                if ($isAdmin) {
+                    $data['precio_inicial'] = $eg->precio_inicial;
+                }
+                return $data;
+            });
 
         return response()->json([
             'id'           => $nro->id,
@@ -160,11 +168,11 @@ class IngresoMobileController extends Controller
 
         $articulo = Articulo::findOrFail($request->articulo_id);
 
-        // Obtener el primer ingreso_bici asociado a este nro_ingreso
+        // La web (EgresoTerminar) guarda bicis.id en ingreso_bici_id — misma convención
         $ingresoBici = IngresoBici::where('nro_ingreso', $id)->firstOrFail();
 
         $egreso = EgresoBici::create([
-            'ingreso_bici_id' => $ingresoBici->id,
+            'ingreso_bici_id' => $ingresoBici->bici_id,
             'articulo_id'     => $request->articulo_id,
             'cantidad'        => $request->cantidad,
             'precio_inicial'  => $articulo->precioI ?? $articulo->precioF,
