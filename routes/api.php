@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Mobile\IngresoMobileController;
 use App\Http\Controllers\Api\Mobile\VentaMobileController;
 use App\Http\Controllers\Api\Mobile\MayoristaMobileController;
 use App\Http\Controllers\Api\Mobile\IngresoAltaMobileController;
+use App\Http\Controllers\Api\Mobile\TallerProcesoMobileController;
 
 // ============================================================
 // 📱 API MOBILE — App de taller de bicicletas
@@ -51,6 +52,12 @@ Route::prefix('mobile')->group(function () {
         Route::get('/ingreso-bici/procesos',                   [IngresoAltaMobileController::class, 'procesos']);
         Route::post('/ingreso-bici',                           [IngresoAltaMobileController::class, 'guardarIngreso']);
         Route::post('/ingreso-bici/{id}/notificar',            [IngresoAltaMobileController::class, 'notificar']);
+
+        // Terminar y entregar (espeja EgresoTerminar + TerminarVentaProceso) — solo Admin
+        Route::get('/taller/{nro}/terminar-datos',             [TallerProcesoMobileController::class, 'terminarDatos']);
+        Route::post('/taller/{nro}/terminar',                  [TallerProcesoMobileController::class, 'terminar']);
+        Route::get('/taller/{nro}/entrega-datos',              [TallerProcesoMobileController::class, 'entregaDatos']);
+        Route::post('/taller/{nro}/entrega',                   [TallerProcesoMobileController::class, 'entrega']);
 
         // Venta (punto de venta) — solo Admin (validado en el controller)
         Route::get('/venta/articulos',                         [VentaMobileController::class, 'buscarArticulo']);
