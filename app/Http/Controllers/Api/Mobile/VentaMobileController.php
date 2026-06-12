@@ -15,6 +15,19 @@ use Illuminate\Support\Facades\DB;
 class VentaMobileController extends Controller
 {
     /**
+     * El punto de venta es exclusivo del administrador (igual que la web).
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if ($request->user()?->user_type !== 'Admin') {
+                return response()->json(['message' => 'Sin permisos. Solo el administrador puede usar el punto de venta.'], 403);
+            }
+            return $next($request);
+        });
+    }
+
+    /**
      * GET /api/mobile/venta/articulos?q=texto
      * Busca artículos activos con stock. Devuelve precio, stock y descuento.
      */

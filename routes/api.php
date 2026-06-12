@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Mobile\AuthMobileController;
 use App\Http\Controllers\Api\Mobile\ArticuloMobileController;
 use App\Http\Controllers\Api\Mobile\IngresoMobileController;
 use App\Http\Controllers\Api\Mobile\VentaMobileController;
+use App\Http\Controllers\Api\Mobile\MayoristaMobileController;
 
 // ============================================================
 // 📱 API MOBILE — App de taller de bicicletas
@@ -24,8 +25,11 @@ Route::prefix('mobile')->group(function () {
         Route::post('/logout', [AuthMobileController::class, 'logout']);
 
         // Artículos
+        Route::get('/articulos',                [ArticuloMobileController::class, 'index']);
         Route::get('/articulos/qr/{codigo}',   [ArticuloMobileController::class, 'porQr']);
         Route::get('/articulos/buscar',         [ArticuloMobileController::class, 'buscar']);
+        Route::patch('/articulos/{id}/stock',   [ArticuloMobileController::class, 'actualizarStock']); // solo Admin
+        Route::get('/categorias',               [ArticuloMobileController::class, 'categorias']);
 
         // Ingresos / Bicis en taller
         Route::get('/ingresos',                                [IngresoMobileController::class, 'index']);
@@ -36,11 +40,21 @@ Route::prefix('mobile')->group(function () {
         // Mecánicos (para selector al terminar)
         Route::get('/mecanicos',                               [IngresoMobileController::class, 'mecanicos']);
 
-        // Venta (punto de venta)
+        // Venta (punto de venta) — solo Admin (validado en el controller)
         Route::get('/venta/articulos',                         [VentaMobileController::class, 'buscarArticulo']);
         Route::get('/venta/clientes',                          [VentaMobileController::class, 'buscarCliente']);
         Route::get('/venta/tipos',                             [VentaMobileController::class, 'tiposVenta']);
         Route::post('/venta/procesar',                         [VentaMobileController::class, 'procesarVenta']);
+
+        // Mayorista — solo Admin (validado en el controller)
+        Route::get('/mayorista/articulos',                     [MayoristaMobileController::class, 'buscarArticulos']);
+        Route::get('/mayorista/clientes',                      [MayoristaMobileController::class, 'clientes']);
+        Route::post('/mayorista/clientes',                     [MayoristaMobileController::class, 'guardarCliente']);
+        Route::put('/mayorista/clientes/{id}',                 [MayoristaMobileController::class, 'actualizarCliente']);
+        Route::delete('/mayorista/clientes/{id}',              [MayoristaMobileController::class, 'eliminarCliente']);
+        Route::post('/mayorista/venta',                        [MayoristaMobileController::class, 'procesarVenta']);
+        Route::get('/mayorista/cuenta/{clienteId}',            [MayoristaMobileController::class, 'cuentaCorriente']);
+        Route::post('/mayorista/cuenta/{clienteId}/pago',      [MayoristaMobileController::class, 'registrarPago']);
     });
 });
 
