@@ -98,9 +98,13 @@ class IngresoMobileController extends Controller
             ]);
 
         // Artículos aplicados (egreso_bicis) – con precios según rol.
-        // Mismo join que la web: ingreso_bici_id guarda bicis.id
+        // ingreso_bici_id puede guardar ingreso_bicis.id (app) o bicis.id (web):
+        // el join acepta ambas convenciones
         $egresos = EgresoBici::join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
-            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->join('ingreso_bicis', function ($join) {
+                $join->on('ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+                     ->orOn('ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id');
+            })
             ->where('ingreso_bicis.nro_ingreso', $id)
             ->select(
                 'egreso_bicis.id', 'articulos.articulo', 'articulos.presentacion',
@@ -168,11 +172,12 @@ class IngresoMobileController extends Controller
 
         $articulo = Articulo::findOrFail($request->articulo_id);
 
-        // La web (EgresoTerminar) guarda bicis.id en ingreso_bici_id — misma convención
+        // La FK exige un id válido de ingreso_bicis (la web guarda bicis.id,
+        // pero eso viola la FK cuando el id no existe; al leer se aceptan ambas)
         $ingresoBici = IngresoBici::where('nro_ingreso', $id)->firstOrFail();
 
         $egreso = EgresoBici::create([
-            'ingreso_bici_id' => $ingresoBici->bici_id,
+            'ingreso_bici_id' => $ingresoBici->id,
             'articulo_id'     => $request->articulo_id,
             'cantidad'        => $request->cantidad,
             'precio_inicial'  => $articulo->precioI ?? $articulo->precioF,

@@ -7,6 +7,7 @@ use App\Livewire\Traits\WithWhatsApp;
 use App\Models\Articulo;
 use App\Models\Bici;
 use App\Models\EgresoBici;
+use App\Models\IngresoBici;
 use App\Models\Mecanico;
 use App\Models\MecanicoItem;
 use App\Models\NroEgreso;
@@ -34,6 +35,16 @@ class TallerProcesoMobileController extends Controller
             }
             return $next($request);
         });
+    }
+
+    /**
+     * Join de egresos que acepta las dos convenciones históricas de ingreso_bici_id:
+     * ingreso_bicis.id (app, requerido por la FK) o bicis.id (web EgresoTerminar).
+     */
+    private function joinEgresoIngreso($join)
+    {
+        $join->on('ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+             ->orOn('ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id');
     }
 
     /**
@@ -72,7 +83,7 @@ class TallerProcesoMobileController extends Controller
 
         // Artículos ya aplicados (igual que Egreso::mostrarProcesosTerminado)
         $aplicados = EgresoBici::join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
-            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->join('ingreso_bicis', fn($join) => $this->joinEgresoIngreso($join))
             ->where('ingreso_bicis.nro_ingreso', $nro)
             ->select(
                 'egreso_bicis.id', 'articulos.articulo', 'articulos.presentacion',
@@ -155,13 +166,15 @@ class TallerProcesoMobileController extends Controller
                 'mecanico_id' => $request->mecanico_id,
             ]);
 
-            // EgresoBici por cada ítem + descuento de stock
-            // (la web guarda bicis.id en ingreso_bici_id — se replica igual)
+            // EgresoBici por cada ítem + descuento de stock.
+            // La FK exige un id válido de ingreso_bicis
+            $ingresoBiciId = IngresoBici::where('nro_ingreso', $nro)->firstOrFail()->id;
+
             foreach ($request->items as $item) {
                 $art = Articulo::findOrFail($item['articulo_id']);
 
                 EgresoBici::create([
-                    'ingreso_bici_id' => $bici->id,
+                    'ingreso_bici_id' => $ingresoBiciId,
                     'articulo_id'     => $item['articulo_id'],
                     'cantidad'        => $item['cantidad'],
                     'precio_inicial'  => $art->precioI,
@@ -222,7 +235,7 @@ class TallerProcesoMobileController extends Controller
         $bici    = $this->biciDelIngreso($nro);
 
         $fijos = EgresoBici::join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
-            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->join('ingreso_bicis', fn($join) => $this->joinEgresoIngreso($join))
             ->where('ingreso_bicis.nro_ingreso', $nro)
             ->select(
                 'articulos.id as articulo_id', 'articulos.articulo', 'articulos.presentacion',
@@ -329,9 +342,9 @@ class TallerProcesoMobileController extends Controller
                 }
             }
 
-            // Vincular los egresos del ingreso con la operación (mismo update que la web)
+            // Vincular los egresos del ingreso con la operación (acepta ambas convenciones)
             NroEgreso::join('egreso_bicis', 'egreso_bicis.nro_egreso', '=', 'nro_egresos.id')
-                ->join('ingreso_bicis', 'ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+                ->join('ingreso_bicis', fn($join) => $this->joinEgresoIngreso($join))
                 ->where('ingreso_bicis.nro_ingreso', $nro)
                 ->update(['nro_egresos.operacion' => $operacion->id]);
 
