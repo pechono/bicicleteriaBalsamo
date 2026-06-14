@@ -20,8 +20,11 @@ class ArticuloMobileController extends Controller
         $isAdmin = $request->user()->user_type === 'Admin';
         $q           = $request->input('q', '');
         $categoriaId = $request->input('categoria_id');
+        $proveedorId = $request->input('proveedor_id');
 
         $articulos = Articulo::where('articulos.activo', 1)
+            // Los servicios (categoria_id = 1) NO se listan acá, son aparte
+            ->where('articulos.categoria_id', '<>', 1)
             ->when($q, fn($query) =>
                 $query->where(fn($sub) =>
                     $sub->where('articulos.articulo', 'like', "%{$q}%")
@@ -32,27 +35,42 @@ class ArticuloMobileController extends Controller
             ->when($categoriaId, fn($query) =>
                 $query->where('articulos.categoria_id', $categoriaId)
             )
+            ->when($proveedorId, fn($query) =>
+                $query->where('stocks.proveedor_id', $proveedorId)
+            )
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('stocks',     'stocks.articulo_id', '=', 'articulos.id')
+            ->leftJoin('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
             ->orderBy('articulos.articulo')
             ->select(
                 'articulos.id', 'articulos.codigo', 'articulos.articulo',
                 'articulos.presentacion', 'articulos.precioF', 'articulos.precioI',
                 'articulos.categoria_id', 'categorias.categoria',
-                'stocks.stock', 'stocks.stockMinimo'
+                'stocks.stock', 'stocks.stockMinimo',
+                'stocks.proveedor_id', 'stocks.codigo_proveedor',
+                'proveedors.nombre as proveedor_nombre', 'proveedors.abreviatura'
             )
             ->paginate(30);
 
         $items = collect($articulos->items())->map(function ($a) use ($isAdmin) {
+            // Código interno = abreviatura del proveedor + código del artículo.
+            // Puede no haber código (el artículo igual se identifica por su id).
+            $codigoInterno = $a->codigo
+                ? ($a->abreviatura ? "{$a->abreviatura}-{$a->codigo}" : $a->codigo)
+                : null;
+
             $data = [
-                'id'           => $a->id,
-                'codigo'       => $a->codigo,
-                'articulo'     => $a->articulo,
-                'presentacion' => $a->presentacion,
-                'categoria'    => $a->categoria,
-                'categoria_id' => $a->categoria_id,
-                'precioF'      => $a->precioF,
-                'stock'        => $a->stock,
+                'id'             => $a->id,
+                'codigo'         => $a->codigo,
+                'codigo_interno' => $codigoInterno,
+                'articulo'       => $a->articulo,
+                'presentacion'   => $a->presentacion,
+                'categoria'      => $a->categoria,
+                'categoria_id'   => $a->categoria_id,
+                'precioF'        => $a->precioF,
+                'stock'          => $a->stock,
+                'proveedor_id'   => $a->proveedor_id,
+                'proveedor'      => $a->proveedor_nombre,
             ];
             if ($isAdmin) {
                 $data['precioI']     = $a->precioI;
@@ -71,12 +89,27 @@ class ArticuloMobileController extends Controller
 
     /**
      * GET /api/mobile/categorias
-     * Categorías para el filtro del listado.
+     * Categorías para el filtro del listado (sin Servicios, que van aparte).
      */
     public function categorias()
     {
         return response()->json(
-            Categoria::orderBy('categoria')->select('id', 'categoria')->get()
+            Categoria::where('id', '<>', 1)
+                ->orderBy('categoria')->select('id', 'categoria')->get()
+        );
+    }
+
+    /**
+     * GET /api/mobile/proveedores
+     * Proveedores activos para el filtro del listado de stock.
+     */
+    public function proveedores()
+    {
+        return response()->json(
+            \App\Models\Proveedor::where('activo', 1)
+                ->orderBy('nombre')
+                ->select('id', 'nombre', 'abreviatura')
+                ->get()
         );
     }
 

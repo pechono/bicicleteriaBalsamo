@@ -32,6 +32,7 @@ Route::prefix('mobile')->group(function () {
         Route::get('/articulos/buscar',         [ArticuloMobileController::class, 'buscar']);
         Route::patch('/articulos/{id}/stock',   [ArticuloMobileController::class, 'actualizarStock']); // solo Admin
         Route::get('/categorias',               [ArticuloMobileController::class, 'categorias']);
+        Route::get('/proveedores',              [ArticuloMobileController::class, 'proveedores']);
 
         // Ingresos / Bicis en taller
         Route::get('/ingresos',                                [IngresoMobileController::class, 'index']);
