@@ -2,11 +2,8 @@
 
 namespace App\Livewire\Articulo;
 
-use App\Models\Articulo;
 use App\Models\Categoria;
-use App\Models\HistoriasPrecio;
 use App\Models\Proveedor;
-use App\Models\Stock;
 use App\Models\Unidad;
 use App\Services\ListaPreciosParser;
 use Illuminate\Support\Facades\DB;
@@ -18,14 +15,17 @@ class ImportarLista extends Component
 {
     use WithFileUploads;
 
-    /** Archivo .xlsx subido por el usuario. */
+    /** Archivo subido por el usuario (.xlsx o .pdf). */
     public $archivo;
 
     /** Proveedor al que pertenece la lista. */
     public $proveedor_id;
 
-    /** Ruta (disco local) del archivo persistido para re-parsear al confirmar. */
+    /** Ruta (disco local) del archivo subido. */
     public $rutaArchivo;
+
+    /** Ruta (disco local) del JSON con los items ya parseados (evita re-parsear al confirmar). */
+    public $rutaItems;
 
     /** Vista previa (primeras filas) de lo parseado. */
     public $preview = [];
@@ -57,20 +57,29 @@ class ImportarLista extends Component
     ];
 
     /**
-     * Lee el archivo y arma la vista previa, sin tocar la base de datos.
+     * Lee el archivo, arma la vista previa y cachea lo parseado (sin tocar la base).
      */
     public function analizar(ListaPreciosParser $parser)
     {
         $this->validate();
         $this->resultado = null;
 
+        // El parseo de PDF puede tardar; evitamos el límite de tiempo.
+        @set_time_limit(0);
+
         $this->abreviatura = Proveedor::whereKey($this->proveedor_id)->value('abreviatura');
 
-        // Persistimos el archivo para poder re-parsearlo al confirmar.
+        // Persistimos el archivo y cacheamos los items para NO re-parsear al confirmar.
         $this->rutaArchivo = $this->archivo->store('listas-importar', 'local');
         $extension = pathinfo($this->rutaArchivo, PATHINFO_EXTENSION);
 
         $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension);
+
+        $this->rutaItems = $this->rutaArchivo . '.items.json';
+        Storage::disk('local')->put(
+            $this->rutaItems,
+            json_encode($items, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE)
+        );
 
         $this->total = count($items);
         $this->preview = array_slice($items, 0, self::PREVIEW_LIMIT);
@@ -91,93 +100,94 @@ class ImportarLista extends Component
             'rutaArchivo'  => 'required',
         ]);
 
-        if (!Storage::disk('local')->exists($this->rutaArchivo)) {
-            $this->addError('archivo', 'El archivo expiró. Vuelva a subirlo.');
-            return;
-        }
-
         @set_time_limit(0);
 
-        $extension = pathinfo($this->rutaArchivo, PATHINFO_EXTENSION);
-        $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension);
+        // Reutilizamos los items cacheados en analizar(); si faltan, re-parseamos.
+        $items = null;
+        if ($this->rutaItems && Storage::disk('local')->exists($this->rutaItems)) {
+            $items = json_decode(Storage::disk('local')->get($this->rutaItems), true);
+        }
+        if (!is_array($items)) {
+            if (!Storage::disk('local')->exists($this->rutaArchivo)) {
+                $this->addError('archivo', 'El archivo expiró. Vuelva a subirlo.');
+                return;
+            }
+            $extension = pathinfo($this->rutaArchivo, PATHINFO_EXTENSION);
+            $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension);
+        }
 
         $categoriaId = Categoria::firstOrCreate(['categoria' => 'General'])->id;
         $unidadId = Unidad::query()->value('id') ?? Unidad::create(['unidad' => 'Unidad'])->id;
-        // En este sistema stocks.codigo_proveedor guarda la abreviatura del proveedor;
-        // el código del producto va en articulos.codigo. El QR NO se genera al importar.
+        // stocks.codigo_proveedor guarda la abreviatura; el código de producto va en articulos.codigo.
         $abreviatura = Proveedor::whereKey($this->proveedor_id)->value('abreviatura');
 
+        // Pre-cargamos los códigos ya existentes para este proveedor en UNA sola query
+        // (evita una consulta de dedup por cada fila).
+        $existentes = DB::table('stocks')
+            ->join('articulos', 'articulos.id', '=', 'stocks.articulo_id')
+            ->where('stocks.proveedor_id', $this->proveedor_id)
+            ->pluck('articulos.id', 'articulos.codigo')
+            ->toArray(); // [codigo => articulo_id]
+
+        $ahora = now();
         $creados = 0;
         $actualizados = 0;
+        $stockRows = [];
+        $histRows = [];
 
-        DB::transaction(function () use ($items, $categoriaId, $unidadId, $abreviatura, &$creados, &$actualizados) {
+        DB::transaction(function () use (
+            $items, $categoriaId, $unidadId, $abreviatura, $ahora,
+            &$existentes, &$creados, &$actualizados, &$stockRows, &$histRows
+        ) {
             foreach ($items as $item) {
-                $precio = $item['precio'];
+                $codigo = (string) $item['codigo'];
+                $precio = (int) round($item['precio']);
 
-                // ¿Ya existe un artículo con ese código de producto para este proveedor?
-                $stock = Stock::query()
-                    ->join('articulos', 'articulos.id', '=', 'stocks.articulo_id')
-                    ->where('stocks.proveedor_id', $this->proveedor_id)
-                    ->where('articulos.codigo', $item['codigo'])
-                    ->select('stocks.*')
-                    ->first();
-
-                if ($stock) {
-                    // Solo actualizamos precios; no tocamos stock, nombre ni estado activo.
-                    $articulo = Articulo::find($stock->articulo_id);
-                    if ($articulo) {
-                        $articulo->update([
-                            'precioI' => $precio,
-                            'precioF' => $precio,
-                        ]);
-                        HistoriasPrecio::create([
-                            'articulo_id'  => $articulo->id,
-                            'precioIcial'  => $precio,
-                            'precioFinal'  => $precio,
-                        ]);
-                        $actualizados++;
-                    }
+                if (isset($existentes[$codigo])) {
+                    // Ya existe: solo actualizamos precios (no tocamos stock/nombre/activo).
+                    DB::table('articulos')->where('id', $existentes[$codigo])->update([
+                        'precioI' => $precio, 'precioF' => $precio, 'updated_at' => $ahora,
+                    ]);
+                    $histRows[] = [
+                        'articulo_id' => $existentes[$codigo], 'precioIcial' => $precio,
+                        'precioFinal' => $precio, 'created_at' => $ahora, 'updated_at' => $ahora,
+                    ];
+                    $actualizados++;
                     continue;
                 }
 
                 // Artículo nuevo: inactivo, para que el usuario lo active manualmente.
-                $articulo = Articulo::create([
-                    'articulo'    => $item['articulo'],
-                    'codigo'      => $item['codigo'],
-                    'categoria_id' => $categoriaId,
-                    'presentacion' => '-',
-                    'unidad_id'   => $unidadId,
-                    'descuento'   => 0,
-                    'unidadVenta' => 'Unidad',
-                    'precioF'     => $precio,
-                    'precioI'     => $precio,
-                    'caducidad'   => 'No',
-                    'detalles'    => '-',
-                    'suelto'      => 0,
-                    'activo'      => 0,
+                $id = DB::table('articulos')->insertGetId([
+                    'articulo' => $item['articulo'], 'codigo' => $codigo, 'categoria_id' => $categoriaId,
+                    'presentacion' => '-', 'unidad_id' => $unidadId, 'descuento' => 0,
+                    'unidadVenta' => 'Unidad', 'precioF' => $precio, 'precioI' => $precio,
+                    'caducidad' => 'No', 'detalles' => '-', 'suelto' => 0, 'activo' => 0,
+                    'created_at' => $ahora, 'updated_at' => $ahora,
                 ]);
-
-                Stock::create([
-                    'articulo_id'      => $articulo->id,
-                    'proveedor_id'     => $this->proveedor_id,
-                    'codigo_proveedor' => $abreviatura,
-                    'stockMinimo'      => 0,
-                    'stock'            => 0,
-                ]);
-
-                HistoriasPrecio::create([
-                    'articulo_id' => $articulo->id,
-                    'precioIcial' => $precio,
-                    'precioFinal' => $precio,
-                ]);
-
+                $existentes[$codigo] = $id; // evita duplicar si el código se repite en el archivo
+                $stockRows[] = [
+                    'articulo_id' => $id, 'proveedor_id' => $this->proveedor_id,
+                    'codigo_proveedor' => $abreviatura, 'stockMinimo' => 0, 'stock' => 0,
+                    'created_at' => $ahora, 'updated_at' => $ahora,
+                ];
+                $histRows[] = [
+                    'articulo_id' => $id, 'precioIcial' => $precio, 'precioFinal' => $precio,
+                    'created_at' => $ahora, 'updated_at' => $ahora,
+                ];
                 $creados++;
+            }
+
+            // Inserts en lote (mucho más rápido que fila por fila).
+            foreach (array_chunk($stockRows, 500) as $chunk) {
+                DB::table('stocks')->insert($chunk);
+            }
+            foreach (array_chunk($histRows, 500) as $chunk) {
+                DB::table('historias_precios')->insert($chunk);
             }
         });
 
-        // Limpieza.
-        Storage::disk('local')->delete($this->rutaArchivo);
-        $this->reset(['archivo', 'rutaArchivo', 'preview', 'total', 'abreviatura']);
+        $this->limpiarArchivo();
+        $this->reset(['preview', 'total', 'abreviatura']);
 
         $this->resultado = [
             'creados'      => $creados,
@@ -195,10 +205,12 @@ class ImportarLista extends Component
 
     private function limpiarArchivo(): void
     {
-        if ($this->rutaArchivo && Storage::disk('local')->exists($this->rutaArchivo)) {
-            Storage::disk('local')->delete($this->rutaArchivo);
+        foreach ([$this->rutaArchivo, $this->rutaItems] as $ruta) {
+            if ($ruta && Storage::disk('local')->exists($ruta)) {
+                Storage::disk('local')->delete($ruta);
+            }
         }
-        $this->reset(['archivo', 'rutaArchivo']);
+        $this->reset(['archivo', 'rutaArchivo', 'rutaItems']);
     }
 
     public function render()
