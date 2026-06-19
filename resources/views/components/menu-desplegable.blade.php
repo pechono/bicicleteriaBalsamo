@@ -222,6 +222,7 @@
                 </button>
                 <div id="gestionSubMenu" class="submenu pl-8 mt-0.5 space-y-0.5 hidden">
                     <a href="{{ route('articulo.articuloGrupo') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">📦 Artículo</a>
+                    <a href="{{ route('articulo.importarLista') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">📥 Importar Lista Precios</a>
                     <a href="{{ route('gestion.precio.precioCambiar') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">💰 Cambio Precio Artículos</a>
                     <a href="{{ route('gestion.precio.precioGrupo') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">📊 Cambio Precio Grupo</a>
                     <a href="{{ route('proveedor.proveedor') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm">🏭 Proveedor</a>
