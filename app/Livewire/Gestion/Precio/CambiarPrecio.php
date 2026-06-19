@@ -33,8 +33,9 @@ class CambiarPrecio extends Component
                                     })
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
             ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad','articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
-            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo')
+            'articulos.suelto', 'articulos.activo','stocks.stock','stocks.stockMinimo','proveedors.iva_incluido')
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')->join('stocks', 'stocks.articulo_id','=','articulos.id')
+            ->leftJoin('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
             ->get();
 
         return view('livewire.gestion.precio.cambiar-precio',compact('articulos'));

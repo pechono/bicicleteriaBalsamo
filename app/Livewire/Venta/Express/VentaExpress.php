@@ -280,6 +280,7 @@ class VentaExpress extends Component
     public $descArt = 0;
     public $cantidadArt;
     public $proveedor_id;
+    public $iva_incluido;
     public $stock;
     public $stockMinimo;
 
@@ -417,11 +418,14 @@ class VentaExpress extends Component
             'articulos.activo',
             'stocks.stock',
             'stocks.stockMinimo',
-            'stocks.codigo_proveedor'
+            'stocks.codigo_proveedor',
+            'stocks.proveedor_id',
+            'proveedors.iva_incluido'
         )
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
             ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->leftJoin('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
             ->where('articulos.activo', $this->active)
             ->find($id);
 
@@ -440,6 +444,7 @@ class VentaExpress extends Component
         $this->stockMinimo = $articulos->stockMinimo;
         $this->stock = $articulos->stock;
         $this->proveedor_id = $articulos->proveedor_id;
+        $this->iva_incluido = $articulos->iva_incluido;
 
         $this->cDescuento = true;
     }

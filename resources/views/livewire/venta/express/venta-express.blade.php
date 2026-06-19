@@ -460,7 +460,7 @@
                                 <td class="px-4 py-2 border">{{ $id }} </td>
                                 <td class="px-4 py-2 border">{{ $art }}</td>
                                 <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
-                                <td class="px-4 py-2 border">{{ $precioI }}</td>
+                                <td class="px-4 py-2 border">{{ $precioI }}@unless($iva_incluido)<span class="text-[10px] text-gray-400 ml-1">+IVA</span>@endunless</td>
                                 <td class="px-4 py-2 border">{{ $precioF }}</td>
                             </tr>
                             <tr  >

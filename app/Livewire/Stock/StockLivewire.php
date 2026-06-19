@@ -52,11 +52,13 @@ class StockLivewire extends Component
                 'articulos.descuento', 'articulos.unidadVenta',
                 'articulos.precioF', 'articulos.precioI',
                 'articulos.detalles', 'articulos.suelto', 'articulos.activo',
-                'stocks.stock', 'stocks.stockMinimo', 'stocks.codigo_proveedor'
+                'stocks.stock', 'stocks.stockMinimo', 'stocks.codigo_proveedor',
+                'proveedors.iva_incluido'
             )
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads',    'unidads.id',    '=', 'articulos.unidad_id')
             ->join('stocks',     'stocks.articulo_id', '=', 'articulos.id')
+            ->leftJoin('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
             ->paginate(20);
 
         $categorias = Categoria::orderBy('categoria')->get();

@@ -116,7 +116,7 @@
                     </td>
                     <td class="rounder border px-4 py-2">{{ $articulo->descuento }}%</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->unidadVenta }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->precioI }}</td>
+                    <td class="rounder border px-4 py-2">{{ $articulo->precioI }}@unless($articulo->iva_incluido)<span class="text-[10px] text-gray-400 ml-1">+IVA</span>@endunless</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->precioF }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->stockMinimo }}</td>
                     <td class="rounder border px-4 py-2">
