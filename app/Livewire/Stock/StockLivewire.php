@@ -4,6 +4,8 @@ namespace App\Livewire\Stock;
 
 use App\Models\Articulo;
 use App\Models\Categoria;
+use App\Models\Grupos;
+use App\Models\GruposArticulos;
 use App\Models\HistoriasPrecio;
 use App\Models\Proveedor;
 use App\Models\Stock;
@@ -72,7 +74,12 @@ class StockLivewire extends Component
         $categorias = Categoria::orderBy('categoria')->get();
         $proveedores = Proveedor::where('activo', 1)->orderBy('nombre')->get();
 
-        return view('livewire.stock.stock-livewire', compact('articulos', 'categorias', 'proveedores'));
+        // Grupos del proveedor del artículo que se está activando (para el modal).
+        $gruposActivar = ($this->activarArt && $this->proveedor_id)
+            ? Grupos::where('proveedor_id', $this->proveedor_id)->orderBy('NombreGrupo')->get()
+            : collect();
+
+        return view('livewire.stock.stock-livewire', compact('articulos', 'categorias', 'proveedores', 'gruposActivar'));
     }
     public function sortby($field)
     {
@@ -165,23 +172,55 @@ class StockLivewire extends Component
      public $activarArt=false;
      public $articuloId;
      public $iva_incluido;
+     public $nombreActivar;   // nombre para el modal (evita colision con el $articulo del foreach)
+     public $grupoActivar = '';   // grupo a asociar (opcional)
+     public $margenActivar = '';  // % de margen para calcular el precio
      public function ActivarArticuloEdit($id ){
          // Traemos costo, precio, stock e IVA para activarlo seteando todo en un paso.
          $art = Articulo::join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
             ->leftJoin('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
             ->where('articulos.id', $id)
             ->select('articulos.id', 'articulos.articulo', 'articulos.precioI', 'articulos.precioF',
-                     'stocks.stock', 'stocks.stockMinimo', 'proveedors.iva_incluido')
+                     'stocks.stock', 'stocks.stockMinimo', 'stocks.proveedor_id', 'proveedors.iva_incluido')
             ->first();
 
-         $this->articuloId   = $art->id;
-         $this->articulo     = $art->articulo;
-         $this->precioI      = $art->precioI;      // costo (referencia)
-         $this->precioF      = $art->precioF;      // precio de venta (editable)
-         $this->stock        = $art->stock;
-         $this->stockMinimo  = $art->stockMinimo;
-         $this->iva_incluido = $art->iva_incluido;
-         $this->activarArt   = true;
+         $this->articuloId    = $art->id;
+         $this->nombreActivar = $art->articulo;
+         $this->precioI       = $art->precioI;      // costo (referencia)
+         $this->precioF       = $art->precioF;      // precio de venta (editable)
+         $this->stock         = $art->stock;
+         $this->stockMinimo   = $art->stockMinimo;
+         $this->proveedor_id  = $art->proveedor_id;
+         $this->iva_incluido  = $art->iva_incluido;
+         $this->grupoActivar  = '';
+         $this->margenActivar = '';
+         $this->activarArt    = true;
+     }
+
+     /** Calcula el precio de venta = costo (+IVA si el proveedor discrimina) × (1 + margen%). */
+     private function calcularPrecioActivar(): void
+     {
+         if ($this->margenActivar === '' || !is_numeric($this->margenActivar)) {
+             return;
+         }
+         $base = (float) $this->precioI;
+         if (!$this->iva_incluido) {
+             $base *= 1.21; // el costo es sin IVA -> lo sumamos
+         }
+         $this->precioF = (int) round($base * (1 + ((float) $this->margenActivar) / 100));
+     }
+
+     public function updatedMargenActivar(): void
+     {
+         $this->calcularPrecioActivar();
+     }
+
+     public function updatedGrupoActivar(): void
+     {
+         if ($this->grupoActivar && $g = Grupos::find($this->grupoActivar)) {
+             $this->margenActivar = $g->porsentaje;   // el grupo trae su % de margen
+             $this->calcularPrecioActivar();
+         }
      }
      public function ConfirmarActivar(){
          $this->validate([
@@ -202,7 +241,16 @@ class StockLivewire extends Component
              'stockMinimo' => $this->stockMinimo,
          ]);
 
+         // Si eligió un grupo, lo asociamos.
+         if ($this->grupoActivar) {
+             GruposArticulos::firstOrCreate([
+                 'grupo_id'    => $this->grupoActivar,
+                 'articulo_id' => $this->articuloId,
+             ]);
+         }
+
          $this->activarArt = false;
-         $this->reset(['articuloId', 'articulo', 'precioI', 'precioF', 'stock', 'stockMinimo', 'iva_incluido']);
+         $this->reset(['articuloId', 'nombreActivar', 'precioI', 'precioF', 'stock', 'stockMinimo',
+                       'iva_incluido', 'grupoActivar', 'margenActivar']);
      }
 }

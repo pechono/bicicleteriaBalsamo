@@ -238,11 +238,31 @@
     <x-dialog-modal wire:model.live="activarArt" maxWidth="md">
         <x-slot name="title">✅ Activar artículo</x-slot>
         <x-slot name="content">
-            <p class="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1">{{ $articulo }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p class="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1">{{ $nombreActivar }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
                 Costo: <span class="font-semibold">${{ $precioI }}</span>
                 @unless($iva_incluido)<span class="text-xs text-gray-600 dark:text-gray-300 font-semibold">+IVA</span>@endunless
             </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                <div>
+                    <x-label value="Grupo (opcional)" />
+                    <select wire:model.live="grupoActivar"
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm text-sm">
+                        <option value="">— Sin grupo —</option>
+                        @foreach($gruposActivar as $g)
+                            <option value="{{ $g->id }}">{{ $g->NombreGrupo }} ({{ $g->porsentaje }}%)</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <x-label value="Margen %" />
+                    <x-input type="number" step="0.01" wire:model.live.debounce.400ms="margenActivar"
+                        class="mt-1 block w-full" placeholder="ej: 50" />
+                    <p class="text-[11px] text-gray-400 mt-0.5">Calcula el precio sobre el costo{{ $iva_incluido ? '' : ' (+IVA)' }}.</p>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                     <x-label value="Precio de venta" />
