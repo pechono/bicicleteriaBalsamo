@@ -50,9 +50,15 @@
                                     </div>
                                 </div>
                                 <div class="text-right ml-4 flex-shrink-0">
-                                    <div class="text-xs text-gray-400 line-through">${{ number_format($r['precio_costo'], 2, ',', '.') }} costo</div>
+                                    <div class="text-xs text-gray-400">
+                                        @if(!$r['iva_incluido'])
+                                            Costo ${{ number_format($r['precio_costo'], 2, ',', '.') }} <span class="text-orange-500">+IVA</span> = ${{ number_format($r['precio_costo'] * 1.21, 2, ',', '.') }}
+                                        @else
+                                            Costo ${{ number_format($r['precio_costo'], 2, ',', '.') }}
+                                        @endif
+                                    </div>
                                     <div class="font-bold text-emerald-700 dark:text-emerald-400">${{ number_format($r['precio_mayorista'], 2, ',', '.') }}</div>
-                                    <div class="text-xs text-gray-400">{{ $r['porcentaje'] }}% margen{{ $r['iva_incluido'] ? '' : ' +IVA' }}</div>
+                                    <div class="text-xs text-gray-400">{{ $r['porcentaje'] }}% margen</div>
                                 </div>
                             </div>
                         </button>

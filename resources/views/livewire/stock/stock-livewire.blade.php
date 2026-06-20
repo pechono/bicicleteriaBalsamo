@@ -240,8 +240,13 @@
         <x-slot name="content">
             <p class="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1">{{ $nombreActivar }}</p>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                Costo: <span class="font-semibold">${{ $precioI }}</span>
-                @unless($iva_incluido)<span class="text-xs text-gray-600 dark:text-gray-300 font-semibold">+IVA</span>@endunless
+                @if(!$iva_incluido)
+                    Costo: <span class="font-semibold">${{ number_format($precioI, 2, ',', '.') }}</span>
+                    <span class="text-orange-500 text-xs font-semibold">+ IVA</span>
+                    = <span class="font-semibold text-gray-700 dark:text-gray-200">${{ number_format($precioI * 1.21, 2, ',', '.') }}</span>
+                @else
+                    Costo: <span class="font-semibold">${{ number_format($precioI, 2, ',', '.') }}</span>
+                @endif
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
