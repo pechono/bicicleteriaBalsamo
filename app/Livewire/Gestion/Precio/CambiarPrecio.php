@@ -25,10 +25,10 @@ class CambiarPrecio extends Component
     ];
     public function render()
     {
-        $articulos=Articulo::where('activo',$this->active)
+        $articulos=Articulo::where('articulos.activo',$this->active)
             ->when($this->q, function ($query){
                                return $query->where( function($query){
-                                            $query->where('articulo','like','%'.$this->q.'%')->orwhere('detalles','like','%'. $this->q .'%')->orwhere('categoria','like','%'.$this->q.'%');
+                                            \App\Support\Busqueda::palabras($query, $this->q, ['articulo','detalles','categoria']);
                                         });
                                     })
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')

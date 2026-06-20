@@ -31,7 +31,7 @@ class VentaMayorista extends Component
     {
         if (strlen($this->busqueda) < 2) { $this->resultados = []; return; }
         $this->resultados = Articulo::where('activo', true)
-            ->where(fn($q) => $q->where('articulo','like',"%{$this->busqueda}%")->orWhere('codigo','like',"%{$this->busqueda}%"))
+            ->where(fn($q) => \App\Support\Busqueda::palabras($q, $this->busqueda, ['articulo','codigo']))
             ->with('categoria')->limit(12)->get()
             ->map(fn($a) => $this->mapArticulo($a))->toArray();
     }

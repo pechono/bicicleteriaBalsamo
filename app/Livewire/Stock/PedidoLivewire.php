@@ -48,11 +48,7 @@ class PedidoLivewire extends Component
 
         $articulos = Articulo::where('articulos.activo', $this->active)
             ->when($this->q, fn($query) =>
-                $query->where(fn($q) =>
-                    $q->where('articulos.articulo', 'like', '%'.$this->q.'%')
-                      ->orWhere('proveedors.nombre', 'like', '%'.$this->q.'%')
-                      ->orWhere('categorias.categoria', 'like', '%'.$this->q.'%')
-                )
+                $query->where(fn($q) => \App\Support\Busqueda::palabras($q, $this->q, ['articulos.articulo','proveedors.nombre','categorias.categoria']))
             )
             ->when($this->categoria_id, fn($q) =>
                 $q->where('articulos.categoria_id', $this->categoria_id)

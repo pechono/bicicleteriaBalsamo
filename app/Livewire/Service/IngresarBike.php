@@ -71,14 +71,14 @@ class IngresarBike extends Component
         $this->procesos = Articulo::where('categoria_id', 1) // Procesos (categoría 1)
             ->when($this->filtroActivos, fn ($q) => $q->where('activo', true))
             ->when($this->buscarProceso, fn ($q) =>
-                $q->where('articulo', 'like', '%' . $this->buscarProceso . '%'))
+                \App\Support\Busqueda::palabras($q, $this->buscarProceso, ['articulo']))
             ->orderBy('articulo')
             ->get();
     } else {
         $this->procesos = Articulo::where('categoria_id', '<>', 1) // Artículos (otras categorías)
             ->when($this->filtroActivos, fn ($q) => $q->where('activo', true))
             ->when($this->buscarProceso, fn ($q) =>
-                $q->where('articulo', 'like', '%' . $this->buscarProceso . '%'))
+                \App\Support\Busqueda::palabras($q, $this->buscarProceso, ['articulo']))
             ->orderBy('articulo')
             ->get();
     }

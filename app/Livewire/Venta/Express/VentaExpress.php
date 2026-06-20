@@ -76,12 +76,7 @@ class VentaExpress extends Component
         $articulos = collect();
         if (!empty($this->q)) {
             $articulos = Articulo::where('activo', $this->active)
-                ->where(function ($query) {
-                    $query->where('articulo', 'like', '%' . $this->q . '%')
-                        ->orWhere('detalles', 'like', '%' . $this->q . '%')
-                        ->orWhere('categoria', 'like', '%' . $this->q . '%')
-                        ->orWhere('codigo_proveedor', 'like', '%' . $this->q . '%');
-                })
+                ->where(fn($query) => \App\Support\Busqueda::palabras($query, $this->q, ['articulo', 'detalles', 'categoria', 'codigo_proveedor']))
                 ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
                 ->select(
                     'articulos.id',

@@ -55,9 +55,7 @@ class OfertaCreate extends Component
         $articulos=Articulo::where('activo',1)
             ->when($this->q, function ($query){
                                return $query->where( function($query){
-                                            $query->where('articulo','like','%'.$this->q.'%')
-                                                    ->orwhere('detalles','like','%'. $this->q .'%')
-                                                    ->orwhere('categoria','like','%'.$this->q.'%');
+                                            \App\Support\Busqueda::palabras($query, $this->q, ['articulo','detalles','categoria']);
                                         });
                                     })
             ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
@@ -98,9 +96,7 @@ class OfertaCreate extends Component
         return $this->articulos=Articulo::where('activo',1)
          ->when($this->q, function ($query){
                             return $query->where( function($query){
-                                         $query->where('articulo','like','%'.$this->q.'%')
-                                                 ->orwhere('detalles','like','%'. $this->q .'%')
-                                                 ->orwhere('categoria','like','%'.$this->q.'%');
+                                         \App\Support\Busqueda::palabras($query, $this->q, ['articulo','detalles','categoria']);
                                      });
                                  })
 

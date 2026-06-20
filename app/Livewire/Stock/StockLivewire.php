@@ -48,6 +48,11 @@ class StockLivewire extends Component
             ->when($this->categoria_id, fn($q) =>
                 $q->where('articulos.categoria_id', $this->categoria_id)
             )
+            // Por defecto ocultamos los servicios (categoria_id = 1 = MDO); aparecen
+            // solo si el usuario elige esa categoría en el filtro.
+            ->when(!$this->categoria_id, fn($q) =>
+                $q->where('articulos.categoria_id', '<>', 1)
+            )
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
             ->select(
                 'articulos.id', 'articulos.codigo', 'articulos.articulo',
