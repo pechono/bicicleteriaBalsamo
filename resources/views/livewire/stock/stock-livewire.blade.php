@@ -116,7 +116,7 @@
                     </td>
                     <td class="rounder border px-4 py-2">{{ $articulo->descuento }}%</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->unidadVenta }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->precioI }}@unless($articulo->iva_incluido)<span class="text-[10px] text-gray-400 ml-1">+IVA</span>@endunless</td>
+                    <td class="rounder border px-4 py-2">{{ $articulo->precioI }}@unless($articulo->iva_incluido)<span class="text-xs text-gray-600 dark:text-gray-300 font-semibold ml-1">+IVA</span>@endunless</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->precioF }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->stockMinimo }}</td>
                     <td class="rounder border px-4 py-2">
@@ -235,10 +235,31 @@
     {{-- ═══════════════════════════════════════════════════════════ --}}
     {{-- MODAL ACTIVAR                                               --}}
     {{-- ═══════════════════════════════════════════════════════════ --}}
-    <x-dialog-modal wire:model.live="activarArt" maxWidth="sm">
+    <x-dialog-modal wire:model.live="activarArt" maxWidth="md">
         <x-slot name="title">✅ Activar artículo</x-slot>
         <x-slot name="content">
-            <p class="text-gray-600">¿Activar este artículo nuevamente? Volverá a aparecer en el stock.</p>
+            <p class="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1">{{ $articulo }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Costo: <span class="font-semibold">${{ $precioI }}</span>
+                @unless($iva_incluido)<span class="text-xs text-gray-600 dark:text-gray-300 font-semibold">+IVA</span>@endunless
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <x-label value="Precio de venta" />
+                    <x-input type="number" step="1" wire:model="precioF" class="mt-1 block w-full" />
+                    <x-input-error for="precioF" class="mt-1" />
+                </div>
+                <div>
+                    <x-label value="Stock" />
+                    <x-input type="number" step="1" wire:model="stock" class="mt-1 block w-full" />
+                    <x-input-error for="stock" class="mt-1" />
+                </div>
+                <div>
+                    <x-label value="Stock mínimo" />
+                    <x-input type="number" step="1" wire:model="stockMinimo" class="mt-1 block w-full" />
+                    <x-input-error for="stockMinimo" class="mt-1" />
+                </div>
+            </div>
         </x-slot>
         <x-slot name="footer">
             <x-secondary-button wire:click="$set('activarArt', false)">Cancelar</x-secondary-button>

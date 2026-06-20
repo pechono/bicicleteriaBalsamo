@@ -156,15 +156,45 @@ class StockLivewire extends Component
      }
      public $activarArt=false;
      public $articuloId;
+     public $iva_incluido;
      public function ActivarArticuloEdit($id ){
-         $this->activarArt=true;
-         $this->articuloId=$id;
+         // Traemos costo, precio, stock e IVA para activarlo seteando todo en un paso.
+         $art = Articulo::join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->leftJoin('proveedors', 'proveedors.id', '=', 'stocks.proveedor_id')
+            ->where('articulos.id', $id)
+            ->select('articulos.id', 'articulos.articulo', 'articulos.precioI', 'articulos.precioF',
+                     'stocks.stock', 'stocks.stockMinimo', 'proveedors.iva_incluido')
+            ->first();
+
+         $this->articuloId   = $art->id;
+         $this->articulo     = $art->articulo;
+         $this->precioI      = $art->precioI;      // costo (referencia)
+         $this->precioF      = $art->precioF;      // precio de venta (editable)
+         $this->stock        = $art->stock;
+         $this->stockMinimo  = $art->stockMinimo;
+         $this->iva_incluido = $art->iva_incluido;
+         $this->activarArt   = true;
      }
      public function ConfirmarActivar(){
-         $art=Articulo::find($this->articuloId);
-         $art->update([
-             'activo'=>1,
-          ]);
-          $this->activarArt=false;
+         $this->validate([
+             'precioF'     => 'required|numeric|min:1',
+             'stock'       => 'required|numeric|min:0',
+             'stockMinimo' => 'required|numeric|min:0',
+         ], [
+             'precioF.required' => 'Ingresá el precio de venta.',
+             'stock.required'   => 'Ingresá el stock.',
+         ]);
+
+         Articulo::where('id', $this->articuloId)->update([
+             'precioF' => $this->precioF,
+             'activo'  => 1,
+         ]);
+         Stock::where('articulo_id', $this->articuloId)->update([
+             'stock'       => $this->stock,
+             'stockMinimo' => $this->stockMinimo,
+         ]);
+
+         $this->activarArt = false;
+         $this->reset(['articuloId', 'articulo', 'precioI', 'precioF', 'stock', 'stockMinimo', 'iva_incluido']);
      }
 }
