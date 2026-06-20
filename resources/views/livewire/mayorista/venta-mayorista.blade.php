@@ -84,8 +84,13 @@
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-gray-800 dark:text-white text-sm truncate">{{ $item['nombre'] }}</div>
                                 <div class="text-xs text-gray-400 mt-0.5">
-                                    Costo: ${{ number_format($item['precio_costo'], 2, ',', '.') }}
-                                    @if(!$item['iva_incluido']) <span class="text-orange-500">+IVA</span> @endif
+                                    @if(!$item['iva_incluido'])
+                                        Costo: ${{ number_format($item['precio_costo'], 2, ',', '.') }}
+                                        <span class="text-orange-500">+ IVA</span>
+                                        = <span class="font-semibold text-gray-600 dark:text-gray-200">${{ number_format($item['precio_costo'] * 1.21, 2, ',', '.') }}</span>
+                                    @else
+                                        Costo: ${{ number_format($item['precio_costo'], 2, ',', '.') }}
+                                    @endif
                                 </div>
                             </div>
                             <button wire:click="quitarDelCarrito({{ $i }})" class="text-red-400 hover:text-red-600 transition flex-shrink-0">
