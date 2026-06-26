@@ -44,15 +44,24 @@ jobs:
           password: ${{ secrets.DEPLOY_PASS }}
           port: 65002
           script: |
+            set -e
             cd ${{ secrets.DEPLOY_APP_PATH }}
-            git fetch origin
-            git stash
-            git checkout main
-            git pull origin main
-            cp -rf public/. ${{ secrets.DEPLOY_PUBLIC_PATH }}/
+
+            # Traer el último código (incluye los assets que commiteó la Action)
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Dependencias PHP (phpspreadsheet, pdfparser, etc.) — IMPRESCINDIBLE
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Migraciones y symlink de storage (idempotentes)
             php artisan migrate --force
+            php artisan storage:link || true
+
+            # Copiar el public del proyecto al docroot (public_html)
+            cp -rf public/. ${{ secrets.DEPLOY_PUBLIC_PATH }}/
+
+            # Limpiar cachés (NO route:cache: las rutas usan closures y rompería)
             php artisan optimize:clear
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
+
             echo "Deploy completado!"
