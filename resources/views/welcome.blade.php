@@ -29,12 +29,13 @@
     <!-- Header -->
    <header class="bg-white shadow-md">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
-       <div class="flex flex-col transition-colors group">
-
-            <div class="text-4xl font-bold text-indigo-800 group-hover:text-red-600 transition-colors duration-300">Bicicleteria</div>
-            <div class="text-lg font-bold text-red-600 group-hover:text-indigo-800 transition-colors duration-300 text-right">Balsamo</div>
-
-        </div>
+       <a href="/" class="flex items-center gap-3 group">
+            <img src="{{ asset('images/bicicletas_logo.png') }}" alt="Bicicletería Balsamo" class="h-10 md:h-12 w-auto">
+            <div class="flex flex-col transition-colors">
+                <div class="text-3xl md:text-4xl font-bold text-indigo-800 group-hover:text-red-600 transition-colors duration-300 leading-none">Bicicletería</div>
+                <div class="text-lg font-bold text-red-600 group-hover:text-indigo-800 transition-colors duration-300 text-right">Balsamo</div>
+            </div>
+        </a>
         
         <nav class="hidden md:flex space-x-4">
             <a href="#" class="text-gray-700 hover:text-indigo-600 transition duration-700">Inicio</a>
@@ -94,27 +95,30 @@
 
     <!-- Hero Section -->
     <section class="bg-indigo-600 text-white py-20 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold">Soluciones para tu negocio</h1>
-        <p class="mt-4 text-lg md:text-xl">Transforma tu negocio con nuestra herramienta única.</p>
-        <a href="#contact" class="mt-6 inline-block bg-white text-indigo-600 font-bold py-3 px-6 rounded-full hover:bg-gray-200">Contáctanos</a>
+        <h1 class="text-4xl md:text-5xl font-bold">Tu bicicletería de confianza</h1>
+        <p class="mt-4 text-lg md:text-xl">Venta de bicicletas, repuestos, accesorios y taller especializado.</p>
+        <a href="{{ route('login') }}" class="mt-6 inline-block bg-white text-indigo-600 font-bold py-3 px-6 rounded-full hover:bg-gray-200">Ingresar al sistema</a>
     </section>
 
     <!-- Features Section -->
     <section id="features" class="py-16 bg-gray-100">
         <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold">Características</h2>
+            <h2 class="text-3xl font-bold">Qué ofrecemos</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold">Facilidad de uso</h3>
-                    <p class="mt-4 text-gray-600">Nuestra interfaz está diseñada para ser intuitiva y fácil de usar.</p>
+                    <div class="text-4xl mb-3">🚲</div>
+                    <h3 class="text-xl font-bold">Venta de bicicletas</h3>
+                    <p class="mt-4 text-gray-600">Rodados infantiles, MTB, ruta y paseo. Las mejores marcas y modelos.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold">Soporte 24/7</h3>
-                    <p class="mt-4 text-gray-600">Estamos disponibles para ayudarte en cualquier momento.</p>
+                    <div class="text-4xl mb-3">🔧</div>
+                    <h3 class="text-xl font-bold">Taller y service</h3>
+                    <p class="mt-4 text-gray-600">Mantenimiento, armado y reparación con mecánicos especializados.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold">Seguridad de datos</h3>
-                    <p class="mt-4 text-gray-600">Tus datos están protegidos con las mejores tecnologías.</p>
+                    <div class="text-4xl mb-3">⚙️</div>
+                    <h3 class="text-xl font-bold">Repuestos y accesorios</h3>
+                    <p class="mt-4 text-gray-600">Cubiertas, cámaras, cascos, luces y todo lo que tu bici necesita.</p>
                 </div>
             </div>
         </div>
@@ -130,16 +134,16 @@
             <h2 class="text-3xl font-bold">Lo que dicen nuestros clientes</h2>
             <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="p-6 rounded-lg shadow-lg bg-gray-100">
-                    <p class="text-gray-700">"¡Increíble! Mi negocio ha crecido gracias a esta herramienta."</p>
-                    <span class="block mt-4 font-bold text-indigo-600">Juan Pérez</span>
+                    <p class="text-gray-700">"Me armaron la bici para competir y quedó impecable. Excelente atención."</p>
+                    <span class="block mt-4 font-bold text-indigo-600">Martín G.</span>
                 </div>
                 <div class="p-6 rounded-lg shadow-lg bg-gray-100">
-                    <p class="text-gray-700">"El soporte al cliente es insuperable, siempre están dispuestos a ayudar."</p>
-                    <span class="block mt-4 font-bold text-indigo-600">Ana Martínez</span>
+                    <p class="text-gray-700">"Service rápido y a buen precio. Mi bici quedó como nueva."</p>
+                    <span class="block mt-4 font-bold text-indigo-600">Carla R.</span>
                 </div>
                 <div class="p-6 rounded-lg shadow-lg bg-gray-100">
-                    <p class="text-gray-700">"Mis datos están más seguros que nunca, 100% recomendable."</p>
-                    <span class="block mt-4 font-bold text-indigo-600">Luis Rodríguez</span>
+                    <p class="text-gray-700">"Gran variedad de repuestos y asesoramiento de verdad. Recomendados."</p>
+                    <span class="block mt-4 font-bold text-indigo-600">Diego P.</span>
                 </div>
             </div>
         </div>
@@ -148,8 +152,8 @@
     <!-- Contact Section -->
     <section id="contact" class="py-16 bg-indigo-600 text-white">
         <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold">Suscríbete</h2>
-            <p class="mt-4">Déjanos tu correo para recibir las últimas novedades.</p>
+            <h2 class="text-3xl font-bold">Mantenete al día</h2>
+            <p class="mt-4">Dejanos tu correo y recibí novedades, ofertas y promos de la bicicletería.</p>
             <form class="mt-8 flex justify-center">
                 <input type="email" placeholder="Tu correo electrónico" class="w-full max-w-md py-3 px-4 rounded-l-lg text-gray-700">
                 <button type="submit" class="bg-white text-indigo-600 font-bold py-3 px-6 rounded-r-lg hover:bg-gray-200">Enviar</button>
@@ -160,7 +164,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-400 py-6">
         <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2024 MiEmpresa. Todos los derechos reservados.</p>
+            <p>&copy; {{ date('Y') }} Bicicletería Balsamo. Todos los derechos reservados.</p>
             <nav class="mt-4">
                 <a href="#" class="text-gray-400 hover:text-white mx-2">Privacidad</a>
                 <a href="#" class="text-gray-400 hover:text-white mx-2">Términos</a>
