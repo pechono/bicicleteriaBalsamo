@@ -2,176 +2,88 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Control de stock</title>
     <style>
-        body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
+        @page { margin: 14mm 12mm; }
+        * { box-sizing: border-box; }
+        body { font-family: 'DejaVu Sans', Arial, sans-serif; margin: 0; color: #1f2937; font-size: 10px; }
 
-.invoice-box {
-    width: 100%;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #eee;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-    font-size: 16px;
-    line-height: 24px;
-    color: #555;
-}
+        .top { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+        .top td { vertical-align: top; }
+        .empresa { font-size: 18px; font-weight: bold; color: #1d4ed8; }
+        .empresa-sub { color: #6b7280; font-size: 10px; line-height: 1.5; }
+        .doc-box { text-align: right; }
+        .doc-title { display: inline-block; background: #1d4ed8; color: #fff; font-size: 13px;
+                     font-weight: bold; padding: 6px 14px; border-radius: 4px; letter-spacing: .5px; }
+        .doc-meta { margin-top: 8px; font-size: 10px; color: #374151; }
+        .doc-meta b { color: #111827; }
 
-header {
-    margin-top: 20px;
-    text-align: center;
-    margin-bottom: 20px;
-    background: #007bff;
-    color: white;
+        table.items { width: 100%; border-collapse: collapse; }
+        table.items thead th { background: #1d4ed8; color: #fff; font-size: 10px; text-transform: uppercase;
+                               letter-spacing: .3px; padding: 7px 6px; text-align: left; }
+        table.items tbody td { padding: 5px 6px; border-bottom: 1px solid #e5e7eb; }
+        table.items tbody tr:nth-child(even) td { background: #f9fafb; }
+        .center { text-align: center; }
+        .code { font-family: 'DejaVu Sans Mono', monospace; color: #1d4ed8; font-weight: bold; }
+        .blank { background: #fff !important; }
 
-
-}
-
-
-header h1 {
-    margin-top: 10px;
-}
-
-.company-info {
-    margin-top: 15px;
-}
-
-.company-name {
-    font-size: 30px;
-    font-weight: bold;
-
-    margin-bottom: 5px;
-}
-
-.company-details  {
-    margin: 2px 0;
-    display: flex;
-    justify-content:space-around;
-}
-
-.invoice-info {
-    display: flex;           /* Activa Flexbox en el contenedor */
-
-    align-items: center;     /* Alinea los divs verticalmente al centro */
-    border: 1px solid #000;  /* Opcional: Añade un borde al contenedor principal */
-    padding: 20px;
-}
-
-
-
-.invoice-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.invoice-table thead {
-    background: #007bff;
-    color: white;
-}
-
-.invoice-table th, .invoice-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.invoice-table tfoot td {
-    font-weight: bold;
-}
-
-.invoice-table tfoot tr td:last-child {
-    text-align: right;
-}
-
-footer {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
-.inner-div {
-    display: inline-block;
-    padding: 10px;
-    margin-right: 2%;
-    font-size: 16px;
-}
-
+        footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #e5e7eb;
+                 text-align: center; color: #9ca3af; font-size: 9px; }
     </style>
 </head>
-    <body>
-            <div class="invoice-box">
+<body>
 
-                <header >
-                    {{-- <h3>Pedido: {{ $proveedor->pedido }}</h3> --}}
-                    <div class="company-info">
-                        <div class="company-name">{{ $emp->empresa }}</div>
+    <table class="top">
+        <tr>
+            <td>
+                <div class="empresa">{{ $emp->empresa ?? 'Bicicletería Bálsamo' }}</div>
+                <div class="empresa-sub">
+                    @if($emp?->direccion) {{ $emp->direccion }} @endif
+                    @if($emp?->telefono) · Tel: {{ $emp->telefono }} @endif
+                </div>
+            </td>
+            <td class="doc-box">
+                <span class="doc-title">CONTROL DE STOCK</span>
+                <div class="doc-meta">
+                    <b>Fecha:</b> {{ date('d/m/Y') }}<br>
+                    <b>Artículos:</b> {{ $articulos->count() }}
+                </div>
+            </td>
+        </tr>
+    </table>
 
-                    </div>
-                </header>
-                <main>
+    <table class="items">
+        <thead>
+            <tr>
+                <th style="width:36px;">Id</th>
+                <th style="width:90px;">Código</th>
+                <th>Artículo</th>
+                <th style="width:38px;" class="center">Mín.</th>
+                <th style="width:46px;" class="center">Stock</th>
+                <th style="width:46px;" class="center">Real</th>
+                <th style="width:46px;" class="center">Dif.</th>
+                <th style="width:90px;">Obs.</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($articulos as $articulo)
+                <tr>
+                    <td>{{ $articulo->id }}</td>
+                    <td class="code">{{ $articulo->codigo_proveedor ? $articulo->codigo_proveedor.'-' : '' }}{{ $articulo->codigo }}</td>
+                    <td>{{ trim($articulo->articulo.' '.$articulo->presentacion) }}{{ $articulo->unidad ? '-'.$articulo->unidad : '' }} <span style="color:#9ca3af;">{{ $articulo->categoria }}</span></td>
+                    <td class="center">{{ $articulo->stockMinimo }}</td>
+                    <td class="center">@if($articulo->suelto==1) S-{{ $articulo->stock }} @else {{ $articulo->stock }} @endif</td>
+                    <td class="blank"></td>
+                    <td class="blank"></td>
+                    <td class="blank"></td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 
-                    <table class="invoice-table">
-                        <thead>
-                            <tr>
-                                <td colspan="2" class="px h-8"> Fecha: {{date('y-m-d')}}</td>
-                                <td colspan="6" class="h-8 px-10 "><div class="items-center">Stock</div></td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2"><div class="flex items-center" >Id</div> </td>
-                                <td class="px-4 py-2"><div class="flex items-center" >Codigo</div> </td>
-                                <td class="px-4 py-2"><div class="flex items-center" colspan=''>Articulo</div></td>
-                                <td class="px-4 py-2"><div class="flex items-center">Min.</div></td>
-                                <td class="px-4 py-2"><div class="flex items-center">Stock</div></td>
-                                <td class="px-4 py-2"><div class="flex items-center">Real</div></td>
-                                <td class="px-4 py-2"><div class="flex items-center">Dif.</div></td>
-                                <td class="px-4 py-2"><div class="flex items-center">Obs.</div></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tbody>
+    <footer>
+        {{ $emp->empresa ?? 'Bicicletería Bálsamo' }} · Planilla de control de stock — {{ date('d/m/Y H:i') }}
+    </footer>
 
-                                @foreach ($articulos as $articulo)
-                                    <tr>
-                                        <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
-                                        <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</td>
-
-                                        <td class="rounder border px-4 py-2">{{ $articulo->articulo }} {{ $articulo->presentacion }}-{{ $articulo->unidad }} {{ $articulo->categoria }} {{ $articulo->unidadVenta }}</td>
-
-
-
-                                        <td class="rounder border px-4 py-2">{{ $articulo->stockMinimo }}</td>
-                                        <td class="rounder border px-4 py-2">
-                                            @if ($articulo->suelto==1)
-                                                {{ 'S-' . $articulo->stock }}
-                                            @else
-                                                {{ $articulo->stock }}
-                                            @endif
-                                        </td>
-                                        <td class="rounder border px-4 py-2"></td>
-                                        <td class="rounder border px-4 py-2"></td>
-                                        <td class="rounder border px-4 py-2"></td>
-
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-
-                        </tbody>
-                        <tfoot>
-
-                        </tfoot>
-                    </table>
-                </main>
-                <footer>
-                    <p>&copy; 2026 Bicicleteria Balsamo. Todos los derechos reservados.</p>
-                </footer>
-            </div>
-    </body>
+</body>
 </html>
-
