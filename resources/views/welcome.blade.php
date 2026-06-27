@@ -30,9 +30,7 @@
    <header class="bg-white shadow-md">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
        <a href="/" class="flex items-center">
-            <div class="bg-indigo-700 rounded-xl px-4 py-2 shadow">
-                <img src="{{ asset('images/logo-balsamo.png') }}" alt="Bicicletería Balsamo" class="h-10 md:h-12 w-auto">
-            </div>
+            <img src="{{ asset('images/logo-balsamo.png') }}" alt="Bicicletería Balsamo" class="h-11 md:h-14 w-auto">
         </a>
         
         <nav class="hidden md:flex space-x-4">
