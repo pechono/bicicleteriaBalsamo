@@ -2,37 +2,46 @@
 
     {{-- ================= BUSCAR CLIENTE ================= --}}
     @if(!$cliente)
-        <div class="bg-white shadow rounded p-4">
-            <h2 class="text-lg font-semibold mb-3">Buscar Cliente</h2>
+        <div class="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto">
+            <h2 class="text-lg font-semibold mb-3 text-center">Buscar Cliente</h2>
 
-            <div class="flex items-end gap-4">
-                <x-input
-                    wire:model.defer="dni"
-                    wire:keydown.enter="buscarCliente"
-                />
-
-                <button
-                    wire:click="buscarCliente"
-                    class="px-4 py-2 bg-brand-600 text-white rounded hover:bg-brand-700">
-                    Buscar
-                </button>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" wire:model.live.debounce.300ms="buscarCli"
+                       placeholder="Buscar por nombre, apellido o DNI..."
+                       class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
             </div>
+
+            @if(mb_strlen(trim($buscarCli)) >= 2)
+                <div class="mt-3">
+                    <div class="text-xs text-gray-500 mb-1">{{ $this->clientesEncontrados->count() }} resultado(s)</div>
+                    @if($this->clientesEncontrados->isNotEmpty())
+                        <div class="max-h-72 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100">
+                            @foreach($this->clientesEncontrados as $c)
+                                <button type="button" wire:click="seleccionarCliente({{ $c->id }})"
+                                        class="w-full text-left p-3 hover:bg-brand-50 transition">
+                                    <div class="font-medium text-gray-900">{{ $c->apellido }}, {{ $c->nombre }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">
+                                        @if($c->dni) DNI: {{ $c->dni }} · @endif Tel: {{ $c->telefono ?: '-' }}
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-sm text-center mt-2">
+                            No se encontró ningún cliente.
+                            <button wire:click='confirmarClienteAdd' class="ml-1 text-white bg-brand-600 hover:bg-brand-500 rounded-md px-3 py-1">
+                                Agregar Cliente
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            @endif
         </div>
-        @if ( $this->confirmingClienteAdd)
-            <div class="bg-yellow-50 border border-yellow-400 rounded p-3 text-sm">
-            Cliente no encontrado. Puede agregarlo haciendo clic en 
-            <button wire:click='confirmarClienteAdd' class="text-white bg-brand-500 hover:bg-green-300 rounded-md w-36 py-2 px-5 mt-1.5" style="margin-top: 3px;">
-                Agregar Cliente
-            </button>
-        </div>
-        @endif
-        
-        @else
-
-
-
-
-        
     @endif
 
     {{-- ================= DATOS CLIENTE ================= --}}

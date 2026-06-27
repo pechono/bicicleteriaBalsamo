@@ -32,6 +32,26 @@ class IngresarBike extends Component
         }
     }
 
+    /* Búsqueda en vivo de clientes (nombre/apellido/DNI) con lista para elegir */
+    public $buscarCli = '';
+
+    public function getClientesEncontradosProperty()
+    {
+        if (mb_strlen(trim($this->buscarCli)) < 2) {
+            return collect();
+        }
+        return Cliente::where('activo', 1)
+            ->where(fn($q) => \App\Support\Busqueda::palabras($q, $this->buscarCli, ['nombre', 'apellido', 'dni']))
+            ->orderBy('apellido')->limit(15)->get();
+    }
+
+    public function seleccionarCliente($id)
+    {
+        $this->cliente = Cliente::find($id);
+        $this->confirmingClienteAdd = false;
+        $this->buscarCli = '';
+    }
+
     /* ================== DATOS BICI ================== */
     public $colors;
     public $brands;
