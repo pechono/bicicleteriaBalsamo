@@ -1,5 +1,5 @@
-<div class="flex ">
-    <div class=" h-auto  md:w-[70%]  m-5 ">
+<div class="flex flex-col md:flex-row">
+    <div class=" h-auto  md:w-[70%]  m-3 md:m-5 ">
 
                 <div class=" bg-white p-4 rounded-lg border">
                     <div class=" bg-white p-4 rounded-lg shadow-lg w-auto border">
@@ -20,6 +20,7 @@
                         <div class="mt-3 w-full rounded-lg border shadow-lg p-4">
                         @if ($q)
 
+                            <div class="hidden md:block overflow-x-auto">
                             <table class="table-auto w-full">
                                 <thead>
                                     <tr>
@@ -59,12 +60,12 @@
                                                         <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded-lg ">
                                                             Elim
                                                         </button>
-                                                        <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-lg "">
+                                                        <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold p-2 rounded-lg "">
                                                             Mod
                                                         </button> 
                                                        
                                                     @else
-                                                        <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded-lg ">
+                                                        <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold p-2 rounded-lg ">
                                                             Agregar
                                                         </button>
 
@@ -76,6 +77,35 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            </div>
+
+                            {{-- tarjetas mobile (resultados de búsqueda) --}}
+                            <div class="md:hidden space-y-2">
+                                @foreach ($articulos as $articulo)
+                                    @if (!$this->stockInsufisinte($articulo->id))
+                                        <div wire:key="m{{ $articulo->id }}" class="rounded-xl border p-3 {{ $this->estaEnCarrito($articulo->id) ? 'border-brand-300 bg-brand-50' : 'border-gray-200' }}">
+                                            <div class="flex justify-between gap-2">
+                                                <div class="min-w-0">
+                                                    <div class="font-semibold {{ $this->Ofeta($articulo->id) ? 'text-green-600' : 'text-gray-800' }}">{{ $articulo->articulo }} {{ $articulo->presentacion }}</div>
+                                                    <div class="text-xs text-gray-400 font-mono">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</div>
+                                                </div>
+                                                <div class="text-right shrink-0">
+                                                    <div class="font-bold text-gray-800">${{ $articulo->precioF }}</div>
+                                                    <div class="text-[10px] text-gray-400 uppercase">Stock {{ $articulo->stock }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 flex gap-2">
+                                                @if ($this->estaEnCarrito($articulo->id))
+                                                    <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-lg bg-red-500 hover:bg-red-700 text-white font-bold">Elim</button>
+                                                    <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold">Mod</button>
+                                                @else
+                                                    <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold">Agregar</button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
 
                         @endif
                         </div>
@@ -84,8 +114,8 @@
                 </div>
                 <div class=" bg-white p-4 rounded-lg shadow-lg w-auto mt-10">
                         {{-- seleccionados --}}
-                        <div class="mt-3 w-full rounded-lg border shadow-lg p-4">
-                            <table class="">
+                        <div class="mt-3 w-full rounded-lg border shadow-lg p-4 overflow-x-auto">
+                            <table class="w-full">
                                 <thead>
                                     <tr>
                                         <td class="px-4 py-2"><div class="flex items-center" >Id</div></td>
@@ -119,7 +149,7 @@
                                                     <div class="flex items-center ">
                                                         <div class="w-6">{{ $item->descuento }}</div>
                                                         <div class="w-5">
-                                                            <button class=' h-18 w-16 text-white text-l rounded-md bg-green-600 hover:bg-green-300' wire:click="descuentoArt({{ $item->articulo_id }})" wire:loading.attr="disabled" >
+                                                            <button class=' h-18 w-16 text-white text-l rounded-md bg-brand-600 hover:bg-brand-500' wire:click="descuentoArt({{ $item->articulo_id }})" wire:loading.attr="disabled" >
                                                             Desc.
                                                             </button>
                                                         </div>
@@ -134,7 +164,7 @@
                                                         <button wire:click="deletCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded-lg ">
                                                             Elim
                                                         </button>
-                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg "">
+                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 px-2 rounded-lg "">
                                                             Mod
                                                         </button> 
                                                        
@@ -150,7 +180,7 @@
                 </div>
     </div>
 
-    <div class="w-30 bg-white  rounded-lg shadow-md   md:w-[25%]  m-5 h-3/4">
+    <div class="w-full bg-white  rounded-lg shadow-md   md:w-[25%]  m-3 md:m-5 h-3/4">
                  {{-- operacion --}}
         <div class=" w-auto rounded-lg shadow-md m-5 p-4">
          <!-- Buscador de clientes -->

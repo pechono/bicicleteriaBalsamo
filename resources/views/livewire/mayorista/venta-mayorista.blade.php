@@ -7,7 +7,7 @@
      ">
 
     {{-- ── Cabecera ──────────────────────────────────────────── --}}
-    <div class="bg-gradient-to-r from-emerald-600 to-emerald-800 rounded-lg shadow-lg p-4 text-white">
+    <div class="bg-gradient-to-r from-brand-600 to-brand-800 rounded-lg shadow-lg p-4 text-white">
         <div class="flex items-center gap-3">
             <div class="bg-white/20 p-2 rounded-full">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,7 +16,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold">Venta Mayorista</h1>
-                <p class="text-emerald-100 text-sm">Precios calculados sobre costo + IVA + margen del grupo</p>
+                <p class="text-brand-100 text-sm">Precios calculados sobre costo + IVA + margen del grupo</p>
             </div>
         </div>
     </div>
@@ -32,13 +32,13 @@
                 <div class="relative">
                     <input wire:model.live.debounce.300ms="busqueda" type="text"
                         placeholder="Nombre o código..."
-                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent" />
 
                     @if(count($resultados) > 0)
                     <div class="absolute z-30 top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl mt-1 max-h-72 overflow-y-auto">
                         @foreach($resultados as $r)
                         <button wire:click="agregarAlCarrito({{ $r['articulo_id'] }})"
-                            class="w-full text-left px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 border-b border-gray-100 dark:border-gray-700 last:border-0 transition">
+                            class="w-full text-left px-4 py-3 hover:bg-brand-50 dark:hover:bg-brand-900/20 border-b border-gray-100 dark:border-gray-700 last:border-0 transition">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <div class="font-semibold text-gray-800 dark:text-white text-sm">{{ $r['nombre'] }}</div>
@@ -57,7 +57,7 @@
                                             Costo ${{ number_format($r['precio_costo'], 2, ',', '.') }}
                                         @endif
                                     </div>
-                                    <div class="font-bold text-emerald-700 dark:text-emerald-400">${{ number_format($r['precio_mayorista'], 2, ',', '.') }}</div>
+                                    <div class="font-bold text-brand-700 dark:text-brand-400">${{ number_format($r['precio_mayorista'], 2, ',', '.') }}</div>
                                     <div class="text-xs text-gray-400">{{ $r['porcentaje'] }}% margen</div>
                                 </div>
                             </div>
@@ -125,7 +125,7 @@
                             {{-- Precio mayorista --}}
                             <div class="ml-auto text-right">
                                 <div class="text-xs text-gray-400">c/u</div>
-                                <div class="font-bold text-emerald-700 dark:text-emerald-400">${{ number_format($item['precio_mayorista'], 2, ',', '.') }}</div>
+                                <div class="font-bold text-brand-700 dark:text-brand-400">${{ number_format($item['precio_mayorista'], 2, ',', '.') }}</div>
                                 <div class="text-xs text-gray-500">= ${{ number_format($item['precio_mayorista'] * $item['cantidad'], 2, ',', '.') }}</div>
                             </div>
                         </div>
@@ -145,12 +145,12 @@
                 <div class="relative">
                     <input wire:model.live.debounce.300ms="busquedaCliente" type="text"
                         placeholder="Buscar cliente..."
-                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent" />
                     @if(count($resultadosClientes) > 0)
                     <div class="absolute z-20 top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl mt-1">
                         @foreach($resultadosClientes as $c)
                         <button wire:click="seleccionarCliente({{ $c['id'] }})"
-                            class="w-full text-left px-3 py-2.5 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 border-b border-gray-100 dark:border-gray-700 last:border-0 transition text-sm">
+                            class="w-full text-left px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-900/20 border-b border-gray-100 dark:border-gray-700 last:border-0 transition text-sm">
                             <div class="font-semibold text-gray-800 dark:text-white">{{ $c['nombre'] }}</div>
                             @if($c['cuit'])<div class="text-xs text-gray-400">CUIT: {{ $c['cuit'] }}</div>@endif
                         </button>
@@ -159,11 +159,11 @@
                     @endif
                 </div>
                 @if($cliente_id)
-                    <div class="mt-2 flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg px-3 py-2">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mt-2 flex items-center gap-2 bg-brand-50 dark:bg-brand-900/20 rounded-lg px-3 py-2">
+                        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        <span class="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{{ $busquedaCliente }}</span>
+                        <span class="text-sm font-semibold text-brand-700 dark:text-brand-300">{{ $busquedaCliente }}</span>
                         <button wire:click="$set('cliente_id', null)" class="ml-auto text-gray-400 hover:text-red-500">✕</button>
                     </div>
                 @endif
@@ -175,8 +175,8 @@
                 <div class="space-y-2">
                     @foreach(['efectivo' => '💵 Efectivo', 'transferencia' => '🏦 Transferencia', 'cuenta_corriente' => '📋 Cuenta Corriente'] as $val => $label)
                     <label class="flex items-center gap-3 p-2.5 rounded-lg cursor-pointer border transition
-                        {{ $tipo_pago === $val ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
-                        <input type="radio" wire:model="tipo_pago" value="{{ $val }}" class="text-emerald-600" />
+                        {{ $tipo_pago === $val ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20' : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
+                        <input type="radio" wire:model="tipo_pago" value="{{ $val }}" class="text-brand-600" />
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $label }}</span>
                     </label>
                     @endforeach
@@ -198,12 +198,12 @@
                 </div>
                 <div class="flex justify-between items-center py-3">
                     <span class="text-base font-bold text-gray-800 dark:text-white">Total</span>
-                    <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-400">
+                    <span class="text-xl font-extrabold text-brand-700 dark:text-brand-400">
                         ${{ number_format($this->totalCarrito(), 2, ',', '.') }}
                     </span>
                 </div>
                 <button wire:click="confirmar"
-                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition text-sm mt-2 flex items-center justify-center gap-2">
+                    class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-lg transition text-sm mt-2 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
@@ -221,7 +221,7 @@
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm">
                     <div class="flex justify-between"><span class="text-gray-500">Cliente:</span><span class="font-semibold">{{ $busquedaCliente }}</span></div>
                     <div class="flex justify-between mt-1"><span class="text-gray-500">Forma de pago:</span><span class="font-semibold capitalize">{{ str_replace('_', ' ', $tipo_pago) }}</span></div>
-                    <div class="flex justify-between mt-1 text-base"><span class="font-bold">Total:</span><span class="font-extrabold text-emerald-600">${{ number_format($this->totalCarrito(), 2, ',', '.') }}</span></div>
+                    <div class="flex justify-between mt-1 text-base"><span class="font-bold">Total:</span><span class="font-extrabold text-brand-600">${{ number_format($this->totalCarrito(), 2, ',', '.') }}</span></div>
                 </div>
                 @if($tipo_pago === 'cuenta_corriente')
                 <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
