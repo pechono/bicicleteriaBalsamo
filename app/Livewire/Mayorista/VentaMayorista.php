@@ -30,8 +30,10 @@ class VentaMayorista extends Component
     public function updatedBusqueda(): void
     {
         if (strlen($this->busqueda) < 2) { $this->resultados = []; return; }
-        $this->resultados = Articulo::where('activo', true)
-            ->where(fn($q) => \App\Support\Busqueda::palabras($q, $this->busqueda, ['articulo','codigo']))
+        $this->resultados = Articulo::where('articulos.activo', true)
+            ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->where(fn($q) => \App\Support\Busqueda::palabras($q, $this->busqueda, ['articulos.articulo','articulos.codigo','stocks.codigo_proveedor']))
+            ->select('articulos.*')
             ->with('categoria')->limit(12)->get()
             ->map(fn($a) => $this->mapArticulo($a))->toArray();
     }

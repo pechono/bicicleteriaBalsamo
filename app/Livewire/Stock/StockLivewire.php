@@ -37,16 +37,10 @@ class StockLivewire extends Component
     public function render()
     {
         $articulos = Articulo::where('articulos.activo', $this->active)
-            ->when(trim($this->q), function ($query) {
-                // Cada palabra por separado, orden indistinto (ej: "piñon index").
-                foreach (array_filter(preg_split('/\s+/', trim($this->q))) as $palabra) {
-                    $query->where(fn($q) =>
-                        $q->where('articulos.articulo', 'like', '%'.$palabra.'%')
-                          ->orWhere('articulos.detalles',  'like', '%'.$palabra.'%')
-                          ->orWhere('articulos.codigo',    'like', '%'.$palabra.'%')
-                    );
-                }
-            })
+            ->when(trim($this->q), fn($query) => \App\Support\Busqueda::palabras(
+                $query, $this->q,
+                ['articulos.articulo', 'articulos.detalles', 'articulos.codigo', 'stocks.codigo_proveedor']
+            ))
             ->when($this->categoria_id, fn($q) =>
                 $q->where('articulos.categoria_id', $this->categoria_id)
             )

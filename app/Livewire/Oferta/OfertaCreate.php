@@ -55,7 +55,7 @@ class OfertaCreate extends Component
         $articulos=Articulo::where('activo',1)
             ->when($this->q, function ($query){
                                return $query->where( function($query){
-                                            \App\Support\Busqueda::palabras($query, $this->q, ['articulo','detalles','categoria']);
+                                            \App\Support\Busqueda::palabras($query, $this->q, ['articulo','codigo','detalles','categoria','codigo_proveedor']);
                                         });
                                     })
             ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',

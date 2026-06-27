@@ -132,16 +132,10 @@ class GrupoArticulos extends Component
                 ->leftJoin('categorias', 'categorias.id', '=', 'articulos.categoria_id')
                 ->where('stocks.proveedor_id', $this->proveedorId)
                 ->whereNull('grupos_articulos.articulo_id')
-                ->when(trim($this->buscar), function ($q) {
-                    // Busca cada palabra por separado (orden indistinto): "piñon index"
-                    // encuentra artículos que tengan "piñon" Y "index" en cualquier posición.
-                    foreach (array_filter(preg_split('/\s+/', trim($this->buscar))) as $palabra) {
-                        $q->where(function ($q) use ($palabra) {
-                            $q->where('articulos.articulo', 'like', '%'.$palabra.'%')
-                              ->orWhere('articulos.codigo', 'like', '%'.$palabra.'%');
-                        });
-                    }
-                });
+                ->when(trim($this->buscar), fn($q) => \App\Support\Busqueda::palabras(
+                    $q, $this->buscar,
+                    ['articulos.articulo', 'articulos.codigo', 'stocks.codigo_proveedor']
+                ));
 
             $totalDisponibles = (clone $base)->count('articulos.id');
 

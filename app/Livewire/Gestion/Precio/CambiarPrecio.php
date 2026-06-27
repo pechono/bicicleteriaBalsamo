@@ -28,7 +28,7 @@ class CambiarPrecio extends Component
         $articulos=Articulo::where('articulos.activo',$this->active)
             ->when($this->q, function ($query){
                                return $query->where( function($query){
-                                            \App\Support\Busqueda::palabras($query, $this->q, ['articulo','detalles','categoria']);
+                                            \App\Support\Busqueda::palabras($query, $this->q, ['articulo','codigo','detalles','categoria','codigo_proveedor']);
                                         });
                                     })
             ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')

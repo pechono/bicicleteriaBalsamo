@@ -86,7 +86,7 @@ class EgresoTerminar extends Component
 
         if ($this->q) {
             $articulos = Articulo::where('activo', $this->active)
-                ->where(fn($query) => \App\Support\Busqueda::palabras($query, $this->q, ['articulo', 'detalles', 'categoria', 'codigo_proveedor']))
+                ->where(fn($query) => \App\Support\Busqueda::palabras($query, $this->q, ['articulo', 'codigo', 'detalles', 'categoria', 'codigo_proveedor']))
                 ->orderBy($this->sortBy, $this->sortAsc ? 'ASC' : 'DESC')
                 ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
                     'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
