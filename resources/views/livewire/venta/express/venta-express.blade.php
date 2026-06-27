@@ -1,7 +1,7 @@
 <div class="flex flex-col md:flex-row">
     <div class=" h-auto  md:w-[70%]  mx-3 md:mx-5 mb-3 md:mb-5 ">
 
-                <div class=" bg-white p-1 rounded-lg">
+                <div class=" rounded-lg">
                     <div class=" bg-white p-4 rounded-lg shadow-lg w-auto border">
                     {{-- articulos --}}
                         <div class="text-2xl flex justify-between shadow-inner">
