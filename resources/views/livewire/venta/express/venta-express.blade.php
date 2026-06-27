@@ -1,10 +1,10 @@
 <div class="flex flex-col md:flex-row">
-    <div class=" h-auto  md:w-[70%]  m-3 md:m-5 ">
+    <div class=" h-auto  md:w-[70%]  mx-3 md:mx-5 mt-2 mb-3 md:mb-5 ">
 
                 <div class=" bg-white p-4 rounded-lg border">
                     <div class=" bg-white p-4 rounded-lg shadow-lg w-auto border">
                     {{-- articulos --}}
-                        <div class="mt-4 text-2xl flex justify-between shadow-inner">
+                        <div class="text-2xl flex justify-between shadow-inner">
                             <div>Articulo</div>
                         </div>
                         <div>
