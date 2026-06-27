@@ -51,7 +51,7 @@ class VentaCart extends Component
         'cliente_id'=>'required|integer',
         'detalles'=>'required|string|min:4',
         'cuentaCorriente'=>'required|float',
-        'dni'=>'required|string|min:4|clienteUnico',
+        'dni'=>'nullable|string|min:4|clienteUnico',
          ];
     public $BloquearBoton;
     public function cancelarBoton(){
@@ -378,7 +378,7 @@ class VentaCart extends Component
              'apellido'=>$this->apellido,
              'nombre'=>$this->nombre,
              'telefono'=>$this->telefono,
-                'dni'=>$this->dni,
+                'dni'=>$this->dni ?: null,
              'activo'=>1
          ]);
          $this->apellido='';

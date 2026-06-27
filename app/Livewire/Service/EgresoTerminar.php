@@ -62,7 +62,7 @@ class EgresoTerminar extends Component
         'apellido'=>'required|string|min:4',
         'nombre'=>'required|string|min:4',
         'telefono'=>'required|string|min:4',
-        'dni' => 'required|regex:/^\d{7,9}$/|unique:clientes,dni',
+        'dni' => 'nullable|regex:/^\d{7,9}$/|unique:clientes,dni',
         'activo'=>'boolean',
         'tipo_id'=>'required|integer',
         'cliente_id'=>'required|integer',

@@ -267,13 +267,13 @@ public function guardarIngreso()
                 'apellido'=>'required|string|max:255',
                 'nombre'=>'required|string|max:255',
                 'telefono'=>'required|string|max:20',
-                'dni2'=>'required|string|max:20|unique:clientes,dni',
+                'dni2'=>'nullable|string|max:20|unique:clientes,dni',
             ]);
          Cliente::create([
              'apellido'=>$this->apellido,
              'nombre'=>$this->nombre,
              'telefono'=>$this->telefono,
-             'dni'=>$this->dni2,
+             'dni'=>$this->dni2 ?: null,
              'activo'=>1
          ]);
          $this->apellido='';

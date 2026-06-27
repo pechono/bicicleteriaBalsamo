@@ -86,7 +86,7 @@ class Clientelivewire extends Component
     //reglas de validacion de Cliente
 
     protected $rules = [
-        'dni' => 'required|regex:/^\d{7,9}$/|unique:clientes,dni',
+        'dni' => 'nullable|regex:/^\d{7,9}$/|unique:clientes,dni',
         'apellido' => 'required|string|max:255',
         'nombre' => 'required|string|max:255',
         'telefono' => 'nullable|string|max:20',
@@ -104,14 +104,14 @@ class Clientelivewire extends Component
     // Limpiar el formato del DNI
     $this->dni = str_replace('.', '', $this->dni);
     $this->validate([
-        'dni' => 'required|regex:/^\d{7,9}$/|unique:clientes,dni',
+        'dni' => 'nullable|regex:/^\d{7,9}$/|unique:clientes,dni',
         'apellido' => 'required|string|max:255',
         'nombre' => 'required|string|max:255',
         'telefono' => 'nullable|string|max:20',
         'activo' => 'boolean',
     ]);
     Cliente::create([
-        'dni' => $this->dni,
+        'dni' => $this->dni ?: null,
         'apellido' => $this->apellido,
         'nombre' => $this->nombre,
         'telefono' => $this->telefono,
@@ -166,7 +166,7 @@ class Clientelivewire extends Component
         if ($client->dni !== $this->dni) {
             // Validar el DNI solo si ha cambiado
             $this->validate([
-                'dni' => 'required|regex:/^\d{7,9}$/|unique:clientes,dni',
+                'dni' => 'nullable|regex:/^\d{7,9}$/|unique:clientes,dni',
             ]);
             // Actualizar el DNI si ha cambiado
             $client->dni = $this->dni;

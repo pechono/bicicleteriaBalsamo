@@ -49,9 +49,10 @@ class IngresoAltaMobileController extends Controller
             'apellido' => 'required|string|max:255',
             'nombre'   => 'required|string|max:255',
             'telefono' => 'required|string|max:20',
-            'dni'      => 'required|string|max:20|unique:clientes,dni',
+            'dni'      => 'nullable|string|max:20|unique:clientes,dni',
         ]);
         $data['activo'] = 1;
+        $data['dni'] = ($data['dni'] ?? null) ?: null;
 
         $cliente = Cliente::create($data);
 
