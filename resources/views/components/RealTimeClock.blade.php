@@ -1,5 +1,5 @@
 <!-- resources/views/components/real-time-clock.blade.php -->
-<div id="clock" class="text-xl font-bold w-28 p-2 rounded-lg bg-slate-400 flex justify-center items-center"></div>
+<div id="clock" class="hidden sm:flex text-sm font-semibold font-mono text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg justify-center items-center"></div>
 <script>
     function updateClock() {
         const now = new Date();
