@@ -2,256 +2,121 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Nota Ingreso Rodado - Comprobante A5</title>
-
+<title>Ingreso N° {{ $bicicleta->nro_ingreso }}</title>
 <style>
-@page {
-    size: A5 portrait;
-    margin: 5mm 20mm 5mm 5mm;
-}
+    @page { size: A5 portrait; margin: 8mm; }
+    * { box-sizing: border-box; }
+    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; font-size: 10px; margin: 0; }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    .top { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    .top td { vertical-align: top; }
+    .empresa { font-size: 15px; font-weight: bold; color: #1d4ed8; }
+    .empresa-sub { color: #6b7280; font-size: 9px; }
+    .doc-box { text-align: right; }
+    .doc-title { display: inline-block; background: #1d4ed8; color: #fff; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 3px; }
+    .doc-meta { margin-top: 5px; font-size: 9px; color: #374151; }
 
-body {
-    font-family: 'Courier New', monospace;
-    font-size: 12px; /* 🔥 Tamaño general */
-    line-height: 1.4;
-    color: #000;
-    width: 128mm;
-    height: 210mm;
-    margin: 0 auto;
-    padding: 5mm 0 5mm 5mm;
-}
+    .box { width: 100%; border-collapse: collapse; margin: 4px 0; }
+    .box td { border: 1px solid #e5e7eb; padding: 5px 7px; background: #f9fafb; vertical-align: top; }
+    .label { font-size: 8px; text-transform: uppercase; color: #6b7280; letter-spacing: .3px; }
+    .val { font-size: 11px; color: #111827; }
 
-.titulo {
-    font-size: 14px;
-    font-weight: bold;
-    border-bottom: 2px dotted #000;
-    padding-bottom: 3px;
-    margin-bottom: 8px;
-    text-align: center;
-}
+    .sec { font-size: 11px; font-weight: bold; color: #1d4ed8; margin: 9px 0 2px; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
 
-.fila-punteada {
-    border-bottom: 1px dotted #999;
-    padding: 4px 0;
-    margin: 3px 0;
-    display: flex;
-    justify-content: space-between;
-}
+    table.items { width: 100%; border-collapse: collapse; }
+    table.items td { border-bottom: 1px solid #e5e7eb; padding: 4px 7px; font-size: 10px; }
 
-.relleno {
-    flex-grow: 1;
-    margin-left: 5px;
-}
+    .nota { border: 1px solid #e5e7eb; border-radius: 3px; padding: 6px; font-size: 10px; color: #374151; }
 
-.linea-punteada {
-    border-bottom: 2px dotted #666;
-    margin: 5px 0;
-}
+    .qr { width: 100%; border-collapse: collapse; margin-top: 8px; border: 1px dashed #9ca3af; border-radius: 3px; }
+    .qr td { padding: 6px; vertical-align: middle; }
+    .qr img { width: 92px; height: 92px; }
+    .qr .t strong { display: block; font-size: 10px; color: #111827; margin-bottom: 2px; }
+    .qr .t { font-size: 8px; color: #374151; line-height: 1.4; }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 5px 0;
-}
-
-th, td {
-    border: 1px dotted #333;
-    padding: 3px 4px;
-}
-
-.grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 5px 0;
-}
-
-.borde-puntos {
-    border: 1px dotted #333;
-    padding: 5px;
-}
-
-.lista-puntos {
-    list-style: none;
-}
-
-.lista-puntos li {
-    border-bottom: 1px dotted #999;
-    padding: 2px 0;
-}
-
-.linea-corte {
-    text-align: center;
-    margin: 6px 0;
-    border-top: 1px dashed #333;
-    border-bottom: 1px dashed #333;
-    padding: 3px 0;
-}
-
-.footer {
-    position: fixed;
-    bottom: 0;
-    width: 128mm;
-    border-top: 2px solid #000;
-    padding-top: 5px;
-}
-
-.recuadro-punteado {
-    border: 1px dotted #333;
-    padding: 5px;
-    margin-top: 5px;
-}
-
-.condicion-item {
-    border-bottom: 1px dotted #999;
-    padding: 3px 0;
-    font-size: 9px;
-}
-.datos-cliente {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px; /* separación entre columnas */
-}
-
-.datos-cliente > div {
-    width: 48%;
-}
-
-/* QR mobile */
-.qr-block {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    margin: 4px 0;
-    border: 1px dotted #555;
-    padding: 4px;
-    border-radius: 3px;
-}
-.qr-block svg {
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-}
-.qr-text {
-    font-size: 8px;
-    line-height: 1.4;
-    color: #333;
-    padding-top: 2px;
-}
-.qr-text strong {
-    display: block;
-    font-size: 9px;
-    margin-bottom: 3px;
-    color: #000;
-}
+    .cond { border: 1px solid #e5e7eb; border-radius: 3px; padding: 6px; margin-top: 8px; font-size: 8px; color: #6b7280; }
 </style>
 </head>
-
 <body>
-<div class="titulo">· NOTA INGRESO, Nro {{ $bicicleta->nro_ingreso }} ·</div>
-<div>
-    <table>
+
+    <table class="top">
         <tr>
-            <th>Empresa</th>
-            <th>Cliente</th>
+            <td>
+                <div class="empresa">{{ $emp->empresa ?? 'Bicicletería Bálsamo' }}</div>
+                <div class="empresa-sub">
+                    @if($emp?->telefono) Tel: {{ $emp->telefono }} @endif
+                    @if($emp?->direccion) · {{ $emp->direccion }} @endif
+                </div>
+            </td>
+            <td class="doc-box">
+                <span class="doc-title">INGRESO DE RODADO</span>
+                <div class="doc-meta">
+                    <b>N°:</b> {{ $bicicleta->nro_ingreso }}<br>
+                    <b>Ingreso:</b> {{ $bicicleta->fecha_ingreso }}<br>
+                    <b>Retiro est.:</b> {{ $bicicleta->fecha_retiro ?: '-' }}
+                </div>
+            </td>
         </tr>
-        <tr>
-            <td>
-                {{ $emp->empresa }}<br>
-                Tel: {{ $emp->telefono }}
-            </td>
-            <td>
-                Ap y Nom: {{ $bicicleta->apellido . ' ' . $bicicleta->nombre }}<br>
-                Dni: {{ $bicicleta->dni }}<br>
-                Telefono: {{ $bicicleta->telefono }}
-            </td>
     </table>
-</div>
-    
-<div class="linea-punteada"></div>
 
-<div class="recuadro-punteado">
-    <div>CONDICIONES</div>
-    <div class="condicion-item">
-    PLAZO: 7 DÍAS HÁBILES ({{ $bicicleta->fecha_retiro }}). NO RESPONSABLES POR ROBO, HURTO O DAÑOS.
-   VERIFICAR ESTADO AL RETIRAR - NO RECLAMOS
+    <table class="box">
+        <tr>
+            <td style="width:60%;">
+                <div class="label">Cliente</div>
+                <div class="val">{{ $bicicleta->apellido }} {{ $bicicleta->nombre }}</div>
+            </td>
+            <td>
+                <div class="label">Teléfono</div>
+                <div class="val">{{ $bicicleta->telefono ?: '-' }}</div>
+            </td>
+        </tr>
+        @if($bicicleta->dni)
+        <tr>
+            <td colspan="2"><div class="label">DNI</div><div class="val">{{ $bicicleta->dni }}</div></td>
+        </tr>
+        @endif
+    </table>
+
+    <table class="box">
+        <tr>
+            <td><div class="label">Marca</div><div class="val">{{ $bicicleta->marca }}</div></td>
+            <td><div class="label">Tipo</div><div class="val">{{ $bicicleta->tipo }}</div></td>
+            <td><div class="label">Color</div><div class="val">{{ $bicicleta->color }}</div></td>
+        </tr>
+    </table>
+
+    <div class="sec">Trabajos / procesos</div>
+    <table class="items">
+        <tbody>
+            @forelse($procesos as $item)
+                <tr><td>{{ $item->articulo ? trim($item->articulo.' '.$item->presentacion) : ($item->detalles_articulo ?: 'Proceso') }}</td></tr>
+            @empty
+                <tr><td style="color:#9ca3af;">Sin procesos asignados</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    @if($bicicleta->detalles)
+        <div class="sec">Nota</div>
+        <div class="nota">{{ $bicicleta->detalles }}</div>
+    @endif
+
+    @if(!empty($qrBase64))
+        <table class="qr">
+            <tr>
+                <td style="width:104px;"><img src="{{ $qrBase64 }}"></td>
+                <td class="t">
+                    <strong>Escaneá con la app del taller</strong>
+                    Accedé a esta orden desde el celular: ver los procesos a realizar y cargar los artículos que uses en la reparación.<br>
+                    Ingreso N° {{ $bicicleta->nro_ingreso }}
+                </td>
+            </tr>
+        </table>
+    @endif
+
+    <div class="cond">
+        <b>CONDICIONES:</b> Plazo 7 días hábiles (retiro estimado {{ $bicicleta->fecha_retiro ?: 's/f' }}). No nos responsabilizamos por robo, hurto o daños. Verificar el estado al retirar — no se aceptan reclamos posteriores.
     </div>
-</div>
-
-
-<div class="titulo">· INGRESO RODADO ·</div>
-
-<div class="fila-punteada">
-    <div class="relleno"><h2>{{ $emp->empresa }}</h2></div>
-    Datos bicicleta:
-    <div class="relleno">
-        {{ $bicicleta->marca }} - {{ $bicicleta->tipo }} - {{ $bicicleta->color }}
-    </div>
-</div>
-
-<div class="linea-punteada"></div>
-
-<table>
-<tr>
-    <th>Nro</th>
-    <th>Fecha ingreso</th>
-    <th>Fecha estimada</th>
-    <th>Cliente</th>
-</tr>
-<tr>
-    <td>{{ $bicicleta->nro_ingreso }}</td>
-    <td>{{ $bicicleta->fecha_ingreso }}</td>
-    <td>{{ $bicicleta->fecha_retiro }}</td>
-    <td>
-        Ap y Nom: {{ $bicicleta->apellido . ' ' . $bicicleta->nombre }}<br>
-        Dni: {{ $bicicleta->dni }}<br>
-        Telefono: {{ $bicicleta->telefono }}
-    </td>
-</tr>
-</table>
-
-<div class="grid-2">
-<div class="borde-puntos">
-<ul class="lista-puntos">
-@forelse ($procesos as $item)
-    <li>{{ $item->articulo . ' ' . $item->presentacion }}</li>
-@empty
-    <li>No hay procesos asignados</li>
-@endforelse
-</ul>
-</div>
-
-<div class="borde-puntos">
-Nota: {{ $bicicleta->detalles }}
-</div>
-</div>
-
-{{-- ── QR para el mecánico ────────────────────────────────────── --}}
-@if(!empty($qrBase64))
-<div class="linea-punteada"></div>
-<div class="qr-block">
-    <img src="{{ $qrBase64 }}" style="width:80px;height:80px;" />
-    <div class="qr-text">
-        <strong>Escaneá con la app del taller</strong>
-        Accede a esta orden de trabajo desde tu celular.<br>
-        Podes ver los procesos a realizar y agregar<br>
-        los articulos que uses en la reparacion.<br><br>
-        <span>Ingreso N° {{ $bicicleta->nro_ingreso }}</span>
-    </div>
-</div>
-@endif
-
-<div class="linea-corte">✂️ ······ CORTE ······ ✂️</div>
-
-<div class="footer">
-
-</div>
 
 </body>
 </html>
