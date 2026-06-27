@@ -27,7 +27,7 @@
                     @include('components.menu-info')
                 </header>
 
-                <main class="p-4">
+                <main class="px-3 sm:px-4 pt-2 pb-6">
                     {{ $slot }}
                 </main>
             </div>

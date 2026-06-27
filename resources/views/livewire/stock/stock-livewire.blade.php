@@ -1,4 +1,4 @@
-<div class="w-full px-2 py-3">
+<div class="w-full px-2 pb-3">
 
     {{-- ── FILTROS ─────────────────────────────────────────────── --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 mb-3">

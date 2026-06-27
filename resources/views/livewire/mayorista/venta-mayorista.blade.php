@@ -1,4 +1,4 @@
-<div class="p-4 max-w-7xl mx-auto space-y-4"
+<div class="px-4 pb-4 max-w-7xl mx-auto space-y-4"
      x-data="{}"
      x-on:notify.window="
         let msg = $event.detail[0];

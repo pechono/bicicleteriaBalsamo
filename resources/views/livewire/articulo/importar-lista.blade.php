@@ -1,4 +1,4 @@
-<div class="p-6">
+<div class="px-6 pb-6">
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white">📥 Importar Lista de Precios</h2>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">

@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+<div class="px-4 pb-4 sm:px-6 sm:pb-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
 
     {{-- Encabezado --}}
     <div class="flex items-center justify-between mb-5">

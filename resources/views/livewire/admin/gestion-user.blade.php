@@ -1,4 +1,4 @@
-<div class="p-6">
+<div class="px-6 pb-6">
     <!-- Mensajes flash -->
     @if(session()->has('message'))
         <div class="fixed top-4 right-4 z-50 animate-fade-in-down">
