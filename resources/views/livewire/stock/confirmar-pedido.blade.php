@@ -35,24 +35,38 @@
                     <td class="px-4 py-2">Código</td>
                     <td class="px-4 py-2">Artículo</td>
                     <td class="px-4 py-2">Presentación</td>
-                    <td class="px-4 py-2">Cantidad</td>
+                    <td class="px-4 py-2 text-center">Cantidad</td>
+                    <td class="px-4 py-2 text-right">Precio</td>
+                    <td class="px-4 py-2 text-right">Subtotal</td>
                 </tr>
             </thead>
             <tbody>
+                @php $total = 0; @endphp
                 @forelse ($inTheCar as $car)
+                    @php $subtotal = $car->cantidad * $car->precioI; $total += $subtotal; @endphp
                 <tr>
                     <td class="rounder border px-4 py-2">{{ $car->id }}</td>
                     <td class="rounder border px-4 py-2">{{ $car->codigo_proveedor }}-{{ $car->codigo }}</td>
                     <td class="rounder border px-4 py-2">{{ $car->articulo }}</td>
                     <td class="rounder border px-4 py-2">{{ $car->presentacion }}-{{ $car->unidad }}</td>
-                    <td class="rounder border px-4 py-2">{{ $car->cantidad }}</td>
+                    <td class="rounder border px-4 py-2 text-center">{{ $car->cantidad }}</td>
+                    <td class="rounder border px-4 py-2 text-right">${{ number_format($car->precioI, 0, ',', '.') }}</td>
+                    <td class="rounder border px-4 py-2 text-right">${{ number_format($subtotal, 0, ',', '.') }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-4 py-8 text-center text-gray-400">No hay artículos en el pedido.</td>
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-400">No hay artículos en el pedido.</td>
                 </tr>
                 @endforelse
             </tbody>
+            @if ($inTheCar->count() > 0)
+            <tfoot>
+                <tr class="bg-brand-50 font-bold text-brand-800">
+                    <td colspan="6" class="px-4 py-2 text-right">TOTAL DEL PEDIDO</td>
+                    <td class="px-4 py-2 text-right text-brand-700">${{ number_format($total, 0, ',', '.') }}</td>
+                </tr>
+            </tfoot>
+            @endif
         </table>
 
     </div>

@@ -103,7 +103,7 @@
                 @foreach($pedidos as $i => $p)
                     <tr>
                         <td class="center">{{ $i + 1 }}</td>
-                        <td class="cod">{{ $p->codigo_proveedor }}{{ $p->codigo ? '-'.$p->codigo : '' }}</td>
+                        <td class="cod">{{ $p->codigo }}</td>
                         <td>{{ $p->articulo }} {{ $p->presentacion !== '-' ? $p->presentacion : '' }} {{ $p->unidad }}</td>
                         <td class="cant">{{ $p->cantidad }}</td>
                     </tr>

@@ -17,7 +17,7 @@ class ConfirmarPedido extends Component
 
         $inTheCar=PedidoCar::select('articulos.id','articulos.codigo','articulos.articulo',
         'categorias.categoria','articulos.presentacion','unidads.unidad',
-        'pedido_cars.cantidad','stocks.codigo_proveedor')
+        'pedido_cars.cantidad','stocks.codigo_proveedor','articulos.precioI')
         
         ->join('articulos','articulos.id','pedido_cars.articulo_id')
         ->join('stocks','stocks.articulo_id','articulos.id')
