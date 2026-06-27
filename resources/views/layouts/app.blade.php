@@ -23,11 +23,9 @@
 
             <!-- Page Content -->
             <div id="main" class="flex-1 transition-all duration-500">
-                <div class=" flex pr-2 justify-center bg-slate-100 fixed w-full rounded-lg shadow-lg border border-gray-200">
-                    <button class="openbtn px-10 " onclick="openNav()"></button>
+                <header class="sticky top-0 z-30 bg-slate-100 shadow-sm border-b border-gray-200 pl-14 md:pl-16">
                     @include('components.menu-info')
-                </div>
-
+                </header>
 
                 <main class="p-4">
                     {{ $slot }}
@@ -38,8 +36,9 @@
 
     <script>
         function openNav() {
-            document.getElementById("mySidebar").style.width = "18%";
-            document.getElementById("main").style.marginLeft = "18%";
+            document.getElementById("mySidebar").style.width = "16rem";
+            // En desktop empuja el contenido; en celular queda como overlay (no aplasta)
+            document.getElementById("main").style.marginLeft = window.innerWidth >= 768 ? "16rem" : "0";
         }
 
         function closeNav() {
