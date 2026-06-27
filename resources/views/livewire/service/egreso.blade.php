@@ -2,7 +2,7 @@
     <!-- Buscadores separados -->
     <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 w-7/12 ">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 mr-2 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
             Buscar Ingresos
@@ -12,7 +12,7 @@
             <!-- Buscador por N° de Ingreso -->
             <div class="w-fit">
                 <label class=" text-sm font-medium text-gray-600 mb-1 flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
                     </svg>
                     N° de Ingreso
@@ -21,14 +21,14 @@
                     wire:model.live="searchIngreso"
                     type="text"
                     placeholder="Ej: 8, 15, 23..."
-                    class="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm"
+                    class="w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-lg shadow-sm"
                 />
             </div>
             
             <!-- Buscador por Datos del Cliente -->
             <div class="w-full">
                 <label class=" text-sm font-medium text-gray-600 mb-1 flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                     Cliente (nombre, apellido, DNI, teléfono)
@@ -37,7 +37,7 @@
                     wire:model.live="searchCliente"
                     type="text"
                     placeholder="Buscar por datos del cliente..."
-                    class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm"
+                    class="w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-lg shadow-sm"
                 />
             </div>
                 {{-- --------------------- --}}
@@ -119,12 +119,12 @@
         <!-- Indicadores de búsqueda activa -->
         <div class="flex flex-wrap gap-2 mt-3">
             @if($searchIngreso)
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-blue-800">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
                     </svg>
                     Ingreso: {{ $searchIngreso }}
-                    <button wire:click="$set('searchIngreso', '')" class="ml-1 hover:text-blue-600">
+                    <button wire:click="$set('searchIngreso', '')" class="ml-1 hover:text-brand-600">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -138,7 +138,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                     Cliente: {{ $searchCliente }}
-                    <button wire:click="$set('searchCliente', '')" class="ml-1 hover:text-green-600">
+                    <button wire:click="$set('searchCliente', '')" class="ml-1 hover:text-brand-600">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -151,7 +151,7 @@
     <!-- Tabla de resultados -->
     <div class="w-full">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
+            <div class="bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-4 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-white flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
@@ -189,9 +189,9 @@
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($clientes as $cliente)
                         <!-- Fila principal -->
-                        <tr class="hover:bg-blue-50 transition-colors duration-150 {{ $ver == $cliente->nro_ingreso ? 'bg-blue-50' : '' }}">
+                        <tr class="hover:bg-brand-50 transition-colors duration-150 {{ $ver == $cliente->nro_ingreso ? 'bg-brand-50' : '' }}">
                             <td class="px-4 py-3 text-sm font-medium text-gray-900 border-r">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
                                     #{{ $cliente->nro_ingreso }}
                                 </span>
                             </td>
@@ -203,7 +203,7 @@
                                 <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">{{ $cliente->marca }}</span>
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">{{ $cliente->tipo }}</span>
+                                <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">{{ $cliente->tipo }}</span>
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r ">
                                 <span class="flex items-center">
@@ -219,7 +219,7 @@
                                         @if($cliente->estado=='Pendiente' || $cliente->estado=='pendiente')
                                             <button 
                                                 wire:click="terminarProceso({{ $cliente->nro_ingreso }})" placeholder="Terminar Proceso"
-                                                class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
+                                                class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow" >
                                             Terminar 
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />    
@@ -229,7 +229,7 @@
                                         @if($cliente->estado=='Completado' || $cliente->estado=='completado')
                                             <button 
                                                 wire:click="cerrarDetalles" placeholder="Terminar Proceso"
-                                                class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
+                                                class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow" >
                                                 <h3>cerrar</h3>
                                             </button>
                                         @endif
@@ -240,7 +240,7 @@
                                             isset($operacionNro) && !is_null($operacionNro))
                                             <a href="{{ route('comprobante',['operacion'=>$operacionNro]) }}" 
                                             target="_blank" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow">
+                                            class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow">
                                                 Imprimir Comprobante
                                             </a>
                                         @endif
@@ -248,7 +248,7 @@
                                     @else
                                         <button 
                                         wire:click="verCliente({{ $cliente->nro_ingreso }})"
-                                        class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-medium rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-sm hover:shadow">
+                                        class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -287,7 +287,7 @@
                                                                 <td class="border border-gray-300 px-4 py-2">{{$item->codigo_proveedor}}-{{$item->codigo}}</td>
                                                                 <td class="border border-gray-300 px-4 py-2">{{$item->articulo}}</td>
                                                                 <td class="border border-gray-300 px-4 py-2">
-                                                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                                                                    <span class="bg-brand-100 text-blue-800 px-2 py-1 rounded-full text-sm">
                                                                         {{$item->cantidad}}
                                                                     </span>
                                                                 </td>
@@ -314,7 +314,7 @@
                                                     <div class="flex-1 justify-center">
                                                         <button 
                                                             wire:click="terminarProcesoVenta({{ $cliente->nro_ingreso }})" placeholder="Terminar Proceso"
-                                                            class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow" >
+                                                            class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow" >
                                                             <h3>Entregar</h3>
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m11.99 7.5 3.75-3.75m0 0 3.75 3.75m-3.75-3.75v16.499H4.49" />
@@ -327,12 +327,12 @@
                                         </td>
                                     </tr>
                                     @else    
-                                        <tr class="bg-blue-50 border-t-2 border-blue-200">
+                                        <tr class="bg-brand-50 border-t-2 border-blue-200">
                                                 <td colspan="7" class="px-6 py-4">
                                                     <div class="bg-white rounded-lg shadow-inner p-4">
                                                         <div class="flex items-center mb-3 justify-between">
                                                             <div>
-                                                                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg class="w-5 h-5 text-brand-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                                                 </svg>
                                                                 <h4 class="text-md font-semibold text-gray-800">Artículos del ingreso #{{ $cliente->nro_ingreso }}</h4>
@@ -350,7 +350,7 @@
                                                         </div>
                                                         @forelse ($procesos as $item)
                                                         <span class="inline-flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700 mr-2 mb-2">
-                                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                                            <span class="w-2 h-2 bg-brand-500 rounded-full mr-2"></span>
                                                             #{{ $item->id }} - {{ $item->articulo }}
                                                         </span>
                                                         @empty
@@ -365,7 +365,7 @@
                                                     <div class="bg-white rounded-lg shadow-inner p-4">
                                                         <div class="flex items-center mb-3 justify-between">
                                                             <div>
-                                                                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg class="w-5 h-5 text-brand-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                                 </svg>
                                                                 <h4 class="text-md font-semibold text-gray-800">Detalles del ingreso #{{ $nDetalles->detalles }}</h4>

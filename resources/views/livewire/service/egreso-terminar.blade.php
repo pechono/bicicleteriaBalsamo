@@ -30,10 +30,10 @@
                                                     class="cursor-pointer {{ $this->estaEnCarrito($Items->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
                                                     wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$Items->id.')' : 'addCar('.$Items->id.')' }}"
                                                     wire:loading.attr="disabled">
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-green-500 font-bold':'' }}">{{ $Items->id }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-green-500 font-bold':'' }}">{{$Items->codigo_proveedor}}-{{ $Items->codigo }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-brand-500 font-bold':'' }}">{{ $Items->id }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-brand-500 font-bold':'' }}">{{$Items->codigo_proveedor}}-{{ $Items->codigo }}</td>
 
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-green-500 font-bold':'' }}">{{ $Items->articulo }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($Items->id) ? 'text-brand-500 font-bold':'' }}">{{ $Items->articulo }}</td>
                                                     <td class="rounder border flex p-1 flex-wrap">   
                                                                 @if ($this->estaEnCarrito($Items->id))
                                                                     <div class="flex gap-1 justify-center">
@@ -49,7 +49,7 @@
                                                                         <!-- Botón Modificar -->
                                                                         <button wire:click="modCar({{ $Items->id }})" 
                                                                                 wire:loading.attr="disabled"
-                                                                                class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95">
+                                                                                class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-600 hover:from-brand-500 hover:to-brand-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95">
                                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white">
                                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                                             </svg>
@@ -59,7 +59,7 @@
                                                                     <!-- Botón Agregar -->
                                                                     <button wire:click="addCar({{ $Items->id }})" 
                                                                             wire:loading.attr="disabled"
-                                                                            class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95 mx-auto">
+                                                                            class="group flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-400 to-brand-600 hover:from-brand-500 hover:to-brand-700 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-md active:scale-95 mx-auto">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white">
                                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                                                         </svg>
@@ -93,7 +93,7 @@
                             <!-- Campo de búsqueda -->
                             <div class="mt-3">
                                 <input wire:model.live="q" type="search" placeholder="Buscar" class="shadow appearance-none border rounded w-full py-2 px-3
-                                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-blue-400">
+                                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-brand-400">
                             </div>
                             @if (!$q)
                                 <p class="text-gray-500 mt-2">Ingrese algún texto para buscar un artículo.</p>
@@ -122,13 +122,13 @@
                                                     class="cursor-pointer {{ $this->estaEnCarrito($articulo->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
                                                     wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$articulo->id.')' : 'addCar('.$articulo->id.')' }}"
                                                     wire:loading.attr="disabled">
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->id }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{$articulo->codigo_proveedor}}-{{ $articulo->codigo }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->id }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{$articulo->codigo_proveedor}}-{{ $articulo->codigo }}</td>
 
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
-                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
+                                                    <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">
                                                         @if ($articulo->suelto == 1)
                                                             <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
                                                         @else
@@ -141,12 +141,12 @@
                                                             <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded-lg ">
                                                                 Elim
                                                             </button>
-                                                            <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-lg "">
+                                                            <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-500 hover:bg-brand-700 text-white font-bold p-2 rounded-lg "">
                                                                 Mod
                                                             </button> 
                                                         
                                                         @else
-                                                            <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded-lg ">
+                                                            <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-brand-500 hover:bg-brand-700 text-white font-bold p-2 rounded-lg ">
                                                                 Agregar
                                                             </button>
 
@@ -188,7 +188,7 @@
                                         $total=0;
                                     @endphp
                                         @foreach ($inTheCar as $item)
-                                            <tr class="{{ $this->Ofeta($item->articulo_id) ? 'text-green-500 font-bold':'' }}">
+                                            <tr class="{{ $this->Ofeta($item->articulo_id) ? 'text-brand-500 font-bold':'' }}">
                                                 <td class="rounder border px-4 py-2">{{ $item->articulo_id }}</td>
                                                 <td class="rounder border px-4 py-2">{{ $item->codigo_proveedor }}-{{ $item->codigo }}</td>
                                                 <td class="rounder border px-4 py-2">{{ $item->articulo }} {{ $item->presentacion }} - {{ $item->unidad  }}</td>
@@ -200,7 +200,7 @@
                                                     <div class="flex items-center ">
                                                         <div class="w-6">{{ $item->descuento }}</div>
                                                         <div class="w-5">
-                                                            <button class=' h-18 w-16 text-white text-l rounded-md bg-green-600 hover:bg-green-300' wire:click="descuentoArt({{ $item->articulo_id }})" wire:loading.attr="disabled" >
+                                                            <button class=' h-18 w-16 text-white text-l rounded-md bg-brand-600 hover:bg-green-300' wire:click="descuentoArt({{ $item->articulo_id }})" wire:loading.attr="disabled" >
                                                             Desc.
                                                             </button>
                                                         </div>
@@ -215,7 +215,7 @@
                                                         <button wire:click="deletCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded-lg ">
                                                             Elim
                                                         </button>
-                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg "">
+                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-500 hover:bg-brand-700 text-white font-bold py-2 px-2 rounded-lg "">
                                                             Mod
                                                         </button> 
                                                        
@@ -236,7 +236,7 @@
                                  <div class="flex-1">
                                     <div class="col-span-6 sm:col-span-4 rounded-lg border shadow-lg p-4">
                                         <div class="text-lg mb-4">Mecanico </div>
-                                        <select id="mecanicoSelect" class="block w-full text-1xl rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" 
+                                        <select id="mecanicoSelect" class="block w-full text-1xl rounded-md border-gray-300 focus:border-brand-500 focus:ring-brand-500" 
                                                 wire:model.live='mecanicoSelect' >
                                             <option value="">Seleccionar...</option>
                                             @foreach ($mecanicos as $m)
@@ -294,16 +294,16 @@
                         </thead>
                         <tbody>
                         <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Id</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Articulo</td>
 
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $articulosMuestra->id }} </td>
                                 <td class="px-4 py-2 border">{{ $articulosMuestra->articulo }} - {{ $articulosMuestra->presentacion }}-{{ $articulosMuestra->unidad }}</td>
                             <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Actual</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Precio Final</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Actual</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Final</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $articulosMuestra->stock }}</td>
@@ -314,11 +314,11 @@
 
                         <tfoot >
                             <tr >
-                                <td colspan="1" class=" px-4 py-2 border border-slate-300 bg-sky-400/50  text-2xl font-semibold">
+                                <td colspan="1" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-2xl font-semibold">
                                 Ingresar Cantidad
                                 </td>
 
-                                <td colspan="1"  class="px-4 py-2 border border-slate-300 bg-sky-400/50  font-semibold text-right">
+                                <td colspan="1"  class="px-4 py-2 border border-slate-300 bg-brand-400/50  font-semibold text-right">
                                     <input 
                                     id="cantidadArt" 
                                     wire:model="cantidadArt" 
@@ -374,11 +374,11 @@
                         </thead>
                         <tbody>
                         <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">"Descripcion</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Precio Inicial</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Precio Final</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Id</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Articulo</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">"Descripcion</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Inicial</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Final</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $id }} </td>
@@ -388,11 +388,11 @@
                                 <td class="px-4 py-2 border">{{ $precioF }}</td>
                             </tr>
                             <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50  text-lg font-semibold">Caducidad</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Descuento</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Detalles</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Minimo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Actual</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50  text-lg font-semibold">Caducidad</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Descuento</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Detalles</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Minimo</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Actual</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $caducidad}} </td>
@@ -405,10 +405,10 @@
 
                         <tfoot >
                             <tr >
-                                <td colspan="3" class=" px-4 py-2 border border-slate-300 bg-sky-400/50  text-4xl font-semibold">
+                                <td colspan="3" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-4xl font-semibold">
                                 Aplicar Descuento
                                 </td>
-                                <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-sky-400/50   font-semibold">
+                                <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-brand-400/50   font-semibold">
                                     <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
                                     <x-input-error for="descArt" class="mt-2" />
                                 </td>
@@ -465,7 +465,7 @@
                         <tfoot>
                             <tr class="border-t border-gray-200 bg-gray-50">
                                 <td colspan="3" class="px-4 py-2 text-sm font-semibold text-gray-700 text-right">Total cobrado:</td>
-                                <td class="px-4 py-2 text-right font-bold text-green-700">
+                                <td class="px-4 py-2 text-right font-bold text-brand-700">
                                     ${{ number_format($inTheCar->sum(fn($c) => $c->cantidad * $c->precioF * (1 - $c->descuento / 100)), 2) }}
                                 </td>
                             </tr>
@@ -501,7 +501,7 @@
                         <div class="flex items-center justify-between bg-white border border-amber-200 rounded-lg px-3 py-2 text-sm">
                             <span class="text-gray-700">{{ $item['descripcion'] }}</span>
                             <div class="flex items-center gap-3">
-                                <span class="font-semibold text-green-700">${{ number_format($item['monto'], 2) }}</span>
+                                <span class="font-semibold text-brand-700">${{ number_format($item['monto'], 2) }}</span>
                                 <button wire:click="quitarItemMecanico({{ $i }})" type="button"
                                     class="text-red-400 hover:text-red-600 text-lg leading-none transition">×</button>
                             </div>

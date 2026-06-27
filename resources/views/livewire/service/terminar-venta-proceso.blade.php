@@ -11,7 +11,7 @@
                             <!-- Campo de búsqueda -->
                             <div class="mt-3">
                                 <input wire:model.live="q" type="search" placeholder="Buscar" class="shadow appearance-none border rounded w-full py-2 px-3
-                                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-blue-400">
+                                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-brand-400">
                             </div>
                             @if (!$q)
                                 <p class="text-gray-500 mt-2">Ingrese algún texto para buscar un artículo.</p>
@@ -40,13 +40,13 @@
                                                 class="cursor-pointer {{ $this->estaEnCarrito($articulo->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
                                                 wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$articulo->id.')' : 'addCar('.$articulo->id.')' }}"
                                                 wire:loading.attr="disabled">
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->id }}</td>
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{$articulo->codigo_proveedor}}-{{ $articulo->codigo }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->id }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{$articulo->codigo_proveedor}}-{{ $articulo->codigo }}</td>
 
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
+                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-brand-500 font-bold':'' }}">
                                                     @if ($articulo->suelto == 1)
                                                         <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
                                                     @else
@@ -59,12 +59,12 @@
                                                         <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded-lg ">
                                                             Elim
                                                         </button>
-                                                        <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-lg "">
+                                                        <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-500 hover:bg-brand-700 text-white font-bold p-2 rounded-lg "">
                                                             Mod
                                                         </button> 
                                                        
                                                     @else
-                                                        <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded-lg ">
+                                                        <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-brand-500 hover:bg-brand-700 text-white font-bold p-2 rounded-lg ">
                                                             Agregar
                                                         </button>
 
@@ -106,7 +106,7 @@
                                         $total=0;
                                     @endphp
                                         @foreach ($inTheCar as $item)
-                                            <tr class="{{ $this->desdeProcesos($item->articulo_id) ? 'text-blue-500 font-bold':'' }}">
+                                            <tr class="{{ $this->desdeProcesos($item->articulo_id) ? 'text-brand-500 font-bold':'' }}">
                                                 <td class="rounder border px-4 py-2">{{ $item->articulo_id }}</td>
                                                  <td class="rounder border px-4 py-2">{{ $item->codigo_proveedor }}-{{ $item->codigo }}</td>
 
@@ -119,7 +119,7 @@
                                                     <div class="flex items-center ">
                                                         <div class="w-6">{{ $item->descuento }}</div>
                                                         <div class="w-5">
-                                                            <button class=' h-18 w-16 text-white text-l rounded-md bg-green-600 hover:bg-green-300' wire:click="descuentoArt({{ $item->articulo_id }})" wire:loading.attr="disabled" >
+                                                            <button class=' h-18 w-16 text-white text-l rounded-md bg-brand-600 hover:bg-green-300' wire:click="descuentoArt({{ $item->articulo_id }})" wire:loading.attr="disabled" >
                                                             Desc.
                                                             </button>
                                                         </div>
@@ -133,12 +133,12 @@
                                                 <td class="rounder border  py-1 flex p-1 flex-wrap">
                                                    @if ($this->desdeProcesos($item->articulo_id))
                                                         <div class="flex items-center justify-center">
-                                                            <div class="backdrop-blur-sm bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-1.5">
+                                                            <div class="backdrop-blur-sm bg-brand-500/10 border border-brand-500/30 rounded-xl px-4 py-1.5">
                                                                 <div class="flex items-center space-x-2">
-                                                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                                     </svg>
-                                                                    <span class="text-green-700 font-medium text-sm">Finalizado</span>
+                                                                    <span class="text-brand-700 font-medium text-sm">Finalizado</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -146,7 +146,7 @@
                                                         <button wire:click="deletCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded-lg">
                                                             Elim
                                                         </button>
-                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg">
+                                                        <button wire:click="modCar({{$item->articulo_id}})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-500 hover:bg-brand-700 text-white font-bold py-2 px-2 rounded-lg">
                                                             Mod
                                                         </button>
                                                     @endif
@@ -187,8 +187,8 @@
                             
                             <div class="flex flex-col space-y-3">
                                 <div class="flex items-center p-3 bg-white rounded-xl shadow-sm">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                        <span class="text-blue-600 font-bold text-sm">ID</span>
+                                    <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-brand-600 font-bold text-sm">ID</span>
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-400">Identificación</p>
@@ -198,7 +198,7 @@
                                 
                                 <div class="flex items-center p-3 bg-white rounded-xl shadow-sm">
                                     <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </div>
@@ -238,7 +238,7 @@
                 <i class="fas fa-tag mr-2"></i>Tipo de Venta
                     </div>
                     
-                    <select id="tipo_id" class="block w-full mt-2 text-1xl rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" wire:model='tipo_id' wire:click='tipoVenta()'>
+                    <select id="tipo_id" class="block w-full mt-2 text-1xl rounded-md border-gray-300 shadow-sm focus:border-brand-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" wire:model='tipo_id' wire:click='tipoVenta()'>
                         <option value="">Seleccionar tipo de venta...</option>
                         @foreach ($tipoVentas as $tipo)
                             <option value="{{ $tipo->id }}">
@@ -255,7 +255,7 @@
                     <div class="text-2xl flex items-end justify-end flex-grow mr-4 text-gray-600">
                         Total:
                     </div>
-                    <div class="text-4xl font-bold text-blue-600 rounded-md shadow-sm flex items-center justify-end">
+                    <div class="text-4xl font-bold text-brand-600 rounded-md shadow-sm flex items-center justify-end">
                         ${{ number_format($total, 2) }}
                     </div>
                 </div>
@@ -263,7 +263,7 @@
 
             {{-- SECCIÓN BOTONES DE ACCIÓN --}}
             @if ($BloquearBoton)
-                <div class='rounded-lg border shadow-lg bg-gradient-to-r from-green-400 to-green-500 m-4 p-3 flex justify-between'>
+                <div class='rounded-lg border shadow-lg bg-gradient-to-r from-green-400 to-brand-500 m-4 p-3 flex justify-between'>
                     <x-danger-button wire:click="cancelarOperacion()" wire:loading.attr="disabled" class="bg-red-500 hover:bg-red-700">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -272,7 +272,7 @@
                     </x-danger-button>
                     
                     @if ( $tipo_id)
-                        <x-secondary-button wire:click="PreguntaConfirmarVenta()" wire:loading.attr="disabled" class="bg-white hover:bg-gray-100 text-green-600 font-bold">
+                        <x-secondary-button wire:click="PreguntaConfirmarVenta()" wire:loading.attr="disabled" class="bg-white hover:bg-gray-100 text-brand-600 font-bold">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
@@ -298,16 +298,16 @@
                         </thead>
                         <tbody>
                         <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Id</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Articulo</td>
 
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $articulosMuestra->id }} </td>
                                 <td class="px-4 py-2 border">{{ $articulosMuestra->articulo }} - {{ $articulosMuestra->presentacion }}-{{ $articulosMuestra->unidad }}</td>
                             <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Actual</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Precio Final</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Actual</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Final</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $articulosMuestra->stock }}</td>
@@ -318,11 +318,11 @@
 
                         <tfoot >
                             <tr >
-                                <td colspan="1" class=" px-4 py-2 border border-slate-300 bg-sky-400/50  text-2xl font-semibold">
+                                <td colspan="1" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-2xl font-semibold">
                                 Ingresar Cantidad
                                 </td>
 
-                                <td colspan="1"  class="px-4 py-2 border border-slate-300 bg-sky-400/50  font-semibold text-right">
+                                <td colspan="1"  class="px-4 py-2 border border-slate-300 bg-brand-400/50  font-semibold text-right">
                                     <input 
                                     id="cantidadArt" 
                                     wire:model="cantidadArt" 
@@ -378,11 +378,11 @@
                         </thead>
                         <tbody>
                         <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Articulo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">"Descripcion</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Precio Inicial</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Precio Final</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Id</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Articulo</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">"Descripcion</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Inicial</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Final</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $id }} </td>
@@ -392,11 +392,11 @@
                                 <td class="px-4 py-2 border">{{ $precioF }}</td>
                             </tr>
                             <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50  text-lg font-semibold">Caducidad</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Descuento</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Detalles</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Minimo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-sky-400/50 text-lg font-semibold">Stock Actual</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50  text-lg font-semibold">Caducidad</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Descuento</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Detalles</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Minimo</td>
+                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Actual</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 border">{{ $caducidad}} </td>
@@ -409,10 +409,10 @@
 
                         <tfoot >
                             <tr >
-                                <td colspan="3" class=" px-4 py-2 border border-slate-300 bg-sky-400/50  text-4xl font-semibold">
+                                <td colspan="3" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-4xl font-semibold">
                                 Aplicar Descuento
                                 </td>
-                                <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-sky-400/50   font-semibold">
+                                <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-brand-400/50   font-semibold">
                                     <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
                                     <x-input-error for="descArt" class="mt-2" />
                                 </td>

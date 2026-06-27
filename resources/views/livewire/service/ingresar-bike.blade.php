@@ -13,7 +13,7 @@
 
                 <button
                     wire:click="buscarCliente"
-                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    class="px-4 py-2 bg-brand-600 text-white rounded hover:bg-brand-700">
                     Buscar
                 </button>
             </div>
@@ -21,7 +21,7 @@
         @if ( $this->confirmingClienteAdd)
             <div class="bg-yellow-50 border border-yellow-400 rounded p-3 text-sm">
             Cliente no encontrado. Puede agregarlo haciendo clic en 
-            <button wire:click='confirmarClienteAdd' class="text-white bg-green-500 hover:bg-green-300 rounded-md w-36 py-2 px-5 mt-1.5" style="margin-top: 3px;">
+            <button wire:click='confirmarClienteAdd' class="text-white bg-brand-500 hover:bg-green-300 rounded-md w-36 py-2 px-5 mt-1.5" style="margin-top: 3px;">
                 Agregar Cliente
             </button>
         </div>
@@ -78,7 +78,7 @@
 
                     <button
                         wire:click="$set('modalTipo', true)"
-                        class="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                        class="text-xs px-2 py-1 bg-brand-600 text-white rounded hover:bg-brand-700"
                     >
                         ➕ Agregar
                     </button>
@@ -103,7 +103,7 @@
 
                         <button
                             wire:click="$set('modalMarca', true)"
-                            class="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                            class="text-xs px-2 py-1 bg-brand-600 text-white rounded hover:bg-brand-700"
                         >
                             ➕ Agregar
                         </button>
@@ -179,7 +179,7 @@
             <div class="flex justify-end mb-2">
                 <button
                     wire:click="$toggle('mostrarNotaProceso')"
-                    class="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    class="px-3 py-1 text-sm bg-brand-600 text-white rounded hover:bg-brand-700"
                 >
                     📝 Nota
                 </button>
@@ -245,7 +245,7 @@
             >
                 <button
                     wire:click="$toggle('mostrarNotaProceso')"
-                    class="absolute -left-4 top-4 bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow"
+                    class="absolute -left-4 top-4 bg-brand-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow"
                 >
                     {{ $mostrarNotaProceso ? '→' : '←' }}
                 </button>
@@ -268,7 +268,7 @@
     <div class="flex justify-end">
         <button
             wire:click="guardarIngreso"
-            class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            class="px-6 py-2 bg-brand-600 text-white rounded hover:bg-brand-700"
         >
             Guardar ingreso
         </button>
@@ -358,7 +358,7 @@
 
                         <button
                             wire:click="guardarTipo"
-                            class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                            class="px-3 py-1 text-sm bg-brand-600 text-white rounded hover:bg-brand-700"
                         >
                             Guardar Tipo
                         </button>
@@ -402,7 +402,7 @@
 
                             <button
                                 wire:click="guardarMarca"
-                                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                class="px-3 py-1 text-sm bg-brand-600 text-white rounded hover:bg-brand-700"
                             >
                                 Guardar
                             </button>
