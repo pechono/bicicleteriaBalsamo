@@ -2,211 +2,133 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>Pedido N° {{ $ver }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .invoice-box {
-            width: 100%;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #eee;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-            font-size: 14px;
-            line-height: 24px;
-            color: #555;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            background: #007bff;
-            color: white;
-            padding: 15px;
-        }
-        
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        
-        header h3 {
-            margin: 10px 0 0;
-            font-size: 16px;
-        }
-        
-        .company-info {
-            margin-top: 10px;
-        }
-        
-        .company-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .company-details {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            font-size: 12px;
-        }
-        
-        .report-info {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            background: #f4f4f4;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
-        .info-box {
-            flex: 1;
-        }
-        
-        .info-box p {
-            margin: 5px 0;
-        }
-        
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .invoice-table thead {
-            background: #007bff;
-            color: white;
-        }
-        
-        .invoice-table th, .invoice-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        
-        .invoice-table th {
-            font-weight: bold;
-        }
-        
-        .invoice-table tfoot td {
-            font-weight: bold;
-            background: #f4f4f4;
-        }
-        
-        .text-right {
-            text-align: right;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-            font-size: 12px;
-        }
-        
-        @media print {
-            body {
-                padding: 0;
-                margin: 0;
-            }
-            .invoice-box {
-                box-shadow: none;
-                border: none;
-            }
-        }
+        * { box-sizing: border-box; }
+        body { font-family: 'DejaVu Sans', Arial, sans-serif; margin: 0; color: #1f2937; font-size: 12px; }
+        .wrap { padding: 26px 30px; }
+
+        .top { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+        .top td { vertical-align: top; }
+        .empresa { font-size: 20px; font-weight: bold; color: #1d4ed8; }
+        .empresa-sub { color: #6b7280; font-size: 11px; line-height: 1.5; }
+
+        .doc-box { text-align: right; }
+        .doc-title { display: inline-block; background: #1d4ed8; color: #fff; font-size: 14px;
+                     font-weight: bold; padding: 6px 14px; border-radius: 4px; letter-spacing: .5px; }
+        .doc-meta { margin-top: 8px; font-size: 11px; color: #374151; }
+        .doc-meta b { color: #111827; }
+
+        .prov { width: 100%; border-collapse: collapse; margin: 6px 0 18px; }
+        .prov td { padding: 10px 12px; background: #f3f4f6; border: 1px solid #e5e7eb; }
+        .prov .label { font-size: 10px; text-transform: uppercase; color: #6b7280; letter-spacing: .5px; }
+        .prov .val { font-size: 13px; color: #111827; }
+
+        table.items { width: 100%; border-collapse: collapse; }
+        table.items thead th { background: #1d4ed8; color: #fff; font-size: 11px; text-transform: uppercase;
+                               letter-spacing: .4px; padding: 9px 10px; text-align: left; }
+        table.items tbody td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; }
+        table.items tbody tr:nth-child(even) td { background: #f9fafb; }
+        .cod { font-family: 'DejaVu Sans Mono', monospace; color: #374151; font-size: 11px; }
+        .cant { text-align: center; font-weight: bold; }
+        .right { text-align: right; }
+        .center { text-align: center; }
+
+        .total-row td { padding: 10px; font-weight: bold; background: #eef2ff; border-top: 2px solid #1d4ed8; }
+
+        footer { margin-top: 26px; padding-top: 10px; border-top: 1px solid #e5e7eb;
+                 text-align: center; color: #9ca3af; font-size: 10px; }
+        .firma { margin-top: 40px; width: 100%; }
+        .firma td { width: 50%; text-align: center; padding-top: 28px; font-size: 11px; color: #6b7280; }
+        .firma .line { border-top: 1px solid #9ca3af; margin: 0 30px 4px; }
     </style>
 </head>
 <body>
-    <div class="invoice-box">
-        <header>
-            <h1>{{ $titulo }}</h1>
-            <div class="company-info">
-                <div class="company-name">{{ $empresa->empresa ?? 'Sistema de Ventas' }}</div>
-                <div class="company-details">
-                    <div>Dirección: {{ $empresa->direccion ?? '' }}</div>
-                    <div>Teléfono: {{ $empresa->telefono ?? '' }}</div>
-                    <div>Email: {{ $empresa->mail ?? '' }}</div>
+<div class="wrap">
+
+    <table class="top">
+        <tr>
+            <td>
+                <div class="empresa">{{ $emp->empresa ?? 'Bicicletería Bálsamo' }}</div>
+                <div class="empresa-sub">
+                    {{ $emp->direccion ?? '' }}<br>
+                    @if($emp?->telefono) Tel: {{ $emp->telefono }} @endif
+                    @if($emp?->mail) · {{ $emp->mail }} @endif
                 </div>
-            </div>
-        </header>
-        
-        <div class="report-info">
-            <div class="info-box">
-                <p><strong>Fecha de emisión:</strong> {{ $fechaEmision->format('d/m/Y H:i:s') }}</p>
-                <p><strong>Cantidad de operaciones:</strong> {{ $cantidadOperaciones }}</p>
-                <p><strong>Total general:</strong> $ {{ number_format($totalGeneral, 2) }}</p>
-            </div>
-            <div class="info-box">
-                @if(isset($datos))
-                    <p><strong>Criterio aplicado:</strong></p>
-                    @if($datos['opcion'] == 1)
-                        <p>Día: {{ \Carbon\Carbon::parse($datos['dia'])->format('d/m/Y') }}</p>
-                    @elseif($datos['opcion'] == 2)
-                        <p>Desde: {{ \Carbon\Carbon::parse($datos['fechaI'])->format('d/m/Y') }}</p>
-                        <p>Hasta: {{ \Carbon\Carbon::parse($datos['fechaF'])->format('d/m/Y') }}</p>
-                    @elseif($datos['opcion'] == 3)
-                        <p>Mes: {{ $datos['mes'] }}</p>
-                        <p>Año: {{ $datos['anio'] ?? date('Y') }}</p>
-                    @elseif($datos['opcion'] == 4)
-                        <p>Año: {{ $datos['anio'] }}</p>
-                    @endif
-                @endif
-            </div>
-        </div>
-        
-        @if($operaciones->count() > 0)
-        <table class="invoice-table">
+            </td>
+            <td class="doc-box">
+                <span class="doc-title">PEDIDO A PROVEEDOR</span>
+                <div class="doc-meta">
+                    <b>N°:</b> {{ $ver }}<br>
+                    <b>Fecha:</b> {{ optional($pedidos->first())->Fecha ? \Carbon\Carbon::parse($pedidos->first()->Fecha)->format('d/m/Y H:i') : now()->format('d/m/Y H:i') }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="prov">
+        <tr>
+            <td style="width:55%;">
+                <div class="label">Proveedor</div>
+                <div class="val">{{ $proveedor->nombre ?? '-' }}</div>
+            </td>
+            <td>
+                <div class="label">Teléfono</div>
+                <div class="val">{{ $proveedor->telefono ?? '-' }}</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="label">Dirección</div>
+                <div class="val">{{ $proveedor->direccion ?? '-' }}</div>
+            </td>
+            <td>
+                <div class="label">Localidad</div>
+                <div class="val">{{ $proveedor->localidad ?? '-' }}</div>
+            </td>
+        </tr>
+    </table>
+
+    @if($pedidos->count() > 0)
+        <table class="items">
             <thead>
-                 <tr>
-                    <th>ID</th>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
-                    <th>Vendedor</th>
-                    <th>Tipo Venta</th>
-                    <th class="text-right">Total</th>
-                  </tr>
+                <tr>
+                    <th style="width:32px;" class="center">#</th>
+                    <th style="width:130px;">Código</th>
+                    <th>Artículo</th>
+                    <th style="width:80px;" class="center">Cantidad</th>
+                </tr>
             </thead>
             <tbody>
-                @foreach($operaciones as $op)
-                 <tr>
-                    <td>{{ $op->id }}</td>
-                    <td>{{ \Carbon\Carbon::parse($op->Fecha)->format('d/m/Y H:i') }}</td>
-                    <td>{{ $op->apellido }}, {{ $op->nombre }}</td>
-                    <td>{{ $op->name }}</td>
-                    <td>{{ $op->tipoVenta }}</td>
-                    <td class="text-right">$ {{ number_format($op->venta, 2) }}</td>
-                 </tr>
+                @foreach($pedidos as $i => $p)
+                    <tr>
+                        <td class="center">{{ $i + 1 }}</td>
+                        <td class="cod">{{ $p->codigo_proveedor }}{{ $p->codigo ? '-'.$p->codigo : '' }}</td>
+                        <td>{{ $p->articulo }} {{ $p->presentacion !== '-' ? $p->presentacion : '' }} {{ $p->unidad }}</td>
+                        <td class="cant">{{ $p->cantidad }}</td>
+                    </tr>
                 @endforeach
+                <tr class="total-row">
+                    <td colspan="3" class="right">TOTAL DE ARTÍCULOS</td>
+                    <td class="center">{{ $pedidos->count() }}</td>
+                </tr>
             </tbody>
-            <tfoot>
-                 <tr>
-                    <td colspan="5" class="text-right"><strong>TOTAL GENERAL:</strong></td>
-                    <td class="text-right"><strong>$ {{ number_format($totalGeneral, 2) }}</strong></td>
-                 </tr>
-            </tfoot>
         </table>
-        @else
-        <p style="text-align: center; color: red; padding: 40px;">
-            No se encontraron operaciones para el criterio seleccionado.
-        </p>
-        @endif
-        
-        <footer>
-            <p>&copy; {{ date('Y') }} {{ $empresa->empresa ?? 'Sistema de Ventas' }}. Todos los derechos reservados.</p>
-            <p>Documento generado electrónicamente - {{ $fechaEmision->format('d/m/Y H:i:s') }}</p>
-        </footer>
-    </div>
+
+        <table class="firma">
+            <tr>
+                <td><div class="line"></div>Solicita</td>
+                <td><div class="line"></div>Recibe / Proveedor</td>
+            </tr>
+        </table>
+    @else
+        <p class="center" style="padding:40px; color:#9ca3af;">Este pedido no tiene artículos.</p>
+    @endif
+
+    <footer>
+        {{ $emp->empresa ?? 'Bicicletería Bálsamo' }} · Pedido generado el {{ now()->format('d/m/Y H:i') }}
+    </footer>
+
+</div>
 </body>
 </html>
