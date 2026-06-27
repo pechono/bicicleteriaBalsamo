@@ -8,13 +8,13 @@
             <div class="flex-1 min-w-[180px]">
                 <input wire:model.live.debounce.300ms="q" type="search"
                        placeholder="🔍 Buscar artículo, código, detalles..."
-                       class="w-full text-sm border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 py-1.5"/>
+                       class="w-full text-sm border-gray-300 rounded-lg shadow-sm focus:ring-brand-500 focus:border-brand-500 py-1.5"/>
             </div>
 
             {{-- Filtro por categoría --}}
             <div class="min-w-[160px]">
                 <select wire:model.live="categoria_id"
-                        class="w-full text-sm border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 py-1.5">
+                        class="w-full text-sm border-gray-300 rounded-lg shadow-sm focus:ring-brand-500 py-1.5">
                     <option value="">Todas las categorías</option>
                     @foreach($categorias as $cat)
                         <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
@@ -25,7 +25,7 @@
             {{-- Toggle activos --}}
             <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                 <input type="checkbox" wire:model.live="active" value="1"
-                       class="rounded border-gray-300 text-indigo-600 shadow-sm"/>
+                       class="rounded border-gray-300 text-brand-600 shadow-sm"/>
                 Solo activos
             </label>
 
@@ -33,14 +33,14 @@
             <span class="text-xs text-gray-400 ml-auto">
                 {{ $articulos->total() }} artículos
                 @if($categoria_id)
-                    · <span class="text-indigo-500 font-medium">{{ $categorias->firstWhere('id', $categoria_id)?->categoria }}</span>
+                    · <span class="text-brand-500 font-medium">{{ $categorias->firstWhere('id', $categoria_id)?->categoria }}</span>
                 @endif
             </span>
         </div>
     </div>
 
-    {{-- ── TABLA ───────────────────────────────────────────────── --}}
-    <div class="w-full">
+    {{-- ── TABLA (desktop) ─────────────────────────────────────── --}}
+    <div class="hidden md:block w-full overflow-x-auto">
         <table class="table-auto w-full">
             <thead>
                 <tr>
@@ -130,13 +130,13 @@
                     <td class="rounder border px-4 py-2">
                         @if($articulo->activo != 1)
                             <button wire:click="ActivarArticuloEdit({{ $articulo->id }})"
-                                    class="rounded bg-green-500 hover:bg-green-400 text-white h-8 px-3">
+                                    class="rounded bg-brand-600 hover:bg-brand-500 text-white h-8 px-3">
                                 Activar
                             </button>
                         @else
                             <div class="flex items-center gap-1">
                                 <button wire:click="confirmarArticuloEdit({{ $articulo->id }})"
-                                        class="rounded bg-green-500 hover:bg-green-400 text-white h-8 px-3">
+                                        class="rounded bg-brand-600 hover:bg-brand-500 text-white h-8 px-3">
                                     Editar
                                 </button>
                                 <button wire:click="confirmarArticuloDeletion({{ $articulo->id }})"
@@ -155,6 +155,45 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- ── TARJETAS (mobile) ───────────────────────────────────── --}}
+    <div class="md:hidden space-y-2">
+        @forelse($articulos as $articulo)
+            @php $stockBajo = $articulo->stock <= $articulo->stockMinimo; @endphp
+            <div class="rounded-xl border bg-white dark:bg-gray-800 p-3 {{ $stockBajo ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-700' }}">
+                <div class="flex justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="font-semibold text-gray-800 dark:text-gray-100">{{ $articulo->articulo }}</div>
+                        <div class="text-xs text-gray-400 font-mono">{{ $articulo->codigo_proveedor }}{{ $articulo->codigo ? '-'.$articulo->codigo : '' }}</div>
+                        @if($articulo->detalles && $articulo->detalles !== '')
+                            <div class="text-xs text-gray-400">{{ $articulo->detalles }}</div>
+                        @endif
+                    </div>
+                    <div class="text-right shrink-0">
+                        <div class="text-[10px] text-gray-400 uppercase">Stock</div>
+                        <div class="text-lg font-bold {{ $stockBajo ? 'text-red-600' : 'text-gray-700 dark:text-gray-200' }}">{{ $articulo->stock }}</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mt-2 text-sm">
+                    <div><span class="block text-[10px] text-gray-400 uppercase">Costo</span>${{ $articulo->precioI }}@unless($articulo->iva_incluido)<span class="text-[10px] text-gray-500 font-semibold"> +IVA</span>@endunless</div>
+                    <div><span class="block text-[10px] text-gray-400 uppercase">Venta</span>${{ $articulo->precioF }}</div>
+                    <div><span class="block text-[10px] text-gray-400 uppercase">Desc</span>{{ $articulo->descuento }}%</div>
+                </div>
+                @admin
+                <div class="mt-3 flex gap-2">
+                    @if($articulo->activo != 1)
+                        <button wire:click="ActivarArticuloEdit({{ $articulo->id }})" class="flex-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white h-10 font-medium">Activar</button>
+                    @else
+                        <button wire:click="confirmarArticuloEdit({{ $articulo->id }})" class="flex-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white h-10 font-medium">Editar</button>
+                        <button wire:click="confirmarArticuloDeletion({{ $articulo->id }})" class="flex-1 rounded-lg bg-red-500 hover:bg-red-400 text-white h-10 font-medium">Quitar</button>
+                    @endif
+                </div>
+                @endadmin
+            </div>
+        @empty
+            <div class="text-center text-gray-400 py-8">No se encontraron artículos.</div>
+        @endforelse
     </div>
 
     {{-- ── PAGINACIÓN ──────────────────────────────────────────── --}}
