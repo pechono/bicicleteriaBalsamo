@@ -1,2 +1,3 @@
-<img src="{{ asset('images/bicicletas_logo.png') }}" alt="Bicicletería Balsamo"
-     {{ $attributes->merge(['class' => 'dark:invert']) }}>
+<span class="inline-flex bg-brand-700 rounded-xl p-3">
+    <img src="{{ asset('images/logo-balsamo.png') }}" alt="Bicicletería Bálsamo" class="h-12 w-auto">
+</span>

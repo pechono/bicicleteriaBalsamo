@@ -29,11 +29,9 @@
     <!-- Header -->
    <header class="bg-white shadow-md">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
-       <a href="/" class="flex items-center gap-3 group">
-            <img src="{{ asset('images/bicicletas_logo.png') }}" alt="Bicicletería Balsamo" class="h-10 md:h-12 w-auto">
-            <div class="flex flex-col transition-colors">
-                <div class="text-3xl md:text-4xl font-bold text-indigo-800 group-hover:text-red-600 transition-colors duration-300 leading-none">Bicicletería</div>
-                <div class="text-lg font-bold text-red-600 group-hover:text-indigo-800 transition-colors duration-300 text-right">Balsamo</div>
+       <a href="/" class="flex items-center">
+            <div class="bg-indigo-700 rounded-xl px-4 py-2 shadow">
+                <img src="{{ asset('images/logo-balsamo.png') }}" alt="Bicicletería Balsamo" class="h-10 md:h-12 w-auto">
             </div>
         </a>
         

@@ -23,7 +23,7 @@
 
             <!-- Page Content -->
             <div id="main" class="flex-1 transition-all duration-500">
-                <header class="sticky top-0 z-30 bg-slate-100 shadow-sm border-b border-gray-200 pl-14 md:pl-16">
+                <header class="sticky top-0 z-30 bg-brand-700 shadow-md pl-14 md:pl-16">
                     @include('components.menu-info')
                 </header>
 

@@ -1,7 +1,5 @@
-<a href="/" class="flex flex-col items-center">
-    <img src="{{ asset('images/bicicletas_logo.png') }}" alt="Bicicletería Balsamo" class="h-14 w-auto dark:invert">
-    <div class="mt-2 text-center leading-tight">
-        <span class="block text-2xl font-extrabold text-indigo-800 dark:text-indigo-300">Bicicletería</span>
-        <span class="block text-base font-bold text-red-600 dark:text-red-400 -mt-1">Balsamo</span>
+<a href="/" class="flex justify-center">
+    <div class="bg-brand-700 rounded-2xl px-8 py-5 shadow-md">
+        <img src="{{ asset('images/logo-balsamo.png') }}" alt="Bicicletería Bálsamo" class="h-20 w-auto">
     </div>
 </a>
