@@ -22,6 +22,9 @@ Route::get('/app', function () {
     return view('app.download');
 })->name('app.download');
 
+// ── Hook de deploy por HTTP (lo llama la GitHub Action; protegido por token) ──
+Route::get('/deploy/{token}', [\App\Http\Controllers\DeployController::class, 'deploy'])->name('deploy.hook');
+
 // ── Comprobante público (desde app móvil) ────────────────────────
 // hash = sha256(operacion_id . APP_KEY) – sin auth, solo lectura del PDF
 Route::get('/comprobante/mobile/{operacion}/{hash}', function ($operacion, $hash) {

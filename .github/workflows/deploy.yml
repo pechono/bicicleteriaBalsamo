@@ -36,32 +36,12 @@ jobs:
           git diff --staged --quiet || git commit -m "build: assets compilados [skip ci]"
           git push --force origin main
 
-      - name: Deploy en Hostinger
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          password: ${{ secrets.DEPLOY_PASS }}
-          port: 65002
-          script: |
-            set -e
-            cd ${{ secrets.DEPLOY_APP_PATH }}
-
-            # Traer el último código (incluye los assets que commiteó la Action)
-            git fetch origin main
-            git reset --hard origin/main
-
-            # Dependencias PHP (phpspreadsheet, pdfparser, etc.) — IMPRESCINDIBLE
-            composer install --no-dev --optimize-autoloader --no-interaction
-
-            # Migraciones y symlink de storage (idempotentes)
-            php artisan migrate --force
-            php artisan storage:link || true
-
-            # Copiar el public del proyecto al docroot (public_html)
-            cp -rf public/. ${{ secrets.DEPLOY_PUBLIC_PATH }}/
-
-            # Limpiar cachés (NO route:cache: las rutas usan closures y rompería)
-            php artisan optimize:clear
-
-            echo "Deploy completado!"
+      - name: Deploy via hook HTTP
+        run: |
+          echo "Llamando al hook de deploy por HTTPS (evita el SSH que Hostinger bloquea)..."
+          HTTP=$(curl -sS --max-time 300 -o response.txt -w "%{http_code}" \
+            "https://bicicleteriabalsamo.xyz/deploy/${{ secrets.DEPLOY_TOKEN }}")
+          echo "=== Respuesta del servidor (HTTP $HTTP) ==="
+          cat response.txt
+          echo ""
+          test "$HTTP" = "200"
