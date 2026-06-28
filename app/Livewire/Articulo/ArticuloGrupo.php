@@ -34,7 +34,7 @@ class ArticuloGrupo extends Component
     public $categorias = [];
     public $unidades = [];
     public $articulo, $categoria_id, $presentacion, $unidad_id,
-            $descuento, $unidadVenta='Unidad', $precioF, $precioI, $caducidad=false,
+            $descuento=0, $unidadVenta='Unidad', $precioF, $precioI, $caducidad=false,
             $detalles, $suelto, $porcentaje, $idArtitul, $proveedor_id, $stock, $stockMinimo, $codigo,
             $codigo_proveedor;
     
@@ -228,6 +228,11 @@ class ArticuloGrupo extends Component
         if ($this->cargando) return;
         $this->cargando = true;
 
+        // Descuento vacío = sin descuento = 0 (el "0" del campo es placeholder, no un valor real)
+        if ($this->descuento === '' || $this->descuento === null) {
+            $this->descuento = 0;
+        }
+
         $this->validate([
             'articulo'    => 'required|string|min:4',
             'unidad_id'   => 'required',
@@ -344,7 +349,7 @@ class ArticuloGrupo extends Component
         $this->codigo = null;
         $this->presentacion = '';
         $this->unidad_id = '';
-        $this->descuento = '';
+        $this->descuento = 0;
         $this->unidadVenta = 'Unidad';
         $this->precioF = '';
         $this->precioI = '';
