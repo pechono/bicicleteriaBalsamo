@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Articulo;
 use App\Models\Categoria;
 use App\Models\Stock;
+use App\Support\Busqueda;
 use Illuminate\Http\Request;
 
 class ArticuloMobileController extends Controller
@@ -25,12 +26,12 @@ class ArticuloMobileController extends Controller
         $articulos = Articulo::where('articulos.activo', 1)
             // Los servicios (categoria_id = 1) NO se listan acá, son aparte
             ->where('articulos.categoria_id', '<>', 1)
+            // Búsqueda multi-palabra + código/abrev-código (igual que la web, Busqueda::palabras)
             ->when($q, fn($query) =>
-                $query->where(fn($sub) =>
-                    $sub->where('articulos.articulo', 'like', "%{$q}%")
-                        ->orWhere('articulos.detalles', 'like', "%{$q}%")
-                        ->orWhere('articulos.codigo',   'like', "%{$q}%")
-                )
+                Busqueda::palabras($query, $q, [
+                    'articulos.articulo', 'articulos.detalles',
+                    'articulos.codigo', 'stocks.codigo_proveedor',
+                ])
             )
             ->when($categoriaId, fn($query) =>
                 $query->where('articulos.categoria_id', $categoriaId)
@@ -170,11 +171,12 @@ class ArticuloMobileController extends Controller
         $q = $request->input('q', '');
 
         $articulos = Articulo::where('articulos.activo', true)
-            ->where(function ($query) use ($q) {
-                $query->where('articulos.articulo', 'like', "%{$q}%")
-                      ->orWhere('articulos.codigo', 'like', "%{$q}%");
-            })
             ->leftJoin('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->when($q, fn($query) =>
+                Busqueda::palabras($query, $q, [
+                    'articulos.articulo', 'articulos.codigo', 'stocks.codigo_proveedor',
+                ])
+            )
             ->select(
                 'articulos.id', 'articulos.articulo', 'articulos.codigo',
                 'articulos.presentacion', 'articulos.precioF', 'stocks.stock'

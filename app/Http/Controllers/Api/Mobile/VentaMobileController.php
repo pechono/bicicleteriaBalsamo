@@ -36,13 +36,14 @@ class VentaMobileController extends Controller
         $q = $request->input('q', '');
 
         $articulos = Articulo::where('articulos.activo', true)
-            ->where(function ($query) use ($q) {
-                $query->where('articulos.articulo', 'like', "%{$q}%")
-                      ->orWhere('articulos.codigo', 'like', "%{$q}%")
-                      ->orWhere('categorias.categoria', 'like', "%{$q}%");
-            })
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->when($q, fn($query) =>
+                \App\Support\Busqueda::palabras($query, $q, [
+                    'articulos.articulo', 'articulos.codigo',
+                    'stocks.codigo_proveedor', 'categorias.categoria',
+                ])
+            )
             ->select(
                 'articulos.id',
                 'articulos.articulo',

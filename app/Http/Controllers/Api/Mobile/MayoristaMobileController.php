@@ -68,9 +68,13 @@ class MayoristaMobileController extends Controller
             return response()->json([]);
         }
 
-        $articulos = Articulo::where('activo', true)
-            ->where(fn($query) => $query->where('articulo', 'like', "%{$q}%")
-                                        ->orWhere('codigo', 'like', "%{$q}%"))
+        // Join a stocks para buscar también por codigo_proveedor (igual que la web)
+        $articulos = Articulo::where('articulos.activo', true)
+            ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->where(fn($query) => \App\Support\Busqueda::palabras($query, $q, [
+                'articulos.articulo', 'articulos.codigo', 'stocks.codigo_proveedor',
+            ]))
+            ->select('articulos.*')
             ->with('categoria')
             ->limit(12)
             ->get()
