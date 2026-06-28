@@ -18,7 +18,7 @@ class StockLivewire extends Component
 {
     use WithPagination;
 
-    public $active   = 1;
+    public $active   = true;   // checkbox booleano: tildado = solo activos
     public $q        = '';
     public $categoria_id = '';
     public $sortBy   = 'articulo';
@@ -36,7 +36,7 @@ class StockLivewire extends Component
 
     public function render()
     {
-        $articulos = Articulo::where('articulos.activo', $this->active)
+        $articulos = Articulo::where('articulos.activo', $this->active ? 1 : 0)
             ->when(trim($this->q), fn($query) => \App\Support\Busqueda::palabras(
                 $query, $this->q,
                 ['articulos.articulo', 'articulos.detalles', 'articulos.codigo', 'stocks.codigo_proveedor']

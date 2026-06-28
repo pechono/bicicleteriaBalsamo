@@ -24,7 +24,7 @@
 
             {{-- Toggle activos --}}
             <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                <input type="checkbox" wire:model.live="active" value="1"
+                <input type="checkbox" wire:model.live="active"
                        class="rounded border-gray-300 text-brand-600 shadow-sm"/>
                 Solo activos
             </label>
