@@ -247,12 +247,20 @@ class ArticuloGrupo extends Component
                 'regex:/^[A-Za-z0-9\-\/\.]+$/'
             ],
         ], [
+            'articulo.required'      => 'El nombre del artículo es obligatorio.',
             'articulo.min'           => 'El artículo debe tener al menos 4 caracteres.',
             'categoria_id.required'  => 'Debe seleccionar una categoría.',
+            'unidad_id.required'     => 'Debe seleccionar una unidad de medida.',
             'grupo.required'         => 'Debe seleccionar un grupo en la parte superior.',
             'proveedor_id.required'  => 'Debe seleccionar un proveedor en la parte superior.',
+            'descuento.required'     => 'El descuento es obligatorio (poné 0 si no tiene).',
+            'descuento.numeric'      => 'El descuento debe ser un número.',
+            'precioI.required'       => 'El precio inicial es obligatorio.',
             'precioI.min'            => 'El precio inicial debe ser mayor a 0.',
+            'precioF.required'       => 'El precio final es obligatorio.',
             'precioF.min'            => 'El precio final debe ser mayor a 0.',
+            'stock.required'         => 'El stock actual es obligatorio.',
+            'stockMinimo.required'   => 'El stock mínimo es obligatorio.',
         ]);
 
         DB::beginTransaction();

@@ -188,7 +188,7 @@
                 <div class="flex-1">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Artículo *</label>
                     <x-input type="text" class="mt-1 block w-full text-sm"
-                             wire:model="articulo" placeholder="Nombre del artículo"/>
+                             wire:model.blur="articulo" placeholder="Nombre del artículo"/>
                     <x-input-error for="articulo" class="mt-1" />
                 </div>
             </div>
@@ -208,7 +208,7 @@
                 <div class="w-1/2">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Unidad de Venta *</label>
                     <x-input type="text" class="mt-1 block w-full text-sm"
-                             wire:model="unidadVenta" placeholder="Unidad / Pack"/>
+                             wire:model.blur="unidadVenta" placeholder="Unidad / Pack"/>
                     <x-input-error for="unidadVenta" class="mt-1" />
                 </div>
             </div>
@@ -218,13 +218,13 @@
                 <div class="flex-1">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio Inicial *</label>
                     <x-input type="number" step="0.01" class="mt-1 block w-full text-sm"
-                             wire:model="precioI" placeholder="0.00"/>
+                             wire:model.blur="precioI" placeholder="0.00"/>
                     <x-input-error for="precioI" class="mt-1" />
                 </div>
                 <div class="w-24">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">% Ganancia</label>
                     <x-input type="number" step="0.01" class="mt-1 block w-full text-sm"
-                             wire:model="porcentaje" placeholder="0"/>
+                             wire:model.blur="porcentaje" placeholder="0"/>
                 </div>
                 <div class="pb-0.5">
                     <button wire:click="calcular"
@@ -235,7 +235,7 @@
                 <div class="flex-1">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio Final *</label>
                     <x-input type="number" step="0.01" class="mt-1 block w-full text-sm bg-green-50"
-                             wire:model="precioF" placeholder="0.00"/>
+                             wire:model.blur="precioF" placeholder="0.00"/>
                     <x-input-error for="precioF" class="mt-1" />
                 </div>
             </div>
@@ -245,19 +245,19 @@
                 <div class="w-1/3">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Descuento (%) *</label>
                     <x-input type="number" class="mt-1 block w-full text-sm"
-                             wire:model="descuento" placeholder="0"/>
+                             wire:model.blur="descuento" placeholder="0"/>
                     <x-input-error for="descuento" class="mt-1" />
                 </div>
                 <div class="w-1/3">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock Mínimo *</label>
                     <x-input type="number" class="mt-1 block w-full text-sm"
-                             wire:model="stockMinimo" placeholder="0"/>
+                             wire:model.blur="stockMinimo" placeholder="0"/>
                     <x-input-error for="stockMinimo" class="mt-1" />
                 </div>
                 <div class="w-1/3">
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock Actual *</label>
                     <x-input type="number" class="mt-1 block w-full text-sm"
-                             wire:model="stock" placeholder="0"/>
+                             wire:model.blur="stock" placeholder="0"/>
                     <x-input-error for="stock" class="mt-1" />
                 </div>
             </div>
@@ -266,7 +266,7 @@
             <div class="mb-4">
                 <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Detalles</label>
                 <x-input type="text" class="mt-1 block w-full text-sm"
-                         wire:model="detalles" placeholder="Descripción adicional (opcional)"/>
+                         wire:model.blur="detalles" placeholder="Descripción adicional (opcional)"/>
             </div>
 
             {{-- Botón --}}
