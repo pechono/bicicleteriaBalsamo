@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 
 const PUERTO = 3000;
 const AUTH_DIR = path.join(__dirname, '.wwebjs_auth');
