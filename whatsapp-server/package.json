@@ -1,7 +1,7 @@
 {
-  "name": "whatsapp-server",
+  "name": "whatsapp-balsamo",
   "version": "1.0.0",
-  "description": "Servidor local WhatsApp para Bicicleteria Balsamo",
+  "description": "Servidor WhatsApp - Bicicleteria Balsamo",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

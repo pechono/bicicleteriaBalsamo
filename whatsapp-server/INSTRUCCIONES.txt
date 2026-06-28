@@ -1,0 +1,71 @@
+====================================================
+  INSTRUCCIONES - WhatsApp Bicicleteria Balsamo
+====================================================
+
+REQUISITOS
+----------
+- Windows 10 u 11
+- Conexion a internet
+- El celular del negocio con WhatsApp
+
+
+PASO 1 - INSTALAR NODE.JS (solo la primera vez)
+-------------------------------------------------
+1. Ir a https://nodejs.org
+2. Descargar la version LTS (boton verde grande)
+3. Instalar con todas las opciones por defecto
+4. Reiniciar la PC
+
+
+PASO 2 - INSTALAR NGROK (solo la primera vez)
+----------------------------------------------
+1. Abrir cmd como administrador
+   (Menu inicio > buscar "cmd" > clic derecho > Ejecutar como administrador)
+2. Pegar este comando y presionar Enter:
+   winget install ngrok.ngrok
+3. Esperar que termine
+4. Cerrar y volver a abrir cmd
+5. Pegar este comando con el token de la cuenta:
+   ngrok config add-authtoken 2wDnDvfZRr6hWz8XxxxxxxxxxTU_TOKEN
+
+
+PASO 3 - INICIAR WHATSAPP (cada vez que se enciende la PC)
+-----------------------------------------------------------
+1. Doble clic en INICIAR.bat
+2. La primera vez instala dependencias (puede tardar 5 minutos)
+3. Aparece un codigo QR en la pantalla
+4. En el celular del negocio:
+   - Abrir WhatsApp
+   - Menu (tres puntos) > Dispositivos vinculados > Vincular dispositivo
+   - Escanear el QR con la camara
+5. Cuando dice "WhatsApp listo para enviar mensajes!" esta OK
+6. NO cerrar esta ventana
+
+
+PASO 4 - INICIAR EL TUNEL (cada vez que se enciende la PC)
+-----------------------------------------------------------
+1. Doble clic en TUNEL.bat
+2. Esperar hasta ver "Forwarding" con la URL fija:
+   https://calamari-judgingly-shakiness.ngrok-free.dev
+3. NO cerrar esta ventana
+
+URL PERMANENTE DEL SISTEMA:
+https://calamari-judgingly-shakiness.ngrok-free.dev
+
+
+IMPORTANTE
+----------
+- Ambas ventanas (INICIAR y TUNEL) deben quedar abiertas todo el dia
+- Si se cierran, los mensajes de WhatsApp no se envian
+- El QR solo se escanea una vez, despues recuerda la sesion
+- La URL del tunel SIEMPRE es la misma (no cambia al reiniciar)
+
+
+PROBLEMAS COMUNES
+-----------------
+- "node no se reconoce": reinstalar Node.js y reiniciar la PC
+- "ngrok no se reconoce": reinstalar ngrok y abrir cmd nuevo
+- QR no aparece: cerrar la ventana y volver a abrir INICIAR.bat
+- Mensajes no llegan: verificar que ambas ventanas esten abiertas
+
+====================================================
