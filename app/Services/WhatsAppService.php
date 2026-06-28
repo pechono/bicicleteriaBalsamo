@@ -8,16 +8,24 @@ use Illuminate\Support\Facades\Log;
 class WhatsAppService
 {
     protected string $serverUrl;
+    protected string $token;
 
     public function __construct()
     {
         $this->serverUrl = config('services.whatsapp.server_url', 'http://localhost:3000');
+        $this->token     = (string) config('services.whatsapp.token', '');
+    }
+
+    /** Header de autenticación con el server local (vacío si no hay token configurado). */
+    protected function headers(): array
+    {
+        return $this->token ? ['X-Token' => $this->token] : [];
     }
 
     public function sendText(string $to, string $message): array
     {
         try {
-            $response = Http::timeout(10)->post("{$this->serverUrl}/send", [
+            $response = Http::timeout(10)->withHeaders($this->headers())->post("{$this->serverUrl}/send", [
                 'to'      => $this->formatPhoneNumber($to),
                 'message' => $message,
             ]);
@@ -42,7 +50,7 @@ class WhatsAppService
     public function sendMedia(string $to, string $base64, string $filename, string $caption = ''): array
     {
         try {
-            $response = Http::timeout(60)->post("{$this->serverUrl}/send-media", [
+            $response = Http::timeout(60)->withHeaders($this->headers())->post("{$this->serverUrl}/send-media", [
                 'to'       => $this->formatPhoneNumber($to),
                 'base64'   => $base64,
                 'filename' => $filename,

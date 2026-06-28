@@ -33,6 +33,7 @@ return [
 
     'whatsapp' => [
         'server_url' => env('WHATSAPP_SERVER_URL', 'http://localhost:3000'),
+        'token'      => env('WHATSAPP_TOKEN', ''),
     ],
 
 ];

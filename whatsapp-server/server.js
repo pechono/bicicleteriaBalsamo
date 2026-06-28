@@ -9,6 +9,16 @@ app.use(express.json());
 
 const PUERTO = 3000;
 const AUTH_DIR = path.join(__dirname, '.wwebjs_auth');
+const TOKEN = process.env.WHATSAPP_TOKEN || '';
+
+// Si hay token configurado, exige que coincida el header x-token.
+function tokenInvalido(req, res) {
+    if (TOKEN && req.headers['x-token'] !== TOKEN) {
+        res.status(401).json({ success: false, error: 'Token invalido' });
+        return true;
+    }
+    return false;
+}
 
 let isReady = false;
 let client = null;
@@ -102,6 +112,7 @@ function iniciar() {
 }
 
 app.post('/send', async (req, res) => {
+    if (tokenInvalido(req, res)) return;
     const { to, message } = req.body;
 
     if (!isReady || !client) {
@@ -124,6 +135,7 @@ app.post('/send', async (req, res) => {
 });
 
 app.post('/send-media', async (req, res) => {
+    if (tokenInvalido(req, res)) return;
     const { to, base64, filename, caption } = req.body;
 
     if (!isReady || !client) {
