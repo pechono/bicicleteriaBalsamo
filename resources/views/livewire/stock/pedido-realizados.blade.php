@@ -114,6 +114,11 @@
                 <a href="{{ route('pedidoImprimir',['id'=>$pedido]) }}" target="_blank" class=" px-4 py-2 bg-blue-500 text-white rounded">
                     Imprimir Comprobante
                 </a>
+                <button wire:click="enviarWhatsApp" wire:loading.attr="disabled"
+                    class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">
+                    <span wire:loading.remove wire:target="enviarWhatsApp">Enviar por WhatsApp</span>
+                    <span wire:loading wire:target="enviarWhatsApp">Enviando…</span>
+                </button>
             @endif
             <x-secondary-button wire:click="$toggle('verPedido', false)" wire:loading.attr="disabled">
                 Cancelar

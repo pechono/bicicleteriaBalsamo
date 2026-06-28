@@ -1,4 +1,4 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const express = require('express');
 const fs = require('fs');
@@ -119,6 +119,29 @@ app.post('/send', async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Error al enviar a ' + to + ':', error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/send-media', async (req, res) => {
+    const { to, base64, filename, caption } = req.body;
+
+    if (!isReady || !client) {
+        return res.status(503).json({ success: false, error: 'WhatsApp no conectado' });
+    }
+
+    if (!to || !base64) {
+        return res.status(400).json({ success: false, error: 'Faltan datos' });
+    }
+
+    try {
+        const chatId = to.includes('@c.us') ? to : `${to}@c.us`;
+        const media = new MessageMedia('application/pdf', base64, filename || 'documento.pdf');
+        await client.sendMessage(chatId, media, { caption: caption || '' });
+        console.log('Archivo enviado a ' + to);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error al enviar archivo a ' + to + ':', error.message);
         res.status(500).json({ success: false, error: error.message });
     }
 });

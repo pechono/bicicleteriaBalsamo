@@ -15,7 +15,7 @@ class ReportVentaO extends Component
     public $emp=[];
 
 
-    public function generateReport($operacion)
+    private function build($operacion)
     {
 
 
@@ -44,8 +44,17 @@ class ReportVentaO extends Component
         $emp=Empresa::first();
 
 
-        $pdf=Pdf::loadView('livewire.print.report-venta-o', compact('ventaOp','emp','datos'));
-        return $pdf->stream();
+        return Pdf::loadView('livewire.print.report-venta-o', compact('ventaOp','emp','datos'));
+    }
 
+    public function generateReport($operacion)
+    {
+        return $this->build($operacion)->stream();
+    }
+
+    /** Devuelve el comprobante como bytes (para enviarlo por WhatsApp). */
+    public function pdfBytes($operacion)
+    {
+        return $this->build($operacion)->output();
     }
 }

@@ -21,7 +21,7 @@ class PrintPedido extends Component
 
     public $post;
 
-    public function generateReport($id)
+    private function build($id)
     {
         $ver=$id;
 
@@ -37,16 +37,24 @@ class PrintPedido extends Component
                         ->where('pedidos.pedido','=',$id)
                         ->get();
 
-                        
+
         $proveedor=Pedido::join('proveedors','proveedors.id','=','pedidos.proveedor_id')
                             ->where('pedidos.pedido','=',$id)
                             ->select('proveedors.nombre','pedidos.pedido', 'proveedors.telefono','proveedors.localidad','proveedors.direccion')->first();
 
         $emp=Empresa::first();
 
+        return Pdf::loadView('livewire.print.print-pedido', compact('pedidos','emp','ver','proveedor'));
+    }
 
-        $pdf=Pdf::loadView('livewire.print.print-pedido', compact('pedidos','emp','ver','proveedor'));
-        return $pdf->stream();
+    public function generateReport($id)
+    {
+        return $this->build($id)->stream();
+    }
 
+    /** Devuelve el PDF como bytes (para enviarlo por WhatsApp). */
+    public function pdfBytes($id)
+    {
+        return $this->build($id)->output();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Livewire\Traits;
 
 use App\Models\WhatsAppQueue;
+use App\Support\WhatsApp;
 use Illuminate\Support\Facades\Log;
 
 trait WithWhatsApp
@@ -38,6 +39,27 @@ trait WithWhatsApp
         } catch (\Exception $e) {
             Log::error('Error al encolar WhatsApp: ' . $e->getMessage());
             $this->notify('Error al preparar el mensaje de WhatsApp', 'error');
+            return false;
+        }
+    }
+
+    protected function sendWhatsAppPdf(string $to, string $pdfBytes, string $filename, string $caption = ''): bool
+    {
+        if (empty(trim($to))) {
+            Log::warning('WhatsApp: intento de enviar PDF sin número');
+            $this->notify('No hay teléfono registrado', 'warning');
+            return false;
+        }
+
+        try {
+            WhatsApp::encolarPdf($to, $pdfBytes, $filename, $caption);
+            $this->notify('Documento en cola para WhatsApp ✓', 'success');
+            Log::info("WhatsApp PDF encolado para {$to}");
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Error al encolar PDF de WhatsApp: ' . $e->getMessage());
+            $this->notify('Error al preparar el documento de WhatsApp', 'error');
             return false;
         }
     }

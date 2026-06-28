@@ -11,6 +11,8 @@ class WhatsAppQueue extends Model
     protected $fillable = [
         'telefono',
         'mensaje',
+        'archivo',
+        'nombre_archivo',
         'enviado',
         'enviado_en',
         'error'

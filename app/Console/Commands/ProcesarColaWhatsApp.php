@@ -6,6 +6,7 @@ use App\Models\WhatsAppQueue;
 use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProcesarColaWhatsApp extends Command
 {
@@ -29,9 +30,22 @@ class ProcesarColaWhatsApp extends Command
         $this->info("Procesando {$pendientes->count()} mensaje(s)...");
 
         foreach ($pendientes as $item) {
-            $resultado = $whatsapp->sendText($item->telefono, $item->mensaje);
+            if ($item->archivo && Storage::disk('local')->exists($item->archivo)) {
+                $base64 = base64_encode(Storage::disk('local')->get($item->archivo));
+                $resultado = $whatsapp->sendMedia(
+                    $item->telefono,
+                    $base64,
+                    $item->nombre_archivo ?: 'documento.pdf',
+                    $item->mensaje ?: ''
+                );
+            } else {
+                $resultado = $whatsapp->sendText($item->telefono, $item->mensaje);
+            }
 
             if ($resultado['success']) {
+                if ($item->archivo) {
+                    Storage::disk('local')->delete($item->archivo);
+                }
                 $item->update([
                     'enviado'    => true,
                     'enviado_en' => now(),

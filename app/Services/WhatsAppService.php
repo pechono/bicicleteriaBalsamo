@@ -39,6 +39,33 @@ class WhatsAppService
         }
     }
 
+    public function sendMedia(string $to, string $base64, string $filename, string $caption = ''): array
+    {
+        try {
+            $response = Http::timeout(60)->post("{$this->serverUrl}/send-media", [
+                'to'       => $this->formatPhoneNumber($to),
+                'base64'   => $base64,
+                'filename' => $filename,
+                'caption'  => $caption,
+            ]);
+
+            if ($response->failed()) {
+                Log::error('WhatsApp server error (media)', [
+                    'to'       => $to,
+                    'status'   => $response->status(),
+                    'response' => $response->json(),
+                ]);
+                return ['success' => false, 'response' => $response->json()];
+            }
+
+            return ['success' => true, 'response' => $response->json()];
+
+        } catch (\Exception $e) {
+            Log::error('WhatsApp excepción (media): ' . $e->getMessage());
+            return ['success' => false, 'response' => ['error' => $e->getMessage()]];
+        }
+    }
+
     public function serverOnline(): bool
     {
         try {
