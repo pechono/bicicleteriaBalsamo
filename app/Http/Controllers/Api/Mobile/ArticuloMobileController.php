@@ -49,16 +49,18 @@ class ArticuloMobileController extends Controller
                 'articulos.categoria_id', 'categorias.categoria',
                 'stocks.stock', 'stocks.stockMinimo',
                 'stocks.proveedor_id', 'stocks.codigo_proveedor',
-                'proveedors.nombre as proveedor_nombre', 'proveedors.abreviatura'
+                'proveedors.nombre as proveedor_nombre'
             )
             ->paginate(30);
 
         $items = collect($articulos->items())->map(function ($a) use ($isAdmin) {
-            // Código interno = abreviatura del proveedor + código del artículo.
-            // Puede no haber código (el artículo igual se identifica por su id).
-            $codigoInterno = $a->codigo
-                ? ($a->abreviatura ? "{$a->abreviatura}-{$a->codigo}" : $a->codigo)
-                : null;
+            // Código interno = codigo_proveedor (abreviatura, ej "DalS") + código del
+            // artículo, MISMA convención que toda la web ({{codigo_proveedor}}-{{codigo}}).
+            // Puede no haber ninguno (el artículo igual se identifica por su id).
+            $codigoInterno = trim(
+                ($a->codigo_proveedor ?? '') . ($a->codigo ? '-' . $a->codigo : ''),
+                '-'
+            ) ?: null;
 
             $data = [
                 'id'             => $a->id,
