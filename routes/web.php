@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::prefix('articulo')->group(function () {
         Route::get('/grupo', fn() => view('articulo.articuloGrupo'))->name('articulo.articuloGrupo');
         Route::get('/importar-lista', fn() => view('articulo.importarLista'))->name('articulo.importarLista');
+        Route::get('/catalogo', fn() => view('articulo.catalogo'))->name('articulo.catalogo');
 
     });
 

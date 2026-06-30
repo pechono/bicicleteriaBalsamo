@@ -46,7 +46,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Proveedor</label>
-                <select wire:model.live="proveedor_id"
+                <select wire:model="proveedor_id"
                     class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
                     <option value="">— Seleccionar —</option>
                     @foreach ($proveedores as $prov)
@@ -54,18 +54,6 @@
                     @endforeach
                 </select>
                 @error('proveedor_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grupo</label>
-                <select wire:model="grupo_id" @disabled(!$proveedor_id)
-                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm disabled:opacity-50">
-                    <option value="">{{ $proveedor_id ? '— Seleccionar —' : 'Elegí primero un proveedor' }}</option>
-                    @foreach ($grupos as $g)
-                        <option value="{{ $g->id }}">{{ $g->NombreGrupo }}</option>
-                    @endforeach
-                </select>
-                @error('grupo_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div>
