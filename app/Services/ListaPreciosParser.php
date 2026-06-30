@@ -9,90 +9,171 @@ use Smalot\PdfParser\Parser as PdfParser;
  * Parsea listas de precios de proveedores.
  *
  * Formatos soportados:
- *  - Excel de Dal Santo (hoja "STOCK GENERAL", encabezados en fila 5, datos desde fila 6).
- *  - PDF de NSM (por categorías; líneas "CÓDIGO descripción bulto precio$").
+ *  - 'dalsanto' : Excel de Dal Santo (hoja "STOCK GENERAL", datos desde fila 6). 1 precio.
+ *  - 'nsm'      : PDF de NSM (por categorías). 1 precio.
+ *  - 'vega'     : Excel de Vega (encabezado fila 1; A=código B=desc C=desc.adic D=precio). 1 precio (costo).
+ *  - 'cairo'    : Excel de El Cairo (encabezado con "BICICLETERO"/"PUBLICO"; columnas autodetectadas).
+ *                 2 precios: BICICLETERO=costo, PUBLICO=venta. Salta filas de sección.
  *
- * Cada item devuelto tiene la forma:
- *   ['codigo' => string, 'articulo' => string, 'precio' => int]
+ * Cada item devuelto:
+ *   ['codigo' => string, 'articulo' => string, 'precioI' => float, 'precioF' => float]
+ * Los precios se devuelven SIN redondear (el importador redondea y, si corresponde,
+ * multiplica por la cotización del dólar).
  */
 class ListaPreciosParser
 {
-    /** Nombre de la hoja a leer en el archivo de Dal Santo. */
     public const HOJA_DAL_SANTO = 'STOCK GENERAL';
 
     /**
-     * Dispatcher por extensión: elige el parser según el tipo de archivo.
-     *
-     * @return array<int, array{codigo:string, articulo:string, precio:int}>
+     * @return array<int, array{codigo:string, articulo:string, precioI:float, precioF:float}>
      */
-    public function parse(string $rutaArchivo, string $extension): array
+    public function parse(string $rutaArchivo, string $extension, ?string $formato = null): array
     {
-        return match (strtolower($extension)) {
-            'pdf'        => $this->parseNsm($rutaArchivo),
-            'xlsx', 'xls' => $this->parseDalSanto($rutaArchivo),
-            default      => throw new \InvalidArgumentException("Formato no soportado: .{$extension}"),
+        // Si viene formato explícito (elegido en la UI), tiene prioridad.
+        $formato = $formato ?: (strtolower($extension) === 'pdf' ? 'nsm' : 'dalsanto');
+
+        return match ($formato) {
+            'nsm'      => $this->parseNsm($rutaArchivo),
+            'dalsanto' => $this->parseDalSanto($rutaArchivo),
+            'vega'     => $this->parseVega($rutaArchivo),
+            'cairo'    => $this->parseCairo($rutaArchivo),
+            default    => throw new \InvalidArgumentException("Formato no soportado: {$formato}"),
         };
     }
 
-    /**
-     * Parsea un .xlsx de Dal Santo y devuelve los artículos listos para importar.
-     *
-     * @param  string  $rutaArchivo  Ruta absoluta al archivo .xlsx
-     * @return array<int, array{codigo:string, articulo:string, precio:int}>
-     */
+    /** Dal Santo: B=codigo, C=detalle, D=precio. Datos desde fila 6. */
     public function parseDalSanto(string $rutaArchivo): array
     {
-        $reader = IOFactory::createReaderForFile($rutaArchivo);
-        $reader->setReadDataOnly(true);
-
-        $spreadsheet = $reader->load($rutaArchivo);
-
-        // Buscamos la hoja por nombre; si no existe, usamos la activa.
-        $sheet = $spreadsheet->getSheetByName(self::HOJA_DAL_SANTO)
-            ?? $spreadsheet->getActiveSheet();
-
+        $sheet = $this->cargarHoja($rutaArchivo, self::HOJA_DAL_SANTO);
         $items = [];
 
         foreach ($sheet->getRowIterator(6) as $row) {
-            $celdas = [];
-            $cellIterator = $row->getCellIterator('A', 'D');
-            $cellIterator->setIterateOnlyExistingCells(false);
-            foreach ($cellIterator as $cell) {
-                $celdas[$cell->getColumn()] = $cell->getValue();
-            }
+            $c = $this->celdas($row, 'A', 'D');
+            $codigo  = trim((string) ($c['B'] ?? ''));
+            $detalle = trim((string) ($c['C'] ?? ''));
+            $precio  = $this->normalizarPrecio($c['D'] ?? null);
 
-            // B = codigo, C = detalle, D = precio
-            $codigo  = trim((string) ($celdas['B'] ?? ''));
-            $detalle = trim((string) ($celdas['C'] ?? ''));
-            $precioRaw = $celdas['D'] ?? null;
-
-            // Saltar filas vacías o sin datos esenciales.
-            if ($codigo === '' || $detalle === '' || $precioRaw === null || $precioRaw === '') {
+            if ($codigo === '' || $detalle === '' || $precio <= 0) {
                 continue;
             }
+            $items[] = ['codigo' => $codigo, 'articulo' => $detalle, 'precioI' => $precio, 'precioF' => $precio];
+        }
 
-            $precio = $this->normalizarPrecio($precioRaw);
-            if ($precio <= 0) {
+        return $items;
+    }
+
+    /** Vega: A=código, B=descripción, C=desc. adicional, D=precio (costo). Datos desde fila 2. */
+    public function parseVega(string $rutaArchivo): array
+    {
+        $sheet = $this->cargarHoja($rutaArchivo);
+        $items = [];
+
+        foreach ($sheet->getRowIterator(2) as $row) {
+            $c = $this->celdas($row, 'A', 'D');
+            $codigo = trim((string) ($c['A'] ?? ''));
+            $desc   = trim((string) ($c['B'] ?? ''));
+            $adic   = trim((string) ($c['C'] ?? ''));
+            $precio = $this->normalizarPrecio($c['D'] ?? null);
+
+            if ($codigo === '' || $desc === '' || $precio <= 0) {
                 continue;
             }
-
-            $items[] = [
-                'codigo'   => $codigo,
-                'articulo' => $detalle,
-                'precio'   => $precio,
-            ];
+            $nombre = trim($desc . ($adic !== '' ? ' ' . $adic : ''));
+            // 1 solo precio (costo). El precio de venta se calcula al activar (% del grupo).
+            $items[] = ['codigo' => $codigo, 'articulo' => $nombre, 'precioI' => $precio, 'precioF' => $precio];
         }
 
         return $items;
     }
 
     /**
-     * Convierte un precio (numérico o texto con formato argentino) a entero redondeado.
+     * El Cairo: encabezado con columnas "BICICLETERO" (costo) y "PUBLICO" (venta), que según
+     * el archivo están en distintas columnas. Se autodetecta el encabezado y las columnas.
+     * Las filas de sección (ej "01 .0040. | ASIENTOS DE CROSS" sin precio) se saltan solo.
      */
-    private function normalizarPrecio(mixed $valor): int
+    public function parseCairo(string $rutaArchivo): array
     {
+        $sheet = $this->cargarHoja($rutaArchivo);
+        $maxCol = $sheet->getHighestDataColumn();
+        $maxRow = $sheet->getHighestDataRow();
+
+        // 1) Buscar la fila de encabezado y las columnas de código / costo / público.
+        $colCodigo = $colDesc = $colCosto = $colPublico = null;
+        $filaDatos = null;
+
+        for ($fila = 1; $fila <= min($maxRow, 15); $fila++) {
+            $valores = $sheet->rangeToArray("A{$fila}:{$maxCol}{$fila}", null, false, false, true)[$fila] ?? [];
+            foreach ($valores as $colLetra => $valor) {
+                $txt = mb_strtoupper(trim((string) $valor));
+                if ($txt === 'CÓDIGO' || $txt === 'CODIGO')        $colCodigo  = $colLetra;
+                if ($txt === 'DESCRIPCIÓN' || $txt === 'DESCRIPCION') $colDesc  = $colLetra;
+                if (str_contains($txt, 'BICICLETERO'))             $colCosto   = $colLetra;
+                if (str_contains($txt, 'PUBLICO') || str_contains($txt, 'PÚBLICO')) $colPublico = $colLetra;
+            }
+            if ($colCodigo && $colCosto) {
+                $filaDatos = $fila + 1;
+                break;
+            }
+        }
+
+        if (!$filaDatos) {
+            return []; // no parece una lista de El Cairo
+        }
+        $colDesc    = $colDesc    ?? 'B';
+        $colPublico = $colPublico ?? $colCosto; // si no hay público, usamos el costo
+
+        $items = [];
+        for ($fila = $filaDatos; $fila <= $maxRow; $fila++) {
+            $valores = $sheet->rangeToArray("A{$fila}:{$maxCol}{$fila}", null, false, false, true)[$fila] ?? [];
+            $codigo = trim((string) ($valores[$colCodigo] ?? ''));
+            $desc   = trim((string) ($valores[$colDesc] ?? ''));
+            $costo  = $this->normalizarPrecio($valores[$colCosto] ?? null);
+            $public = $this->normalizarPrecio($valores[$colPublico] ?? null);
+
+            // Filas de sección o vacías: sin costo numérico -> saltar.
+            if ($codigo === '' || $desc === '' || $costo <= 0) {
+                continue;
+            }
+            if ($public <= 0) {
+                $public = $costo;
+            }
+            $items[] = ['codigo' => $codigo, 'articulo' => $desc, 'precioI' => $costo, 'precioF' => $public];
+        }
+
+        return $items;
+    }
+
+    // ── Helpers Excel ──────────────────────────────────────────────────
+
+    private function cargarHoja(string $rutaArchivo, ?string $nombreHoja = null)
+    {
+        $reader = IOFactory::createReaderForFile($rutaArchivo);
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($rutaArchivo);
+
+        return ($nombreHoja ? $spreadsheet->getSheetByName($nombreHoja) : null)
+            ?? $spreadsheet->getActiveSheet();
+    }
+
+    private function celdas($row, string $desde, string $hasta): array
+    {
+        $celdas = [];
+        $it = $row->getCellIterator($desde, $hasta);
+        $it->setIterateOnlyExistingCells(false);
+        foreach ($it as $cell) {
+            $celdas[$cell->getColumn()] = $cell->getValue();
+        }
+        return $celdas;
+    }
+
+    /** Convierte un precio (numérico o texto con formato argentino) a float. SIN redondear. */
+    private function normalizarPrecio(mixed $valor): float
+    {
+        if ($valor === null || $valor === '') {
+            return 0.0;
+        }
         if (is_numeric($valor)) {
-            return (int) round((float) $valor);
+            return (float) $valor;
         }
 
         // Formato argentino "3.800,00" -> 3800.00
@@ -100,18 +181,11 @@ class ListaPreciosParser
         $limpio = str_replace(',', '.', $limpio);
         $limpio = preg_replace('/[^0-9.\-]/', '', $limpio);
 
-        return is_numeric($limpio) ? (int) round((float) $limpio) : 0;
+        return is_numeric($limpio) ? (float) $limpio : 0.0;
     }
 
-    /**
-     * Parsea el PDF de NSM y devuelve los artículos.
-     *
-     * Formato por ficha: CÓDIGO (letra+dígitos) + descripción + bulto (entero) + precio "$".
-     * Algunas fichas son multi-línea (el código queda solo y la descripción sigue debajo),
-     * por eso se acumula en un buffer hasta encontrar el precio.
-     *
-     * @return array<int, array{codigo:string, articulo:string, precio:int}>
-     */
+    // ── NSM (PDF) ──────────────────────────────────────────────────────
+
     public function parseNsm(string $rutaArchivo): array
     {
         $pdf = (new PdfParser())->parseFile($rutaArchivo);
@@ -129,26 +203,17 @@ class ListaPreciosParser
                 continue;
             }
 
-            // Una ficha empieza con código al inicio de la línea. Dos formas:
-            //  - prefijo letra: "W 55005", "S1461", "Z 5452"
-            //  - prefijo dígito: "1  1000", "4  440" (dígito + ESPACIO + dígitos).
-            // El espacio obligatorio en el caso numérico evita confundir con dimensiones
-            // de continuación tipo "270x160mm 30 9.100,00$". Además, una ficha SIEMPRE trae
-            // descripción (letras): así no confundimos una continuación "312  20 51.000,00$"
-            // (solo números + precio) con un código nuevo.
             $empiezaCodigo = preg_match('/^\s*([A-Za-z]\s*\d|\d+\s+\d)/', $linea)
                 && preg_match('/[A-Za-z]/', $linea);
 
             if ($empiezaCodigo) {
                 $buffer = trim($linea);
             } elseif ($buffer !== '') {
-                // Continuación de una ficha multi-línea.
                 $buffer .= ' ' . trim($linea);
             } else {
-                continue; // encabezado de categoría / columna / datos de la empresa
+                continue;
             }
 
-            // Si el buffer ya tiene precio, la ficha está completa.
             if (preg_match('/[\d.]+,\d{2}\s*\$/', $buffer)) {
                 if ($item = $this->parsearFichaNsm($buffer)) {
                     $items[] = $item;
@@ -160,31 +225,20 @@ class ListaPreciosParser
         return $items;
     }
 
-    /**
-     * Convierte una ficha de texto de NSM en un item, o null si no es válida.
-     *
-     * @return array{codigo:string, articulo:string, precio:int}|null
-     */
     private function parsearFichaNsm(string $ficha): ?array
     {
-        // Código al inicio: prefijo opcional de letra + número (con posibles espacios internos
-        // en el caso numérico). La descripción arranca con la primera letra después del número.
         if (!preg_match('/^\s*([A-Za-z]?)\s*([\d\s]*\d)(.*)$/s', $ficha, $m)) {
             return null;
         }
         $codigo = strtoupper($m[1]) . preg_replace('/\s+/', '', $m[2]);
         $resto = $m[3];
 
-        // Precio: número con formato argentino (,NN) seguido de "$".
         if (!preg_match('/([\d.]+,\d{2})\s*\$/', $resto, $mp)) {
             return null;
         }
         $precio = $this->normalizarPrecio($mp[1]);
 
-        // Lo que está entre el código y el precio = descripción + bulto.
         $medio = substr($resto, 0, strpos($resto, $mp[0]));
-
-        // El bulto es el último entero; lo quitamos para quedarnos con la descripción.
         $descripcion = preg_replace('/\s*\d+\s*$/', '', $medio);
         $descripcion = trim(preg_replace('/\s+/', ' ', $descripcion));
 
@@ -192,10 +246,6 @@ class ListaPreciosParser
             return null;
         }
 
-        return [
-            'codigo'   => $codigo,
-            'articulo' => $descripcion,
-            'precio'   => $precio,
-        ];
+        return ['codigo' => $codigo, 'articulo' => $descripcion, 'precioI' => $precio, 'precioF' => $precio];
     }
 }

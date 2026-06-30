@@ -3,6 +3,7 @@
 namespace App\Livewire\Articulo;
 
 use App\Models\Categoria;
+use App\Models\Grupos;
 use App\Models\Proveedor;
 use App\Models\Unidad;
 use App\Services\ListaPreciosParser;
@@ -21,10 +22,19 @@ class ImportarLista extends Component
     /** Proveedor al que pertenece la lista. */
     public $proveedor_id;
 
+    /** Grupo al que se asignan los artículos importados. */
+    public $grupo_id;
+
+    /** Formato de la lista: dalsanto | nsm | vega | cairo. */
+    public $formato = '';
+
+    /** Cotización del dólar (solo si la lista está en USD; vacío = lista en pesos). */
+    public $cotizacion;
+
     /** Ruta (disco local) del archivo subido. */
     public $rutaArchivo;
 
-    /** Ruta (disco local) del JSON con los items ya parseados (evita re-parsear al confirmar). */
+    /** Ruta (disco local) del JSON con los items ya parseados. */
     public $rutaItems;
 
     /** Vista previa (primeras filas) de lo parseado. */
@@ -33,20 +43,29 @@ class ImportarLista extends Component
     /** Total de artículos detectados en el archivo. */
     public $total = 0;
 
-    /** Abreviatura del proveedor elegido (solo para mostrar, ej. "DalS"). */
+    /** Abreviatura del proveedor elegido (solo para mostrar). */
     public $abreviatura = null;
 
     /** Resultado de la importación. */
     public $resultado = null;
 
-    /** Cantidad de filas a mostrar en la vista previa. */
     public const PREVIEW_LIMIT = 50;
+
+    public const FORMATOS = [
+        'cairo'    => 'El Cairo (Excel: costo + público)',
+        'vega'     => 'Vega (Excel: 1 precio/costo)',
+        'dalsanto' => 'Dal Santo (Excel)',
+        'nsm'      => 'NSM (PDF)',
+    ];
 
     protected function rules(): array
     {
         return [
             'archivo'      => 'required|file|mimes:xlsx,xls,pdf|max:20480', // 20 MB
             'proveedor_id' => 'required|exists:proveedors,id',
+            'grupo_id'     => 'required|exists:grupos,id',
+            'formato'      => 'required|in:' . implode(',', array_keys(self::FORMATOS)),
+            'cotizacion'   => 'nullable|numeric|min:0',
         ];
     }
 
@@ -54,7 +73,15 @@ class ImportarLista extends Component
         'archivo.required'      => 'Debe seleccionar un archivo.',
         'archivo.mimes'         => 'El archivo debe ser Excel (.xlsx/.xls) o PDF.',
         'proveedor_id.required' => 'Debe seleccionar un proveedor.',
+        'grupo_id.required'     => 'Debe seleccionar un grupo.',
+        'formato.required'      => 'Debe seleccionar el formato de la lista.',
     ];
+
+    /** Al cambiar de proveedor, reseteamos el grupo elegido. */
+    public function updatedProveedorId(): void
+    {
+        $this->grupo_id = null;
+    }
 
     /**
      * Lee el archivo, arma la vista previa y cachea lo parseado (sin tocar la base).
@@ -64,16 +91,14 @@ class ImportarLista extends Component
         $this->validate();
         $this->resultado = null;
 
-        // El parseo de PDF puede tardar; evitamos el límite de tiempo.
         @set_time_limit(0);
 
         $this->abreviatura = Proveedor::whereKey($this->proveedor_id)->value('abreviatura');
 
-        // Persistimos el archivo y cacheamos los items para NO re-parsear al confirmar.
         $this->rutaArchivo = $this->archivo->store('listas-importar', 'local');
         $extension = pathinfo($this->rutaArchivo, PATHINFO_EXTENSION);
 
-        $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension);
+        $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension, $this->formato);
 
         $this->rutaItems = $this->rutaArchivo . '.items.json';
         Storage::disk('local')->put(
@@ -85,24 +110,26 @@ class ImportarLista extends Component
         $this->preview = array_slice($items, 0, self::PREVIEW_LIMIT);
 
         if ($this->total === 0) {
-            $this->addError('archivo', 'No se detectaron artículos. Verifique que el archivo corresponda al proveedor (Excel de Dal Santo o PDF de NSM).');
+            $this->addError('archivo', 'No se detectaron artículos. Verifique que el archivo corresponda al formato elegido.');
             $this->limpiarArchivo();
         }
     }
 
     /**
-     * Importa los artículos parseados a la base de datos.
+     * Importa los artículos parseados: inactivos, asignados al grupo elegido.
+     * Si hay cotización (>0), los precios se toman como dólares y se pasan a pesos.
      */
     public function confirmar(ListaPreciosParser $parser)
     {
         $this->validate([
             'proveedor_id' => 'required|exists:proveedors,id',
+            'grupo_id'     => 'required|exists:grupos,id',
             'rutaArchivo'  => 'required',
+            'cotizacion'   => 'nullable|numeric|min:0',
         ]);
 
         @set_time_limit(0);
 
-        // Reutilizamos los items cacheados en analizar(); si faltan, re-parseamos.
         $items = null;
         if ($this->rutaItems && Storage::disk('local')->exists($this->rutaItems)) {
             $items = json_decode(Storage::disk('local')->get($this->rutaItems), true);
@@ -113,81 +140,102 @@ class ImportarLista extends Component
                 return;
             }
             $extension = pathinfo($this->rutaArchivo, PATHINFO_EXTENSION);
-            $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension);
+            $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension, $this->formato);
         }
+
+        $factor = ($this->cotizacion && (float) $this->cotizacion > 0) ? (float) $this->cotizacion : 1.0;
 
         $categoriaId = Categoria::firstOrCreate(['categoria' => 'General'])->id;
         $unidadId = Unidad::query()->value('id') ?? Unidad::create(['unidad' => 'Unidad'])->id;
-        // stocks.codigo_proveedor guarda la abreviatura; el código de producto va en articulos.codigo.
         $abreviatura = Proveedor::whereKey($this->proveedor_id)->value('abreviatura');
 
-        // Pre-cargamos los códigos ya existentes para este proveedor en UNA sola query
-        // (evita una consulta de dedup por cada fila).
+        // Códigos ya cargados para este proveedor (dedup en una sola query).
         $existentes = DB::table('stocks')
             ->join('articulos', 'articulos.id', '=', 'stocks.articulo_id')
             ->where('stocks.proveedor_id', $this->proveedor_id)
             ->pluck('articulos.id', 'articulos.codigo')
-            ->toArray(); // [codigo => articulo_id]
+            ->toArray();
+
+        // Artículos ya vinculados a este grupo (para no duplicar el vínculo).
+        $enGrupo = DB::table('grupos_articulos')
+            ->where('grupo_id', $this->grupo_id)
+            ->pluck('articulo_id')
+            ->flip()
+            ->toArray();
 
         $ahora = now();
         $creados = 0;
         $actualizados = 0;
         $stockRows = [];
         $histRows = [];
+        $grupoRows = [];
 
         DB::transaction(function () use (
-            $items, $categoriaId, $unidadId, $abreviatura, $ahora,
-            &$existentes, &$creados, &$actualizados, &$stockRows, &$histRows
+            $items, $categoriaId, $unidadId, $abreviatura, $ahora, $factor,
+            &$existentes, &$enGrupo, &$creados, &$actualizados, &$stockRows, &$histRows, &$grupoRows
         ) {
             foreach ($items as $item) {
-                $codigo = (string) $item['codigo'];
-                $precio = (int) round($item['precio']);
+                $codigo  = (string) $item['codigo'];
+                $precioI = (int) round(($item['precioI'] ?? $item['precio'] ?? 0) * $factor);
+                $precioF = (int) round(($item['precioF'] ?? $item['precio'] ?? 0) * $factor);
+                if ($precioF <= 0) $precioF = $precioI;
 
                 if (isset($existentes[$codigo])) {
-                    // Ya existe: solo actualizamos precios (no tocamos stock/nombre/activo).
-                    DB::table('articulos')->where('id', $existentes[$codigo])->update([
-                        'precioI' => $precio, 'precioF' => $precio, 'updated_at' => $ahora,
+                    $artId = $existentes[$codigo];
+                    DB::table('articulos')->where('id', $artId)->update([
+                        'precioI' => $precioI, 'precioF' => $precioF, 'updated_at' => $ahora,
                     ]);
                     $histRows[] = [
-                        'articulo_id' => $existentes[$codigo], 'precioIcial' => $precio,
-                        'precioFinal' => $precio, 'created_at' => $ahora, 'updated_at' => $ahora,
+                        'articulo_id' => $artId, 'precioIcial' => $precioI,
+                        'precioFinal' => $precioF, 'created_at' => $ahora, 'updated_at' => $ahora,
                     ];
                     $actualizados++;
-                    continue;
+                } else {
+                    $artId = DB::table('articulos')->insertGetId([
+                        'articulo' => $item['articulo'], 'codigo' => $codigo, 'categoria_id' => $categoriaId,
+                        'presentacion' => '-', 'unidad_id' => $unidadId, 'descuento' => 0,
+                        'unidadVenta' => 'Unidad', 'precioF' => $precioF, 'precioI' => $precioI,
+                        'caducidad' => 'No', 'detalles' => '-', 'suelto' => 0, 'activo' => 0,
+                        'created_at' => $ahora, 'updated_at' => $ahora,
+                    ]);
+                    $existentes[$codigo] = $artId;
+                    $stockRows[] = [
+                        'articulo_id' => $artId, 'proveedor_id' => $this->proveedor_id,
+                        'codigo_proveedor' => $abreviatura, 'stockMinimo' => 0, 'stock' => 0,
+                        'created_at' => $ahora, 'updated_at' => $ahora,
+                    ];
+                    $histRows[] = [
+                        'articulo_id' => $artId, 'precioIcial' => $precioI, 'precioFinal' => $precioF,
+                        'created_at' => $ahora, 'updated_at' => $ahora,
+                    ];
+                    $creados++;
                 }
 
-                // Artículo nuevo: inactivo, para que el usuario lo active manualmente.
-                $id = DB::table('articulos')->insertGetId([
-                    'articulo' => $item['articulo'], 'codigo' => $codigo, 'categoria_id' => $categoriaId,
-                    'presentacion' => '-', 'unidad_id' => $unidadId, 'descuento' => 0,
-                    'unidadVenta' => 'Unidad', 'precioF' => $precio, 'precioI' => $precio,
-                    'caducidad' => 'No', 'detalles' => '-', 'suelto' => 0, 'activo' => 0,
-                    'created_at' => $ahora, 'updated_at' => $ahora,
-                ]);
-                $existentes[$codigo] = $id; // evita duplicar si el código se repite en el archivo
-                $stockRows[] = [
-                    'articulo_id' => $id, 'proveedor_id' => $this->proveedor_id,
-                    'codigo_proveedor' => $abreviatura, 'stockMinimo' => 0, 'stock' => 0,
-                    'created_at' => $ahora, 'updated_at' => $ahora,
-                ];
-                $histRows[] = [
-                    'articulo_id' => $id, 'precioIcial' => $precio, 'precioFinal' => $precio,
-                    'created_at' => $ahora, 'updated_at' => $ahora,
-                ];
-                $creados++;
+                // Vincular al grupo si todavía no está.
+                if (!isset($enGrupo[$artId])) {
+                    $grupoRows[] = ['grupo_id' => $this->grupo_id, 'articulo_id' => $artId];
+                    $enGrupo[$artId] = true;
+                }
             }
 
-            // Inserts en lote (mucho más rápido que fila por fila).
             foreach (array_chunk($stockRows, 500) as $chunk) {
                 DB::table('stocks')->insert($chunk);
             }
             foreach (array_chunk($histRows, 500) as $chunk) {
                 DB::table('historias_precios')->insert($chunk);
             }
+            foreach (array_chunk($grupoRows, 500) as $chunk) {
+                DB::table('grupos_articulos')->insert($chunk);
+            }
+
+            // Guardamos la cotización usada (para el botón "recalcular" cuando cambie el dólar).
+            if ($factor > 1.0) {
+                Grupos::whereKey($this->grupo_id)->update(['cotizacion' => $factor]);
+            }
         });
 
         $this->limpiarArchivo();
-        $this->reset(['preview', 'total', 'abreviatura']);
+        $this->reset(['preview', 'total', 'abreviatura', 'cotizacion']);
 
         $this->resultado = [
             'creados'      => $creados,
@@ -216,6 +264,14 @@ class ImportarLista extends Component
     public function render()
     {
         $proveedores = Proveedor::orderBy('nombre')->get();
-        return view('livewire.articulo.importar-lista', compact('proveedores'));
+        $grupos = $this->proveedor_id
+            ? Grupos::where('proveedor_id', $this->proveedor_id)->orderBy('NombreGrupo')->get()
+            : collect();
+
+        return view('livewire.articulo.importar-lista', [
+            'proveedores' => $proveedores,
+            'grupos'      => $grupos,
+            'formatos'    => self::FORMATOS,
+        ]);
     }
 }

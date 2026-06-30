@@ -2,9 +2,9 @@
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white">📥 Importar Lista de Precios</h2>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Subí la lista del proveedor: <strong>Excel</strong> de Dal Santo (hoja STOCK GENERAL) o <strong>PDF</strong> de NSM.
+            Subí la lista del proveedor y elegí el <strong>formato</strong>, el <strong>proveedor</strong> y el <strong>grupo</strong>.
             Los artículos nuevos se crean <strong>inactivos</strong> para que los actives manualmente. Los existentes
-            (mismo código para ese proveedor) solo actualizan su precio.
+            (mismo código para ese proveedor) solo actualizan su precio. Si la lista está <strong>en dólares</strong>, completá la cotización.
         </p>
     </div>
 
@@ -33,8 +33,20 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 mb-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Formato de lista</label>
+                <select wire:model="formato"
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
+                    <option value="">— Seleccionar —</option>
+                    @foreach ($formatos as $key => $label)
+                        <option value="{{ $key }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('formato') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Proveedor</label>
-                <select wire:model="proveedor_id"
+                <select wire:model.live="proveedor_id"
                     class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
                     <option value="">— Seleccionar —</option>
                     @foreach ($proveedores as $prov)
@@ -45,6 +57,27 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grupo</label>
+                <select wire:model="grupo_id" @disabled(!$proveedor_id)
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm disabled:opacity-50">
+                    <option value="">{{ $proveedor_id ? '— Seleccionar —' : 'Elegí primero un proveedor' }}</option>
+                    @foreach ($grupos as $g)
+                        <option value="{{ $g->id }}">{{ $g->NombreGrupo }}</option>
+                    @endforeach
+                </select>
+                @error('grupo_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Cotización dólar <span class="text-gray-400 font-normal">(solo si la lista está en USD)</span>
+                </label>
+                <input type="number" step="0.01" wire:model.live="cotizacion" placeholder="Ej: 1200 (dejar vacío si está en pesos)"
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
+                @error('cotizacion') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Archivo (.xlsx / .pdf)</label>
                 <input type="file" wire:model="archivo" accept=".xlsx,.xls,.pdf"
                     class="block w-full text-sm text-gray-600 dark:text-gray-300
@@ -73,12 +106,16 @@
 
     {{-- Vista previa --}}
     @if ($total > 0)
+        @php $factor = ($cotizacion && (float)$cotizacion > 0) ? (float)$cotizacion : 1; @endphp
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700">
                 <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                    Vista previa — {{ $total }} artículo(s) detectado(s)
+                    Vista previa — {{ $total }} artículo(s)
                     @if ($total > count($preview))
                         <span class="text-gray-400 font-normal">(mostrando primeros {{ count($preview) }})</span>
+                    @endif
+                    @if ($factor > 1)
+                        <span class="text-green-600 font-normal">· precios × {{ number_format($factor, 2, ',', '.') }} (USD→$)</span>
                     @endif
                 </p>
                 <button wire:click="confirmar" wire:loading.attr="disabled" wire:target="confirmar"
@@ -93,15 +130,21 @@
                         <tr>
                             <th class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300">Código prov.</th>
                             <th class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300">Artículo</th>
-                            <th class="px-4 py-2 text-right font-medium text-gray-500 dark:text-gray-300">Precio (costo)</th>
+                            <th class="px-4 py-2 text-right font-medium text-gray-500 dark:text-gray-300">Costo</th>
+                            <th class="px-4 py-2 text-right font-medium text-gray-500 dark:text-gray-300">Público</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                         @foreach ($preview as $row)
+                            @php
+                                $pi = round(($row['precioI'] ?? $row['precio'] ?? 0) * $factor);
+                                $pf = round(($row['precioF'] ?? $row['precio'] ?? 0) * $factor);
+                            @endphp
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <td class="px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs">{{ $abreviatura ? $abreviatura.'-'.$row['codigo'] : $row['codigo'] }}</td>
                                 <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $row['articulo'] }}</td>
-                                <td class="px-4 py-2 text-right text-gray-800 dark:text-gray-200">${{ number_format($row['precio'], 0, ',', '.') }}</td>
+                                <td class="px-4 py-2 text-right text-gray-800 dark:text-gray-200">${{ number_format($pi, 0, ',', '.') }}</td>
+                                <td class="px-4 py-2 text-right text-gray-800 dark:text-gray-200">${{ number_format($pf, 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
