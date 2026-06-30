@@ -37,10 +37,12 @@ class Catalogo extends Component
     public $pNombre = '';
     public $pCodigo = '';
     public $pCosto = 0;
+    public $pPublicoLista = 0; // público que trae la lista (referencia)
     public $pPrecioVenta = 0;
     public $pStock = 0;
     public $pStockMinimo = 0;
     public $pGrupoId = '';
+    public $pPorcentaje = 0; // % del grupo elegido (informativo)
 
     protected $queryString = ['q' => ['except' => '']];
 
@@ -53,18 +55,37 @@ class Catalogo extends Component
         $row = ListaArticulo::findOrFail($id);
         $this->promoverId         = $row->id;
         $this->promoverProveedorId = $row->proveedor_id;
-        $this->pNombre      = $row->articulo;
-        $this->pCodigo      = $row->codigo;
-        $this->pCosto       = $row->precio_costo;
-        $this->pPrecioVenta = $row->precio_publico ?: $row->precio_costo;
-        $this->pStock       = 0;
-        $this->pStockMinimo = 0;
-        $this->pGrupoId     = '';
+        $this->pNombre       = $row->articulo;
+        $this->pCodigo       = $row->codigo;
+        $this->pCosto        = $row->precio_costo;
+        $this->pPublicoLista = $row->precio_publico ?: $row->precio_costo;
+        $this->pPrecioVenta  = $this->pPublicoLista;
+        $this->pStock        = 0;
+        $this->pStockMinimo  = 0;
+        $this->pGrupoId      = '';
+        $this->pPorcentaje   = 0;
+    }
+
+    /** Al elegir el grupo, sugiere el precio de venta = costo + % del grupo (estilo Dal Santo). */
+    public function updatedPGrupoId($value)
+    {
+        if (!$value) {
+            $this->pPorcentaje = 0;
+            return;
+        }
+        $this->pPorcentaje = (float) (Grupos::whereKey($value)->value('porsentaje') ?? 0);
+        $this->pPrecioVenta = (int) round($this->pCosto * (1 + $this->pPorcentaje / 100));
+    }
+
+    /** Botón "usar público": toma el precio público que vino en la lista. */
+    public function usarPublico()
+    {
+        $this->pPrecioVenta = $this->pPublicoLista;
     }
 
     public function cerrarPromover()
     {
-        $this->reset(['promoverId', 'promoverProveedorId', 'pNombre', 'pCodigo', 'pCosto', 'pPrecioVenta', 'pStock', 'pStockMinimo', 'pGrupoId']);
+        $this->reset(['promoverId', 'promoverProveedorId', 'pNombre', 'pCodigo', 'pCosto', 'pPublicoLista', 'pPrecioVenta', 'pStock', 'pStockMinimo', 'pGrupoId', 'pPorcentaje']);
         $this->resetErrorBag();
     }
 

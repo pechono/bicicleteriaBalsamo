@@ -109,10 +109,10 @@
                 <div class="p-5 space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase">Grupo *</label>
-                        <select wire:model="pGrupoId" class="mt-1 block w-full text-sm rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <select wire:model.live="pGrupoId" class="mt-1 block w-full text-sm rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             <option value="">— Elegí el grupo —</option>
                             @foreach ($gruposPromover as $g)
-                                <option value="{{ $g->id }}">{{ $g->NombreGrupo }}</option>
+                                <option value="{{ $g->id }}">{{ $g->NombreGrupo }} ({{ rtrim(rtrim(number_format($g->porsentaje,2,',','.'),'0'),',') }}%)</option>
                             @endforeach
                         </select>
                         @error('pGrupoId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -134,6 +134,11 @@
                             <label class="block text-xs font-semibold text-gray-600 uppercase">Precio de venta *</label>
                             <input type="number" wire:model="pPrecioVenta" class="mt-1 block w-full text-sm rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             @error('pPrecioVenta') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            <p class="text-[11px] text-gray-400 mt-1 leading-tight">
+                                @if ($pGrupoId)Calculado: costo + {{ rtrim(rtrim(number_format($pPorcentaje,2,',','.'),'0'),',') }}% del grupo.@else Elegí el grupo para calcular con su %.@endif<br>
+                                Público de lista: ${{ number_format($pPublicoLista, 0, ',', '.') }}
+                                <button type="button" wire:click="usarPublico" class="text-blue-600 underline ml-1">usar</button>
+                            </p>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 uppercase">Stock *</label>
