@@ -31,6 +31,30 @@
         </label>
     </div>
 
+    {{-- Recalcular cotización dólar --}}
+    @if ($usdCount > 0)
+        <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4 mb-4">
+            <div class="flex flex-wrap items-end gap-3">
+                <div>
+                    <p class="text-sm font-semibold text-amber-800 dark:text-amber-200">💵 Ítems en dólares: {{ $usdCount }}
+                        @if ($usdCotiz) <span class="font-normal">(cotización actual: ${{ number_format($usdCotiz, 2, ',', '.') }})</span> @endif
+                    </p>
+                    <p class="text-xs text-amber-600 dark:text-amber-300">Actualizá la cotización y recalculo los precios en pesos {{ $proveedor_id ? 'de este proveedor' : '(de todos)' }}.</p>
+                </div>
+                <div>
+                    <input type="number" step="0.01" wire:model="nuevaCotizacion" placeholder="Nueva cotización"
+                        class="w-40 rounded-md border-amber-300 dark:border-amber-600 dark:bg-gray-700 dark:text-white shadow-sm text-sm">
+                    @error('nuevaCotizacion') <span class="text-red-500 text-xs block">{{ $message }}</span> @enderror
+                </div>
+                <button wire:click="recalcularCotizacion" wire:loading.attr="disabled" wire:target="recalcularCotizacion"
+                    class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-md">
+                    <span wire:loading.remove wire:target="recalcularCotizacion">Recalcular</span>
+                    <span wire:loading wire:target="recalcularCotizacion">Recalculando…</span>
+                </button>
+            </div>
+        </div>
+    @endif
+
     {{-- Tabla --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">

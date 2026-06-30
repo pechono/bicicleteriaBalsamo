@@ -29,6 +29,8 @@ class Catalogo extends Component
     public $proveedor_id = '';
     public $soloPendientes = false; // mostrar solo los que NO se pasaron a artículos
 
+    public $nuevaCotizacion = ''; // recalcular precios en USD
+
     // Modal "pasar a artículos"
     public $promoverId = null;
     public $promoverProveedorId = null;
@@ -147,8 +149,43 @@ class Catalogo extends Component
         session()->flash('message', 'Artículo pasado a stock correctamente.');
     }
 
+    /**
+     * Recalcula los precios en pesos de los ítems en USD usando una nueva cotización.
+     * Exacto: usa el USD original guardado por fila. Afecta al proveedor filtrado (o a todos).
+     */
+    public function recalcularCotizacion()
+    {
+        $this->validate(
+            ['nuevaCotizacion' => 'required|numeric|min:1'],
+            ['nuevaCotizacion.required' => 'Poné la nueva cotización del dólar.']
+        );
+
+        $rate = (float) $this->nuevaCotizacion;
+
+        $q = ListaArticulo::where('moneda', 'USD')->whereNotNull('costo_usd')
+            ->when($this->proveedor_id, fn ($qb) => $qb->where('proveedor_id', $this->proveedor_id));
+
+        $afectados = (clone $q)->count();
+        $q->update([
+            'precio_costo'   => DB::raw("ROUND(costo_usd * {$rate})"),
+            'precio_publico' => DB::raw("ROUND(COALESCE(publico_usd, costo_usd) * {$rate})"),
+            'cotizacion'     => $rate,
+            'updated_at'     => now(),
+        ]);
+
+        $this->nuevaCotizacion = '';
+        $this->dispatch('notify', "Cotización actualizada en {$afectados} ítems", 'success');
+        session()->flash('message', "Recalculé {$afectados} ítem(s) en dólares con cotización \${$rate}.");
+    }
+
     public function render()
     {
+        // Info de ítems en USD (para el recuadro de recalcular).
+        $usdQuery = ListaArticulo::where('moneda', 'USD')
+            ->when($this->proveedor_id, fn ($qb) => $qb->where('proveedor_id', $this->proveedor_id));
+        $usdCount = (clone $usdQuery)->count();
+        $usdCotiz = (clone $usdQuery)->max('cotizacion');
+
         $items = ListaArticulo::query()
             ->leftJoin('proveedors', 'proveedors.id', '=', 'lista_articulos.proveedor_id')
             ->when($this->proveedor_id, fn ($qb) => $qb->where('lista_articulos.proveedor_id', $this->proveedor_id))
@@ -164,6 +201,6 @@ class Catalogo extends Component
             ? Grupos::where('proveedor_id', $this->promoverProveedorId)->orderBy('NombreGrupo')->get()
             : collect();
 
-        return view('livewire.articulo.catalogo', compact('items', 'proveedores', 'gruposPromover'));
+        return view('livewire.articulo.catalogo', compact('items', 'proveedores', 'gruposPromover', 'usdCount', 'usdCotiz'));
     }
 }
