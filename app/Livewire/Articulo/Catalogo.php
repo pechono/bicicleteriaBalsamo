@@ -77,6 +77,12 @@ class Catalogo extends Component
         $this->pPrecioVenta = (int) round($this->pCosto * (1 + $this->pPorcentaje / 100));
     }
 
+    /** Si editás el porcentaje a mano, recalcula el precio de venta = costo + %. */
+    public function updatedPPorcentaje($value)
+    {
+        $this->pPrecioVenta = (int) round($this->pCosto * (1 + (float) $value / 100));
+    }
+
     /** Botón "usar público": toma el precio público que vino en la lista. */
     public function usarPublico()
     {
