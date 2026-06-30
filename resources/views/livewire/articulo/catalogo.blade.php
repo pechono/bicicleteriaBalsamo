@@ -87,9 +87,9 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse ($items as $row)
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                            <td class="px-4 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">
+                            <td class="px-4 py-2 font-mono text-base font-semibold text-gray-800 dark:text-gray-200">
                                 {{ $row->abreviatura ? $row->abreviatura.'-'.$row->codigo : $row->codigo }}
-                                @if ($row->moneda === 'USD') <span class="text-amber-600">(USD)</span> @endif
+                                @if ($row->moneda === 'USD') <span class="text-amber-600 text-xs font-normal">(USD)</span> @endif
                             </td>
                             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $row->articulo }}</td>
                             <td class="px-4 py-2 text-right">
