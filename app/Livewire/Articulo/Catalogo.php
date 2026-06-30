@@ -199,6 +199,54 @@ class Catalogo extends Component
         session()->flash('message', "Recalculé {$afectados} ítem(s) en dólares con cotización \${$rate}.");
     }
 
+    /**
+     * Actualiza el costo (precioI) de los artículos en stock con el costo nuevo del catálogo,
+     * y ajusta el precio de venta (precioF) manteniendo el MISMO margen que tenían.
+     * Afecta al proveedor filtrado (o a todos). Solo toca los que cambiaron de precio.
+     */
+    public function actualizarPrecios()
+    {
+        $rows = ListaArticulo::query()
+            ->whereNotNull('articulo_id')
+            ->when($this->proveedor_id, fn ($qb) => $qb->where('proveedor_id', $this->proveedor_id))
+            ->get();
+
+        $cambiados = 0;
+
+        DB::transaction(function () use ($rows, &$cambiados) {
+            foreach ($rows as $r) {
+                $art = Articulo::find($r->articulo_id);
+                if (!$art) {
+                    continue;
+                }
+                $costoViejo = (int) $art->precioI;
+                $costoNuevo = (int) $r->precio_costo;
+                if ($costoViejo === $costoNuevo) {
+                    continue;
+                }
+
+                // Mantener el margen: precioF nuevo = precioF viejo * (costo nuevo / costo viejo).
+                $ventaNueva = $costoViejo > 0
+                    ? (int) round($art->precioF * ($costoNuevo / $costoViejo))
+                    : (int) $art->precioF;
+
+                $art->precioI = $costoNuevo;
+                $art->precioF = $ventaNueva;
+                $art->save();
+
+                HistoriasPrecio::create([
+                    'articulo_id' => $art->id,
+                    'precioIcial' => $costoNuevo,
+                    'precioFinal' => $ventaNueva,
+                ]);
+                $cambiados++;
+            }
+        });
+
+        $this->dispatch('notify', "Actualicé {$cambiados} artículo(s) en stock", 'success');
+        session()->flash('message', "Precios actualizados: {$cambiados} artículo(s) en stock (manteniendo el margen).");
+    }
+
     public function render()
     {
         // Info de ítems en USD (para el recuadro de recalcular).
@@ -209,12 +257,20 @@ class Catalogo extends Component
 
         $items = ListaArticulo::query()
             ->leftJoin('proveedors', 'proveedors.id', '=', 'lista_articulos.proveedor_id')
+            ->leftJoin('articulos', 'articulos.id', '=', 'lista_articulos.articulo_id')
             ->when($this->proveedor_id, fn ($qb) => $qb->where('lista_articulos.proveedor_id', $this->proveedor_id))
             ->when($this->soloPendientes, fn ($qb) => $qb->whereNull('lista_articulos.articulo_id'))
             ->when(trim($this->q) !== '', fn ($qb) => Busqueda::palabras($qb, $this->q, ['lista_articulos.codigo', 'lista_articulos.articulo']))
-            ->select('lista_articulos.*', 'proveedors.abreviatura')
+            ->select('lista_articulos.*', 'proveedors.abreviatura', 'articulos.precioI as costo_actual')
             ->orderBy('lista_articulos.articulo')
             ->paginate(25);
+
+        // Resumen de variación de precios para los que YA están en stock (del filtro actual).
+        $cmp = ListaArticulo::query()
+            ->join('articulos', 'articulos.id', '=', 'lista_articulos.articulo_id')
+            ->when($this->proveedor_id, fn ($qb) => $qb->where('lista_articulos.proveedor_id', $this->proveedor_id));
+        $conAumento = (clone $cmp)->whereColumn('lista_articulos.precio_costo', '>', 'articulos.precioI')->count();
+        $conBaja    = (clone $cmp)->whereColumn('lista_articulos.precio_costo', '<', 'articulos.precioI')->count();
 
         $proveedores = Proveedor::orderBy('nombre')->get();
         // Grupos del proveedor del ítem que se está pasando a artículos.
@@ -222,6 +278,6 @@ class Catalogo extends Component
             ? Grupos::where('proveedor_id', $this->promoverProveedorId)->orderBy('NombreGrupo')->get()
             : collect();
 
-        return view('livewire.articulo.catalogo', compact('items', 'proveedores', 'gruposPromover', 'usdCount', 'usdCotiz'));
+        return view('livewire.articulo.catalogo', compact('items', 'proveedores', 'gruposPromover', 'usdCount', 'usdCotiz', 'conAumento', 'conBaja'));
     }
 }

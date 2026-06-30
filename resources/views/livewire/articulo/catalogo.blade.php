@@ -55,6 +55,22 @@
         </div>
     @endif
 
+    {{-- Resumen de variación de precios (artículos ya en stock) --}}
+    @if ($conAumento + $conBaja > 0)
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4 flex flex-wrap items-center gap-4">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">Cambios respecto a tu stock:</span>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-700">▲ {{ $conAumento }} con aumento</span>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">▼ {{ $conBaja }} con baja</span>
+            <button wire:click="actualizarPrecios" wire:loading.attr="disabled" wire:target="actualizarPrecios"
+                class="ml-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md"
+                onclick="return confirm('Voy a actualizar el costo de los artículos en stock con el precio nuevo de la lista, manteniendo tu margen. ¿Seguir?')">
+                <span wire:loading.remove wire:target="actualizarPrecios">Actualizar precios en stock</span>
+                <span wire:loading wire:target="actualizarPrecios">Actualizando…</span>
+            </button>
+            <span class="w-full text-xs text-gray-400">Solo afecta artículos ya pasados a stock {{ $proveedor_id ? 'de este proveedor' : '(de todos)' }}; mantiene el mismo margen de venta.</span>
+        </div>
+    @endif
+
     {{-- Tabla --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
@@ -76,7 +92,19 @@
                                 @if ($row->moneda === 'USD') <span class="text-amber-600">(USD)</span> @endif
                             </td>
                             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $row->articulo }}</td>
-                            <td class="px-4 py-2 text-right text-gray-800 dark:text-gray-200">${{ number_format($row->precio_costo, 0, ',', '.') }}</td>
+                            <td class="px-4 py-2 text-right">
+                                <span class="text-gray-800 dark:text-gray-200">${{ number_format($row->precio_costo, 0, ',', '.') }}</span>
+                                @if ($row->articulo_id && $row->costo_actual !== null && (int)$row->costo_actual !== (int)$row->precio_costo)
+                                    @php
+                                        $delta = (int)$row->precio_costo - (int)$row->costo_actual;
+                                        $pct = $row->costo_actual ? round($delta / $row->costo_actual * 100) : 0;
+                                    @endphp
+                                    <span class="block text-[11px] font-semibold {{ $delta > 0 ? 'text-red-600' : 'text-green-600' }}">
+                                        {{ $delta > 0 ? '▲' : '▼' }} {{ $delta > 0 ? '+' : '' }}{{ $pct }}%
+                                        <span class="text-gray-400 font-normal">(antes ${{ number_format($row->costo_actual, 0, ',', '.') }})</span>
+                                    </span>
+                                @endif
+                            </td>
                             <td class="px-4 py-2 text-right text-gray-800 dark:text-gray-200">${{ number_format($row->precio_publico, 0, ',', '.') }}</td>
                             <td class="px-4 py-2 text-center">
                                 @if ($row->articulo_id)
