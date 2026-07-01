@@ -42,7 +42,8 @@ class Catalogo extends Component
     public $pStock = 0;
     public $pStockMinimo = 0;
     public $pGrupoId = '';
-    public $pPorcentaje = 0; // % del grupo elegido (informativo)
+    public $pPorcentaje = 0; // % de ganancia del grupo (editable)
+    public $pIva = 0;        // % de IVA a sumar (21 si el proveedor lo discrimina, 0 si ya está incluido)
 
     protected $queryString = ['q' => ['except' => '']];
 
@@ -64,24 +65,27 @@ class Catalogo extends Component
         $this->pStockMinimo  = 0;
         $this->pGrupoId      = '';
         $this->pPorcentaje   = 0;
+        // Si el proveedor discrimina IVA (iva_incluido = false), hay que sumarle el 21%.
+        $ivaIncluido = Proveedor::whereKey($row->proveedor_id)->value('iva_incluido');
+        $this->pIva  = $ivaIncluido ? 0 : 21;
     }
 
-    /** Al elegir el grupo, sugiere el precio de venta = costo + % del grupo (estilo Dal Santo). */
+    /** Precio de venta = (costo + IVA) + % de ganancia. */
+    private function recalcularVenta(): void
+    {
+        $conIva = $this->pCosto * (1 + (float) $this->pIva / 100);
+        $this->pPrecioVenta = (int) round($conIva * (1 + (float) $this->pPorcentaje / 100));
+    }
+
+    /** Al elegir el grupo, toma su % y recalcula (estilo Dal Santo, sobre costo+IVA). */
     public function updatedPGrupoId($value)
     {
-        if (!$value) {
-            $this->pPorcentaje = 0;
-            return;
-        }
-        $this->pPorcentaje = (float) (Grupos::whereKey($value)->value('porsentaje') ?? 0);
-        $this->pPrecioVenta = (int) round($this->pCosto * (1 + $this->pPorcentaje / 100));
+        $this->pPorcentaje = $value ? (float) (Grupos::whereKey($value)->value('porsentaje') ?? 0) : 0;
+        $this->recalcularVenta();
     }
 
-    /** Si editás el porcentaje a mano, recalcula el precio de venta = costo + %. */
-    public function updatedPPorcentaje($value)
-    {
-        $this->pPrecioVenta = (int) round($this->pCosto * (1 + (float) $value / 100));
-    }
+    public function updatedPPorcentaje() { $this->recalcularVenta(); }
+    public function updatedPIva() { $this->recalcularVenta(); }
 
     /** Botón "usar público": toma el precio público que vino en la lista. */
     public function usarPublico()
@@ -91,7 +95,7 @@ class Catalogo extends Component
 
     public function cerrarPromover()
     {
-        $this->reset(['promoverId', 'promoverProveedorId', 'pNombre', 'pCodigo', 'pCosto', 'pPublicoLista', 'pPrecioVenta', 'pStock', 'pStockMinimo', 'pGrupoId', 'pPorcentaje']);
+        $this->reset(['promoverId', 'promoverProveedorId', 'pNombre', 'pCodigo', 'pCosto', 'pPublicoLista', 'pPrecioVenta', 'pStock', 'pStockMinimo', 'pGrupoId', 'pPorcentaje', 'pIva']);
         $this->resetErrorBag();
     }
 
