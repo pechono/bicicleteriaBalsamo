@@ -1,6 +1,6 @@
 
  <x-app-layout>
-    <div class="pt-20">
+    <div class="pt-[1cm]">
         <div class=" w-11/12 mx-auto sm:px-6 lg:px-8">
             {{-- --------MENU--------- --}}
             @include('components.menu-stock')

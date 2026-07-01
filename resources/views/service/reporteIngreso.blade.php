@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header" class="flex justify-center pt-20">
+    <x-slot name="header" class="flex justify-center pt-[1cm]">
        Imprimir Comprobante
     </x-slot>
 
