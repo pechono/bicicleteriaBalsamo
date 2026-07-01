@@ -21,6 +21,14 @@ class CierreCaja extends Component
     public $cuentaCorientes;
     public $ventasPorTipo ;
     public $hoy;
+
+    // Totales del día separando Mano de Obra (categoría 1)
+    public $totalDia = 0;        // todo lo vendido (productos + mano de obra)
+    public $totalProductos = 0;  // todo menos mano de obra
+    public $totalMdO = 0;        // solo mano de obra
+    public $mdoTarjDeb = 0;      // mano de obra pagada con tarjeta/débito
+    public $totalContador = 0;   // productos + mano de obra con tarjeta/débito
+
     public function mount()
     {
         $this->hoy = Carbon::today();
@@ -56,6 +64,35 @@ class CierreCaja extends Component
             ->groupBy('tipo_ventas.id', 'tipo_ventas.tipoVenta')
             ->get();
 
+
+        // Totales por producto vs mano de obra (categoría 1), y por medio de pago.
+        // monto de cada línea = cantidad × precioF × (1 - descuento%).
+        $lineas = DB::table('ventas as v')
+            ->join('operacions as o', 'o.id', '=', 'v.operacion')
+            ->join('articulos as a', 'a.id', '=', 'v.articulo_id')
+            ->whereDate('o.created_at', $this->hoy)
+            ->where('o.cerrado', 0)
+            ->where('o.usuario_id', auth()->user()->id)
+            ->selectRaw('a.categoria_id as cat, o.tipoVenta_id as tipo, SUM(v.cantidad * v.precioF * (1 - COALESCE(v.descuento,0)/100)) as monto')
+            ->groupBy('a.categoria_id', 'o.tipoVenta_id')
+            ->get();
+
+        foreach ($lineas as $l) {
+            $monto = (float) $l->monto;
+            if ((int) $l->cat === 1) {
+                $this->totalMdO += $monto;
+                if (in_array((int) $l->tipo, [3, 4])) { // 3=débito, 4=tarjeta
+                    $this->mdoTarjDeb += $monto;
+                }
+            } else {
+                $this->totalProductos += $monto;
+            }
+        }
+        $this->totalProductos = (int) round($this->totalProductos);
+        $this->totalMdO       = (int) round($this->totalMdO);
+        $this->mdoTarjDeb     = (int) round($this->mdoTarjDeb);
+        $this->totalDia       = $this->totalProductos + $this->totalMdO;
+        $this->totalContador  = $this->totalProductos + $this->mdoTarjDeb;
 
         $fecha = Carbon::create(date('y-m-d'));
         Carbon::setLocale('es');

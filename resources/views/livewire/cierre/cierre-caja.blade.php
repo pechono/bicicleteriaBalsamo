@@ -100,8 +100,27 @@
             </div>
         </div>
     </div>
-    <div class=" bg-white p-4 rounded-lg border mt-5">
-
+    <div class="bg-white p-4 rounded-lg border mt-5">
+        <div class="text-xl font-semibold text-gray-700 mb-4">Ventas del día</div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="p-4 rounded-lg border bg-gray-50">
+                <div class="text-sm text-gray-500">Total del día (todo)</div>
+                <div class="text-2xl font-bold text-gray-800">${{ number_format($totalDia, 0, ',', '.') }}</div>
+            </div>
+            <div class="p-4 rounded-lg border bg-blue-50">
+                <div class="text-sm text-blue-600">Sin mano de obra (productos)</div>
+                <div class="text-2xl font-bold text-blue-800">${{ number_format($totalProductos, 0, ',', '.') }}</div>
+            </div>
+            <div class="p-4 rounded-lg border bg-amber-50">
+                <div class="text-sm text-amber-600">Solo mano de obra</div>
+                <div class="text-2xl font-bold text-amber-800">${{ number_format($totalMdO, 0, ',', '.') }}</div>
+            </div>
+            <div class="p-4 rounded-lg border bg-green-50">
+                <div class="text-sm text-green-700 font-semibold">Para el contador</div>
+                <div class="text-2xl font-bold text-green-800">${{ number_format($totalContador, 0, ',', '.') }}</div>
+                <div class="text-[11px] text-green-600 mt-1">Productos + mano de obra pagada con tarjeta/débito (${{ number_format($mdoTarjDeb, 0, ',', '.') }})</div>
+            </div>
+        </div>
     </div>
     {{-- --modal --}}
     <x-dialog-modal wire:model.live="confirmarCierre" maxWidth="2xl">
