@@ -4,37 +4,37 @@
 <meta charset="UTF-8">
 <title>Ingreso N° {{ $bicicleta->nro_ingreso }}</title>
 <style>
-    @page { size: A5 portrait; margin: 8mm; }
+    @page { size: A5 portrait; margin: 9mm; }
     * { box-sizing: border-box; }
-    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; font-size: 10px; margin: 0; }
+    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; font-size: 13px; margin: 0; line-height: 1.35; }
 
-    .top { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    .top { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
     .top td { vertical-align: top; }
-    .empresa { font-size: 15px; font-weight: bold; color: #1d4ed8; }
-    .empresa-sub { color: #6b7280; font-size: 9px; }
+    .empresa { font-size: 20px; font-weight: bold; color: #1d4ed8; }
+    .empresa-sub { color: #6b7280; font-size: 12px; }
     .doc-box { text-align: right; }
-    .doc-title { display: inline-block; background: #1d4ed8; color: #fff; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 3px; }
-    .doc-meta { margin-top: 5px; font-size: 9px; color: #374151; }
+    .doc-title { display: inline-block; background: #1d4ed8; color: #fff; font-size: 14px; font-weight: bold; padding: 5px 12px; border-radius: 3px; }
+    .doc-meta { margin-top: 6px; font-size: 12px; color: #374151; }
 
-    .box { width: 100%; border-collapse: collapse; margin: 4px 0; }
-    .box td { border: 1px solid #e5e7eb; padding: 5px 7px; background: #f9fafb; vertical-align: top; }
-    .label { font-size: 8px; text-transform: uppercase; color: #6b7280; letter-spacing: .3px; }
-    .val { font-size: 11px; color: #111827; }
+    .box { width: 100%; border-collapse: collapse; margin: 5px 0; }
+    .box td { border: 1px solid #e5e7eb; padding: 7px 9px; background: #f9fafb; vertical-align: top; }
+    .label { font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: .3px; }
+    .val { font-size: 14px; color: #111827; }
 
-    .sec { font-size: 11px; font-weight: bold; color: #1d4ed8; margin: 9px 0 2px; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
+    .sec { font-size: 14px; font-weight: bold; color: #1d4ed8; margin: 11px 0 3px; border-bottom: 1px solid #e5e7eb; padding-bottom: 3px; }
 
     table.items { width: 100%; border-collapse: collapse; }
-    table.items td { border-bottom: 1px solid #e5e7eb; padding: 4px 7px; font-size: 10px; }
+    table.items td { border-bottom: 1px solid #e5e7eb; padding: 6px 9px; font-size: 13px; }
 
-    .nota { border: 1px solid #e5e7eb; border-radius: 3px; padding: 6px; font-size: 10px; color: #374151; }
+    .nota { border: 1px solid #e5e7eb; border-radius: 3px; padding: 7px; font-size: 13px; color: #374151; }
 
-    .qr { width: 100%; border-collapse: collapse; margin-top: 8px; border: 1px dashed #9ca3af; border-radius: 3px; }
-    .qr td { padding: 6px; vertical-align: middle; }
-    .qr img { width: 92px; height: 92px; }
-    .qr .t strong { display: block; font-size: 10px; color: #111827; margin-bottom: 2px; }
-    .qr .t { font-size: 8px; color: #374151; line-height: 1.4; }
+    .qr { width: 100%; border-collapse: collapse; margin-top: 9px; border: 1px dashed #9ca3af; border-radius: 3px; }
+    .qr td { padding: 7px; vertical-align: middle; }
+    .qr img { width: 90px; height: 90px; }
+    .qr .t strong { display: block; font-size: 13px; color: #111827; margin-bottom: 3px; }
+    .qr .t { font-size: 11px; color: #374151; line-height: 1.4; }
 
-    .cond { border: 1px solid #e5e7eb; border-radius: 3px; padding: 6px; margin-top: 8px; font-size: 8px; color: #6b7280; }
+    .cond { border: 1px solid #e5e7eb; border-radius: 3px; padding: 7px; margin-top: 9px; font-size: 11px; color: #6b7280; }
 </style>
 </head>
 <body>
