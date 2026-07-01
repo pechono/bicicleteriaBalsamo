@@ -23,69 +23,40 @@ class ArticuloGrupoMDO extends Seeder
         DB::table('grupos')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
+        // id = 1 SIEMPRE "Mano de Obra" (la genérica, precio a definir en cada trabajo).
         $articulos = [
-            [
-                'codigo' => '1','articulo' => 'Parchar','categoria_id' => 1,'presentacion' => ' - ', 'unidad_id' => 1,'descuento' => '0', 'unidadVenta' => 'unidad',
-                'precioI' => 3000,'precioF' => 3000,'caducidad' => 'No', 'detalles' => ' - ', 'suelto' => false,'activo' => true,'created_at' => now(), 'updated_at' => now()
-            ],
-            [
-                'codigo' => '2','articulo' => 'Service General','categoria_id' => 1,'presentacion' => ' - ', 'unidad_id' => 1,'descuento' => '0', 'unidadVenta' => 'unidad',
-                'precioI' => 28000,'precioF' => 28000,'caducidad' => 'No', 'detalles' => ' - ', 'suelto' => false,'activo' => true,'created_at' => now(), 'updated_at' => now()
-            ],
-            [
-                'codigo' => '3','articulo' => 'Centrado de Rueda','categoria_id' => 1,'presentacion' => ' - ', 'unidad_id' => 1,'descuento' => '0', 'unidadVenta' => 'unidad',
-                'precioI' => 4000,'precioF' => 4000,'caducidad' => 'No', 'detalles' => ' - ', 'suelto' => false,'activo' => true,'created_at' => now(), 'updated_at' => now()
-            ],[
-                'codigo' => '4','articulo' => 'Mini servis','categoria_id' => 1,'presentacion' => ' - ', 'unidad_id' => 1,'descuento' => '0', 'unidadVenta' => 'unidad',
-                'precioI' => 20000,'precioF' => 20000,'caducidad' => 'No', 'detalles' => ' - ', 'suelto' => false,'activo' => true,'created_at' => now(), 'updated_at' => now()
-            ]
-            ];
-            foreach ($articulos as $articulo) {
-              DB::table('articulos')->insert($articulo);
-            }
-             $stocks = [
-            [
-                'articulo_id' => 1, 'proveedor_id' => 2,'codigo_proveedor'=>'MdO','stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now()
-            ],
-             [
-                'articulo_id' => 2, 'proveedor_id' => 2,'codigo_proveedor'=>'MdO','stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now()
-            ], 
-            [
-                'articulo_id' => 3, 'proveedor_id' => 2,'codigo_proveedor'=>'MdO','stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now()
-            ], 
-            [
-                'articulo_id' => 4, 'proveedor_id' => 2,'codigo_proveedor'=>'MdO','stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now()
-            ], 
-            [
-                'articulo_id' => 5, 'proveedor_id' => 2,'codigo_proveedor'=>'MdO','stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now()
-            ], 
-            [
-                'articulo_id' => 6, 'proveedor_id' => 2,'codigo_proveedor'=>'MdO','stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now()
-            ]
-            ];
-             foreach ($stocks as $stock) {
-            DB::table('stocks')->insert($stock);
-            }
+            ['codigo' => '1','articulo' => 'Mano de Obra',     'precioI' => 5000,  'precioF' => 5000],
+            ['codigo' => '2','articulo' => 'Parchar',          'precioI' => 3000,  'precioF' => 3000],
+            ['codigo' => '3','articulo' => 'Service General',  'precioI' => 30000, 'precioF' => 30000],
+            ['codigo' => '4','articulo' => 'Centrado de Rueda','precioI' => 4000,  'precioF' => 4000],
+            ['codigo' => '5','articulo' => 'Mini servis',      'precioI' => 15000, 'precioF' => 15000],
+        ];
 
-            Grupos::create([
-                'proveedor_id' => 2,
-                'NombreGrupo' => 'Mano de Obra',
-                'porsentaje' => 0,
-                'created_at' => now(),
-                'updated_at' => now()
+        foreach ($articulos as $a) {
+            DB::table('articulos')->insert([
+                'codigo' => $a['codigo'], 'articulo' => $a['articulo'], 'categoria_id' => 1,
+                'presentacion' => ' - ', 'unidad_id' => 1, 'descuento' => '0', 'unidadVenta' => 'unidad',
+                'precioI' => $a['precioI'], 'precioF' => $a['precioF'], 'caducidad' => 'No',
+                'detalles' => ' - ', 'suelto' => false, 'activo' => true, 'created_at' => now(), 'updated_at' => now(),
             ]);
-            
-            $gruposArticulos = [
-            ['grupo_id' => 1, 'articulo_id' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['grupo_id' => 1, 'articulo_id' => 2, 'created_at' => now(), 'updated_at' => now()],
-            ['grupo_id' => 1, 'articulo_id' => 3, 'created_at' => now(), 'updated_at' => now()],
-            ['grupo_id' => 1, 'articulo_id' => 4, 'created_at' => now(), 'updated_at' => now()],
-            ['grupo_id' => 1, 'articulo_id' => 5, 'created_at' => now(), 'updated_at' => now()],
-            ['grupo_id' => 1, 'articulo_id' => 6, 'created_at' => now(), 'updated_at' => now()],
-            ];
-             foreach ($gruposArticulos as $relacion) {
-                DB::table('grupos_articulos')->insert($relacion);
-             }
+        }
+
+        Grupos::create([
+            'proveedor_id' => 2, 'NombreGrupo' => 'Mano de Obra', 'porsentaje' => 0,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        // Stock + vínculo al grupo "Mano de Obra" (grupo_id = 1 tras el truncate) para cada uno.
+        foreach ($articulos as $i => $a) {
+            $articuloId = $i + 1;
+            DB::table('stocks')->insert([
+                'articulo_id' => $articuloId, 'proveedor_id' => 2, 'codigo_proveedor' => 'MdO',
+                'stockMinimo' => 1, 'stock' => 10000, 'created_at' => now(), 'updated_at' => now(),
+            ]);
+            DB::table('grupos_articulos')->insert([
+                'grupo_id' => 1, 'articulo_id' => $articuloId, 'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
 
 
 
