@@ -79,6 +79,15 @@ class EgresoTerminar extends Component
             $this->BloquearBoton=false;
         }
     }
+
+    public function cancelarOperacion()
+    {
+        // Vacía el carrito de este usuario y vuelve al listado de egresos.
+        Car::where('user_id', auth()->user()->id)->delete();
+        $this->cliente_id = '';
+        $this->tipo_id = '';
+        return redirect()->route('service.egresoBici');
+    }
     public $estaEnCarrito;
     public function render()
     {
