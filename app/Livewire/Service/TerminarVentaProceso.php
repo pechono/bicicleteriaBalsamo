@@ -93,8 +93,9 @@ class TerminarVentaProceso extends Component
                 'articulo_id'=>$aCard->id,
                 'operacionCar'=>$aCard->nro_ingreso,
                 'cantidad'=>$aCard->cantidad,
+                'precio'=>$aCard->precio_final, // conserva el precio definido al terminar (incluye mano de obra)
                 'user_id'=>auth()->user()->id,
-                
+
             ]);
         }
 
@@ -126,7 +127,7 @@ class TerminarVentaProceso extends Component
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
         ->select('articulos.id','articulos.codigo', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+            'articulos.descuento', 'articulos.unidadVenta', DB::raw('COALESCE(cars.precio, articulos.precioF) as precioF'), 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
         ->get();
     
@@ -145,7 +146,7 @@ class TerminarVentaProceso extends Component
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
         ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+            'articulos.descuento', 'articulos.unidadVenta', DB::raw('COALESCE(cars.precio, articulos.precioF) as precioF'), 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento', 'stocks.codigo_proveedor')
         ->get();
 
@@ -171,6 +172,8 @@ class TerminarVentaProceso extends Component
     public $msj;
     public $descArt=0;
     public $cantidadArt;
+    public $esMdO = false;   // el ítem que se agrega/edita es mano de obra (categoría 1)
+    public $precioMdO;       // precio a cobrar por esa mano de obra
     public $proveedor_id;
     public $stock;
     public $stockMinimo;
@@ -189,6 +192,9 @@ class TerminarVentaProceso extends Component
         ->where('articulos.activo', $this->active)
         ->find($id);
 
+        $this->esMdO = Articulo::where('id', $id)->value('categoria_id') == 1;
+        $this->precioMdO = $this->articulosMuestra->precioF;
+        if ($this->esMdO) { $this->cantidadArt = 1; }
 
         $this->agregarCant=1;
     }
@@ -204,16 +210,26 @@ class TerminarVentaProceso extends Component
         $update=Car::where('user_id', auth()->user()->id)->where('articulo_id','=',$id)->first();
         $this->cantidadArt=$update->cantidad;
 
+        $this->esMdO = Articulo::where('id', $id)->value('categoria_id') == 1;
+        $this->precioMdO = $update->precio ?? $this->articulosMuestra->precioF;
+        if ($this->esMdO) { $this->cantidadArt = 1; }
+
     $this->agregarCant=2;
 
     }
     public function updateSave($idart,$stockArt){
-       
-        if ($stockArt >= $this->cantidadArt) {
-            $this->validate(['cantidadArt' => 'required|numeric']);
+        $cantidad = $this->esMdO ? 1 : $this->cantidadArt;
+        if ($stockArt >= $cantidad) {
+            $this->esMdO
+                ? $this->validate(['precioMdO' => 'required|numeric|min:1'])
+                : $this->validate(['cantidadArt' => 'required|numeric']);
+
+            $data = ['cantidad' => $cantidad];
+            if ($this->esMdO) { $data['precio'] = (int) round($this->precioMdO); }
+
             Car::where('user_id', auth()->user()->id)
                ->where('articulo_id', '=', $idart)
-               ->update(['cantidad' => $this->cantidadArt]);
+               ->update($data);
             $this->agregarCant = false;
             $this->Total();
             $this->q = '';
@@ -225,13 +241,16 @@ class TerminarVentaProceso extends Component
 
     public $majStock='--';
     public function save($idart,$stockArt){
-        $this->addCar($idart);
-        if ($stockArt >= $this->cantidadArt){
-            $this->validate(['cantidadArt'=>'required|numeric']);
-            $this->addCar($idart);
+        $cantidad = $this->esMdO ? 1 : $this->cantidadArt;
+        if ($stockArt >= $cantidad){
+            $this->esMdO
+                ? $this->validate(['precioMdO' => 'required|numeric|min:1'])
+                : $this->validate(['cantidadArt'=>'required|numeric']);
+
             Car::create([
                 'articulo_id'=>$idart,
-                'cantidad'=>$this->cantidadArt,
+                'cantidad'=>$cantidad,
+                'precio'=> $this->esMdO ? (int) round($this->precioMdO) : null,
                 'user_id'=>auth()->user()->id,
                 'operacionCar'=>100
             ]);
@@ -321,7 +340,7 @@ class TerminarVentaProceso extends Component
         ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
         ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
         ->select('articulos.id', 'articulos.articulo', 'categorias.categoria', 'articulos.presentacion', 'unidads.unidad',
-            'articulos.descuento', 'articulos.unidadVenta', 'articulos.precioF', 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
+            'articulos.descuento', 'articulos.unidadVenta', DB::raw('COALESCE(cars.precio, articulos.precioF) as precioF'), 'articulos.precioI', 'articulos.caducidad', 'articulos.detalles',
             'articulos.suelto', 'articulos.activo', 'stocks.stock', 'stocks.stockMinimo', 'cars.cantidad', 'cars.articulo_id', 'cars.descuento','stocks.codigo_proveedor')
         ->get();
     

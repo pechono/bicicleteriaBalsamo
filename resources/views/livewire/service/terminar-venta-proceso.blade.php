@@ -319,23 +319,40 @@
                         <tfoot >
                             <tr >
                                 <td colspan="1" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-2xl font-semibold">
-                                Ingresar Cantidad
+                                {{ $esMdO ? 'Precio a cobrar' : 'Ingresar Cantidad' }}
                                 </td>
 
                                 <td colspan="1"  class="px-4 py-2 border border-slate-300 bg-brand-400/50  font-semibold text-right">
-                                    <input 
-                                    id="cantidadArt" 
-                                    wire:model="cantidadArt" 
+                                    @if ($esMdO)
+                                    <input
+                                    id="precioMdO"
+                                    wire:model="precioMdO"
                                     @if ($agregarCant === 1)
                                         wire:keydown.enter="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
                                     @elseif ($agregarCant === 2)
                                         wire:keydown.enter="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
                                     @endif
-                                    type="text" 
-                                    placeholder="0" 
+                                    type="text"
+                                    placeholder="0"
+                                    class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3"
+                                />
+                                <x-input-error for="precioMdO" class="mt-2" />
+                                <div class="text-xs text-gray-500 mt-1 font-normal">Mano de obra: la cantidad queda en 1.</div>
+                                    @else
+                                    <input
+                                    id="cantidadArt"
+                                    wire:model="cantidadArt"
+                                    @if ($agregarCant === 1)
+                                        wire:keydown.enter="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
+                                    @elseif ($agregarCant === 2)
+                                        wire:keydown.enter="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
+                                    @endif
+                                    type="text"
+                                    placeholder="0"
                                     class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3"
                                 />
                                 <x-input-error for="cantidadArt" class="mt-2" />
+                                    @endif
 
                                 </td>
 
@@ -352,10 +369,10 @@
                 </x-danger-button>
                 @if ($agregarCant==1 )
                     <x-secondary-button class="ms-3" wire:click="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})" wire:loading.attr="disabled">
-                    {{ __('Agregar Cantidad') }}
+                    {{ $esMdO ? __('Agregar') : __('Agregar Cantidad') }}
                     </x-secondary-button>
                 @else<x-secondary-button class="ms-3" wire:click="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})" wire:loading.attr="disabled">
-                    {{ __('Modificar Cantidad') }}
+                    {{ $esMdO ? __('Guardar precio') : __('Modificar Cantidad') }}
                     </x-secondary-button>
                     
                 @endif
