@@ -118,7 +118,7 @@ class VentaExpress extends Component
                 'unidads.unidad',
                 'articulos.descuento',
                 'articulos.unidadVenta',
-                'articulos.precioF',
+                DB::raw('COALESCE(cars.precio, articulos.precioF) as precioF'),
                 'articulos.precioI',
                 'articulos.caducidad',
                 'articulos.detalles',
@@ -237,7 +237,7 @@ class VentaExpress extends Component
                 'unidads.unidad',
                 'articulos.descuento',
                 'articulos.unidadVenta',
-                'articulos.precioF',
+                DB::raw('COALESCE(cars.precio, articulos.precioF) as precioF'),
                 'articulos.precioI',
                 'articulos.caducidad',
                 'articulos.detalles',
@@ -274,6 +274,8 @@ class VentaExpress extends Component
     public $msj;
     public $descArt = 0;
     public $cantidadArt;
+    public $esMdO = false;   // el ítem que se agrega/edita es mano de obra (categoría 1)
+    public $precioMdO;       // precio a cobrar por esa mano de obra
     public $proveedor_id;
     public $iva_incluido;
     public $stock;
@@ -308,9 +310,14 @@ class VentaExpress extends Component
             ->where('articulos.activo', $this->active)
             ->find($id);
 
+        // Mano de obra (categoría 1): precio editable, cantidad = 1.
+        $this->esMdO = Articulo::where('id', $id)->value('categoria_id') == 1;
+        $this->precioMdO = $this->articulosMuestra->precioF;
+        if ($this->esMdO) { $this->cantidadArt = 1; }
+
         $this->agregarCant = 1;
     }
-    
+
     public function modCar($id)
     {
         $this->articulosMuestra = Articulo::select(
@@ -340,6 +347,11 @@ class VentaExpress extends Component
         $update = Car::where('user_id', auth()->user()->id)->where('articulo_id', '=', $id)->first();
         $this->cantidadArt = $update->cantidad;
 
+        // Mano de obra: precio editable (el actual de la línea o el del artículo), cantidad = 1.
+        $this->esMdO = Articulo::where('id', $id)->value('categoria_id') == 1;
+        $this->precioMdO = $update->precio ?? $this->articulosMuestra->precioF;
+        if ($this->esMdO) { $this->cantidadArt = 1; }
+
         $this->agregarCant = 2;
     }
     
@@ -347,11 +359,18 @@ class VentaExpress extends Component
     
     public function updateSave($idart, $stockArt)
     {
-        if ($stockArt >= $this->cantidadArt) {
-            $this->validate(['cantidadArt' => 'required|numeric']);
+        $cantidad = $this->esMdO ? 1 : $this->cantidadArt;
+        if ($stockArt >= $cantidad) {
+            $this->esMdO
+                ? $this->validate(['precioMdO' => 'required|numeric|min:1'])
+                : $this->validate(['cantidadArt' => 'required|numeric']);
+
+            $data = ['cantidad' => $cantidad];
+            if ($this->esMdO) { $data['precio'] = (int) round($this->precioMdO); }
+
             Car::where('user_id', auth()->user()->id)
                 ->where('articulo_id', '=', $idart)
-                ->update(['cantidad' => $this->cantidadArt]);
+                ->update($data);
             $this->agregarCant = false;
             $this->Total();
             $this->q = '';
@@ -360,16 +379,19 @@ class VentaExpress extends Component
             $this->majStock = "Stock Insuficiente para realizar esta operacion";
         }
     }
-    
+
     public function save($idart, $stockArt)
     {
-        $this->addCar($idart);
-        if ($stockArt >= $this->cantidadArt) {
-            $this->validate(['cantidadArt' => 'required|numeric']);
-            $this->addCar($idart);
+        $cantidad = $this->esMdO ? 1 : $this->cantidadArt;
+        if ($stockArt >= $cantidad) {
+            $this->esMdO
+                ? $this->validate(['precioMdO' => 'required|numeric|min:1'])
+                : $this->validate(['cantidadArt' => 'required|numeric']);
+
             Car::create([
                 'articulo_id' => $idart,
-                'cantidad' => $this->cantidadArt,
+                'cantidad' => $cantidad,
+                'precio' => $this->esMdO ? (int) round($this->precioMdO) : null,
                 'user_id' => auth()->user()->id,
                 'operacionCar' => 100
             ]);
@@ -488,7 +510,7 @@ class VentaExpress extends Component
                 'unidads.unidad',
                 'articulos.descuento',
                 'articulos.unidadVenta',
-                'articulos.precioF',
+                DB::raw('COALESCE(cars.precio, articulos.precioF) as precioF'),
                 'articulos.precioI',
                 'articulos.caducidad',
                 'articulos.detalles',
