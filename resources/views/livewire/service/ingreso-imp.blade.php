@@ -1,5 +1,5 @@
 
-    <div class="pt-[1cm] max-w-4xl mx-auto px-4">
+    <div class="max-w-4xl mx-auto px-4">
         <div class="bg-white rounded-lg shadow-lg p-4">
 
             {{-- ================= CABECERA ================= --}}
