@@ -23,8 +23,17 @@ async function deploy() {
     const APP = process.env.DEPLOY_APP_PATH;   // ej: /home/u123456789/bicicleteriaBalsamo
     const PUB = process.env.DEPLOY_PUBLIC_PATH; // ej: /home/u123456789/public_html
 
-    // ── 1. Git push local ─────────────────────────────
+    // ── 1. Commitear assets compilados + push ─────────
+    // Se commitea el public/build recién generado por `npm run build` con
+    // [skip ci] (evita que el CI recompile) para que el reset --hard del
+    // servidor traiga los assets frescos sin depender de la Action.
     console.log('📤 Subiendo a GitHub...');
+    try {
+        execSync('git add public/build', { stdio: 'inherit' });
+        execSync('git commit -m "build: assets compilados [skip ci]"', { stdio: 'inherit' });
+    } catch {
+        console.log('  (build sin cambios)');
+    }
     try {
         execSync('git push', { stdio: 'inherit' });
     } catch {
@@ -43,7 +52,7 @@ async function deploy() {
 
     // ── 3. Actualizar código en el servidor ───────────
     console.log('📦 Actualizando servidor...');
-    await correr('git pull',          `cd ${APP} && git pull`);
+    await correr('actualizar código', `cd ${APP} && git fetch origin && git reset --hard origin/main`);
     await correr('copiar build/',     `cp -rf ${APP}/public/build/ ${PUB}/build/`);
     await correr('copiar index.php',  `cp ${APP}/public/index.php ${PUB}/index.php`);
     await correr('copiar .htaccess',  `cp ${APP}/public/.htaccess ${PUB}/.htaccess`);
