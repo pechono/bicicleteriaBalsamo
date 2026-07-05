@@ -397,7 +397,7 @@
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
                     <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 text-sm">
                         <span class="font-mono text-xs text-gray-500">#{{ $articulosMuestra->id }}</span>
-                        <span class="font-semibold text-gray-800 dark:text-gray-200 ml-2">{{ $articulosMuestra->articulo }} - {{ $articulosMuestra->presentacion }}-{{ $articulosMuestra->unidad }}</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-200 ml-2">{{ $articulosMuestra->articulo }}</span>
                     </div>
                     <div class="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700 text-sm">
                         <div class="px-4 py-2"><div class="text-xs text-gray-500 uppercase tracking-wide">Stock actual</div><div class="font-semibold text-gray-800 dark:text-gray-200">{{ $articulosMuestra->stock }}</div></div>
@@ -454,7 +454,7 @@
                     <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 text-sm">
                         <span class="font-mono text-xs text-gray-500">#{{ $id }}</span>
                         <span class="font-semibold text-gray-800 dark:text-gray-200 ml-2">{{ $art }}</span>
-                        <span class="text-gray-500 ml-1">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</span>
+                        @if($categoria && $categoria !== '-')<span class="text-gray-500 ml-1">{{ $categoria }}</span>@endif
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1 text-sm p-4">
                         <div><span class="text-gray-500">Precio inicial:</span> <b class="text-gray-800 dark:text-gray-200">${{ $precioI }}</b>@unless($iva_incluido)<span class="text-xs text-gray-500 font-semibold ml-1">+IVA</span>@endunless</div>
@@ -462,7 +462,7 @@
                         <div><span class="text-gray-500">Descuento:</span> <b class="text-gray-800 dark:text-gray-200">{{ $descuento }}</b></div>
                         <div><span class="text-gray-500">Stock:</span> <b class="text-gray-800 dark:text-gray-200">{{ $stock }}</b></div>
                         <div><span class="text-gray-500">Stock mín.:</span> <b class="text-gray-800 dark:text-gray-200">{{ $stockMinimo }}</b></div>
-                        <div><span class="text-gray-500">Caducidad:</span> <b class="text-gray-800 dark:text-gray-200">{{ $caducidad }}</b></div>
+                        @if($caducidad && $caducidad !== '-' && $caducidad !== 'No')<div><span class="text-gray-500">Caducidad:</span> <b class="text-gray-800 dark:text-gray-200">{{ $caducidad }}</b></div>@endif
                     </div>
                 </div>
 

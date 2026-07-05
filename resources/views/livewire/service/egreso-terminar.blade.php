@@ -287,76 +287,37 @@
                 {{ __('Selecionar Articulo') }}
             </x-slot>
             <x-slot name="content">
-                <div class="rounded-t-lg" >
-                    <table class="w-full rounded text-lg">
-                        <thead>
-
-                        </thead>
-                        <tbody>
-                        <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Articulo</td>
-
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 border">{{ $articulosMuestra->id }} </td>
-                                <td class="px-4 py-2 border">{{ $articulosMuestra->articulo }} - {{ $articulosMuestra->presentacion }}-{{ $articulosMuestra->unidad }}</td>
-                            <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Actual</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Final</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 border">{{ $articulosMuestra->stock }}</td>
-                                <td class="px-4 py-2 border">{{ $articulosMuestra->precioF }}</td>
-                            </tr>
-                            </tr>
-                        </tbody>
-
-                        <tfoot >
-                            <tr >
-                                <td colspan="1" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-2xl font-semibold">
-                                {{ $esMdO ? 'Precio a cobrar' : 'Ingresar Cantidad' }}
-                                </td>
-
-                                <td colspan="1"  class="px-4 py-2 border border-slate-300 bg-brand-400/50  font-semibold text-right">
-                                    @if ($esMdO)
-                                    <input
-                                    id="precioMdO"
-                                    wire:model="precioMdO"
-                                    @if ($agregarCant === 1)
-                                        wire:keydown.enter="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
-                                    @elseif ($agregarCant === 2)
-                                        wire:keydown.enter="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
-                                    @endif
-                                    type="text"
-                                    placeholder="0"
-                                    class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3"
-                                />
-                                <x-input-error for="precioMdO" class="mt-2" />
-                                <div class="text-xs text-gray-500 mt-1 font-normal">Mano de obra: la cantidad queda en 1.</div>
-                                    @else
-                                    <input
-                                    id="cantidadArt"
-                                    wire:model="cantidadArt"
-                                    @if ($agregarCant === 1)
-                                        wire:keydown.enter="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
-                                    @elseif ($agregarCant === 2)
-                                        wire:keydown.enter="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
-                                    @endif
-                                    type="text"
-                                    placeholder="0"
-                                    class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3"
-                                />
-                                <x-input-error for="cantidadArt" class="mt-2" />
-                                    @endif
-
-                                </td>
-
-                            </tr>
-                        </tfoot>
-                    </table>
+                {{-- Datos del artículo --}}
+                <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+                    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 text-sm">
+                        <span class="font-mono text-xs text-gray-500">#{{ $articulosMuestra->id }}</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-200 ml-2">{{ $articulosMuestra->articulo }}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-sm p-4">
+                        <div><span class="text-gray-500">Stock actual:</span> <b class="text-gray-800 dark:text-gray-200">{{ $articulosMuestra->stock }}</b></div>
+                        <div><span class="text-gray-500">Precio final:</span> <b class="text-gray-800 dark:text-gray-200">${{ $articulosMuestra->precioF }}</b></div>
+                    </div>
                 </div>
-                <div>{{ $majStock }}</div>
+
+                {{-- Cantidad / Precio --}}
+                <div class="text-center">
+                    <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase mb-2">{{ $esMdO ? 'Precio a cobrar' : 'Ingresar cantidad' }}</label>
+                    @if ($esMdO)
+                        <input id="precioMdO" wire:model="precioMdO"
+                            @if ($agregarCant === 1) wire:keydown.enter="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
+                            @elseif ($agregarCant === 2) wire:keydown.enter="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})" @endif
+                            type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3" />
+                        <x-input-error for="precioMdO" class="mt-2" />
+                        <div class="text-xs text-gray-500 mt-1">Mano de obra: la cantidad queda en 1.</div>
+                    @else
+                        <input id="cantidadArt" wire:model="cantidadArt"
+                            @if ($agregarCant === 1) wire:keydown.enter="save({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})"
+                            @elseif ($agregarCant === 2) wire:keydown.enter="updateSave({{ $articulosMuestra->id }}, {{ $articulosMuestra->stock }})" @endif
+                            type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3" />
+                        <x-input-error for="cantidadArt" class="mt-2" />
+                    @endif
+                    @if($majStock)<div class="text-center text-red-500 mt-2">{{ $majStock }}</div>@endif
+                </div>
             </x-slot>
 
             <x-slot name="footer">
@@ -382,56 +343,29 @@
                 {{ __('Seleccionar Articulo') }}
             </x-slot>
             <x-slot name="content">
-                <div class="rounded-t-lg" >
-                    <table class="table-auto rounded">
-                        <thead>
-                            <th>
-                                <td colspan="4" class="text-lg font-semibold">Venta</td>
-                            </th>
-                        </thead>
-                        <tbody>
-                        <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Id</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Articulo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">"Descripcion</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Inicial</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Precio Final</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 border">{{ $id }} </td>
-                                <td class="px-4 py-2 border">{{ $art }}</td>
-                                <td class="px-4 py-2 border">{{ $categoria }} - {{ $presentacion }}-{{ $unidad }}</td>
-                                <td class="px-4 py-2 border">{{ $precioI }}</td>
-                                <td class="px-4 py-2 border">{{ $precioF }}</td>
-                            </tr>
-                            <tr  >
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50  text-lg font-semibold">Caducidad</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Descuento</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Detalles</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Minimo</td>
-                                <td class="px-4 py-2 border border-slate-300 bg-brand-400/50 text-lg font-semibold">Stock Actual</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 border">{{ $caducidad}} </td>
-                                <td class="px-4 py-2 border">{{ $descuento }}</td>
-                                <td class="px-4 py-2 border">{{ $detalles}}</td>
-                                <td class="px-4 py-2 border">{{ $stockMinimo }}</td>
-                                <td class="px-4 py-2 border">{{ $stock }}</td>
-                            </tr>
-                        </tbody>
+                {{-- Datos del artículo --}}
+                <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+                    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 text-sm">
+                        <span class="font-mono text-xs text-gray-500">#{{ $id }}</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-200 ml-2">{{ $art }}</span>
+                        @if($categoria && $categoria !== '-')<span class="text-gray-500 ml-1">{{ $categoria }}</span>@endif
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1 text-sm p-4">
+                        <div><span class="text-gray-500">Precio inicial:</span> <b class="text-gray-800 dark:text-gray-200">${{ $precioI }}</b></div>
+                        <div><span class="text-gray-500">Precio final:</span> <b class="text-gray-800 dark:text-gray-200">${{ $precioF }}</b></div>
+                        <div><span class="text-gray-500">Descuento:</span> <b class="text-gray-800 dark:text-gray-200">{{ $descuento }}</b></div>
+                        <div><span class="text-gray-500">Stock:</span> <b class="text-gray-800 dark:text-gray-200">{{ $stock }}</b></div>
+                        <div><span class="text-gray-500">Stock mín.:</span> <b class="text-gray-800 dark:text-gray-200">{{ $stockMinimo }}</b></div>
+                        @if($caducidad && $caducidad !== '-' && $caducidad !== 'No')<div><span class="text-gray-500">Caducidad:</span> <b class="text-gray-800 dark:text-gray-200">{{ $caducidad }}</b></div>@endif
+                        @if($detalles && $detalles !== '-')<div><span class="text-gray-500">Detalles:</span> <b class="text-gray-800 dark:text-gray-200">{{ $detalles }}</b></div>@endif
+                    </div>
+                </div>
 
-                        <tfoot >
-                            <tr >
-                                <td colspan="3" class=" px-4 py-2 border border-slate-300 bg-brand-400/50  text-4xl font-semibold">
-                                Aplicar Descuento
-                                </td>
-                                <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-brand-400/50   font-semibold">
-                                    <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3">
-                                    <x-input-error for="descArt" class="mt-2" />
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                {{-- Descuento --}}
+                <div class="text-center">
+                    <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase mb-2">Aplicar descuento (%)</label>
+                    <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3">
+                    <x-input-error for="descArt" class="mt-2" />
                 </div>
             </x-slot>
             <x-slot name="footer">
