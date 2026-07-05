@@ -334,7 +334,7 @@
                                     @endif
                                     type="text"
                                     placeholder="0"
-                                    class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3"
+                                    class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3"
                                 />
                                 <x-input-error for="precioMdO" class="mt-2" />
                                 <div class="text-xs text-gray-500 mt-1 font-normal">Mano de obra: la cantidad queda en 1.</div>
@@ -430,7 +430,7 @@
                                 Aplicar Descuento
                                 </td>
                                 <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-brand-400/50   font-semibold">
-                                    <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
+                                    <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3">
                                     <x-input-error for="descArt" class="mt-2" />
                                 </td>
                             </tr>

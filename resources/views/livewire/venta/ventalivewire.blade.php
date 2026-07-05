@@ -329,7 +329,7 @@
                             </td>
 
                             <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-sky-400/50   font-semibold">
-                                <input id='cantidadArt' wire:model='cantidadArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
+                                <input id='cantidadArt' wire:model='cantidadArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3">
                                 <x-input-error for="cantidadArt" class="mt-2" />
 
                             </td>
@@ -405,7 +405,7 @@
                             Aplicar Descuento
                             </td>
                             <td colspan="2"  class=" px-4 py-2 border border-slate-300 bg-sky-400/50   font-semibold">
-                                <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
+                                <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3">
                                 <x-input-error for="descArt" class="mt-2" />
                             </td>
                         </tr>

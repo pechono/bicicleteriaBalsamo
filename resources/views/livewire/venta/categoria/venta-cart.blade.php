@@ -354,7 +354,7 @@
             {{-- Descuento --}}
             <div class="text-center">
                 <label class="block text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase mb-2">Aplicar descuento (%)</label>
-                <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-full h-20 py-2 px-3">
+                <input id="descArt" wire:model='descArt' type="text" placeholder="0" class="text-center text-4xl shadow appearance-none border rounded w-40 h-20 py-2 px-3">
                 <x-input-error for="descArt" class="mt-2" />
             </div>
         </x-slot>
