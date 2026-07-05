@@ -1,0 +1,70 @@
+========================================================
+  BACKUP DE LA BASE DE DATOS - Bicicletería Bálsamo
+========================================================
+
+QUÉ HACE
+--------
+Guarda una copia comprimida de TODA la base de datos (clientes, ventas,
+stock, artículos, todo). Cada copia es un archivo ".sql.gz" que se puede
+restaurar si algo se rompe o se pierde información.
+
+
+1) CUÁNDO SE EJECUTA
+--------------------
+- AUTOMÁTICO: todos los días a las 03:00 de la mañana. No hay que hacer
+  nada (lo dispara el cron del hosting, el mismo del WhatsApp).
+- A MANO (cuando quieras), por SSH:
+
+    cd ~/domains/bicicleteriabalsamo.xyz/bicicleteriaBalsamo
+    php artisan backup:db
+
+
+2) DÓNDE SE GUARDAN
+-------------------
+En el servidor, dentro del proyecto:
+
+    ~/domains/bicicleteriabalsamo.xyz/bicicleteriaBalsamo/storage/app/backups/
+
+Los archivos se llaman: backup_2026-07-04_030000.sql.gz  (fecha_hora)
+Se conservan los últimos 14 días; los más viejos se borran solos.
+
+Ver la lista:
+    ls -lh storage/app/backups/
+
+
+3) BAJAR UN BACKUP A TU PC (copia de seguridad "afuera" del server)
+-------------------------------------------------------------------
+CONVIENE hacerlo cada tanto por si se cae el servidor entero.
+
+- Opción fácil: entrá por FTP (con FileZilla) a la carpeta de arriba y
+  descargá el .sql.gz a tu computadora.
+
+- Opción SSH (desde tu PC):
+    scp -P 65002 u778369470@147.93.39.146:~/domains/bicicleteriabalsamo.xyz/bicicleteriaBalsamo/storage/app/backups/backup_XXXX.sql.gz .
+
+
+4) CÓMO RESTAURAR (recuperar la base)  ⚠️ SOLO SI HACE FALTA
+------------------------------------------------------------
+OJO: restaurar REEMPLAZA los datos actuales por los del backup.
+
+Primero mirá los datos de la base (están en el archivo .env):
+    grep "^DB_" .env
+  -> te muestra DB_DATABASE (nombre), DB_USERNAME y DB_PASSWORD
+
+OPCIÓN A - por SSH (reemplazá NOMBRE_DB y USUARIO por los de tu .env):
+    gunzip -c storage/app/backups/backup_XXXX.sql.gz | mysql -u USUARIO -p NOMBRE_DB
+  (te pide la contraseña = DB_PASSWORD)
+
+OPCIÓN B - más fácil, con phpMyAdmin (panel de Hostinger):
+    1. Descomprimí el .sql.gz en tu PC (queda un archivo .sql).
+    2. Abrí phpMyAdmin en el panel de Hostinger.
+    3. Elegí tu base de datos (la de DB_DATABASE).
+    4. Pestaña "Importar" -> subí el .sql -> Continuar.
+
+
+DATOS DEL SERVIDOR
+------------------
+SSH:  ssh u778369470@147.93.39.146 -p 65002
+Ruta: ~/domains/bicicleteriabalsamo.xyz/bicicleteriaBalsamo
+
+========================================================
