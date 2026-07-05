@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "node node_modules/vite/bin/vite.js build",
-        "deploy": "npm run build && node deploy.js"
+        "deploy": "npm run build && node deploy.cjs"
     },
     "dependencies": {
         "dotenv": "^16.4.5",
