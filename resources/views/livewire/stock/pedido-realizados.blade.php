@@ -70,41 +70,35 @@
         </x-slot>
 
         <x-slot name="content" class="w-full">
-            <div class='w-full'>
-            <table class=" table auto w-full border rounded-sm">
-                <thead>
-                 @if ($verPedido)
-                    <tr >
-                        <td class=' text-xl bg-blue-100 mt-4 border' colspan="2"> Pedido a Proveedor N: {{ $pedido }}</td>
-                    </tr>
-                    <tr >
-                        <td class=' text-lg  mt-4 border'> Empresa: </td>
-                        <td class=' text-lg mt-4 '>{{ $proveedor }}</td>
-                    </tr>
-                    <tr >
-                        <td class=' text-lg mt-4 border'> Localidad: </td>
-                        <td class=' text-lg mt-4 '>{{ $localidad }}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="6" class="h-12"></td>
-                    </tr>
-                    <tr  >
-                        <td class=' text-lg bg-blue-100 mt-6 border'>Codigo</td>
-                        <td class=' text-lg bg-blue-100 mt-6 border'>Articulo</td>
-                        <td class=' text-lg bg-blue-100 mt-6 border'>Cantidad</td>
-                    </tr>
-                    @endif
-                </thead>
-                <tbody>
-                    @foreach ( $artPedido as $op )
-                    <tr>
-                        <td class=' text-lg border mt-4  '>{{ $op->codigo_proveedor }}{{ $op->codigo }}</td>
-                        <td class=' text-lg border mt-4  '>{{ $op->articulo}}  {{ $op->presentacion }} {{ $op->unidad }}</td>
-                        <td class=' text-lg border mt-4  '>{{ $op->cantidad }} </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            {{-- Datos del pedido --}}
+            <div class="mb-4 rounded-lg bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-700 p-4">
+                <div class="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">Pedido a Proveedor N° {{ $pedido }}</div>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                    <div><span class="text-gray-500">Empresa:</span> <span class="font-semibold text-gray-800 dark:text-gray-200">{{ $proveedor }}</span></div>
+                    <div><span class="text-gray-500">Localidad:</span> <span class="font-semibold text-gray-800 dark:text-gray-200">{{ $localidad }}</span></div>
+                </div>
+            </div>
+
+            {{-- Artículos del pedido --}}
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wide">Código</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wide">Artículo</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wide">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach ( $artPedido as $op )
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="px-4 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">{{ $op->codigo_proveedor }}{{ $op->codigo }}</td>
+                                <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $op->articulo }} {{ $op->presentacion }} {{ $op->unidad }}</td>
+                                <td class="px-4 py-2 text-right text-gray-800 dark:text-gray-200">{{ $op->cantidad }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </x-slot>
 
