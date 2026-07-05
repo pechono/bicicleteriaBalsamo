@@ -53,7 +53,7 @@ async function deploy() {
     // ── 3. Actualizar código en el servidor ───────────
     console.log('📦 Actualizando servidor...');
     await correr('actualizar código', `cd ${APP} && git fetch origin && git reset --hard origin/main`);
-    await correr('copiar build/',     `cp -rf ${APP}/public/build/ ${PUB}/build/`);
+    await correr('copiar build/',     `rm -rf ${PUB}/build && cp -rf ${APP}/public/build ${PUB}/build`);
     await correr('copiar index.php',  `cp ${APP}/public/index.php ${PUB}/index.php`);
     await correr('copiar .htaccess',  `cp ${APP}/public/.htaccess ${PUB}/.htaccess`);
 
