@@ -1,13 +1,14 @@
-name: Build de assets
+name: Build de assets (manual)
 
-# Hostinger DESCARTA el SSH desde las IP de GitHub Actions (i/o timeout), así que
-# el deploy NO se puede correr desde CI. Esta Action solo compila los assets y los
-# commitea. El deploy se hace con `node deploy.js` desde la PC (push + git pull +
-# copiar a public_html + migrate + cache), o con el webhook nativo de Hostinger.
+# El deploy normal es `npm run deploy` desde la PC: compila los assets, los
+# commitea ([skip ci]) y publica por SSH (git reset --hard + copiar a public_html
+# + migrate + cache). Ese comando YA compila los assets, así que este workflow
+# quedó SOLO en modo manual (workflow_dispatch): antes corría en cada push y
+# generaba un commit de build con OTRO hash → chocaba con el build local y dejaba
+# el repo desincronizado. Usalo solo si necesitás un build en la nube puntual.
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
