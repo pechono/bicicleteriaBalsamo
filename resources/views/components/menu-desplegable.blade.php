@@ -136,6 +136,7 @@
                 <a href="{{ route('stock.pedido') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">📝 Pedido a Proveedor</a>
                 <a href="{{ route('stock.pedidoRealizado') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">✅ Pedidos Realizados</a>
                 <a href="{{ route('stockImprimir') }}" target="_blank" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🖨️ Imprimir Stock</a>
+                <a href="{{ route('stock.actualizarFactura') }}" class="sub-link flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200">🧾 Actualizar desde factura</a>
             </div>
         </div>
 
@@ -487,6 +488,7 @@
                 <a href="{{ route('stock.pedido') }}" class="block py-2.5 px-4 text-base text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200">📝 Pedido a Proveedor</a>
                 <a href="{{ route('stock.pedidoRealizado') }}" class="block py-2.5 px-4 text-base text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200">✅ Pedidos Realizados</a>
                 <a href="{{ route('stockImprimir') }}" target="_blank" class="block py-2.5 px-4 text-base text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200">🖨️ Imprimir Stock</a>
+                <a href="{{ route('stock.actualizarFactura') }}" class="block py-2.5 px-4 text-base text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200">🧾 Actualizar desde factura</a>
             </div>
         </div>
 

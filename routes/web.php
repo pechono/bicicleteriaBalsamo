@@ -104,6 +104,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/pedido/pedido/{id}', [PrintPedido::class, 'generateReport'])->name('pedidoImprimir');
         Route::get('/pedidorealizados', fn() => view('stock.pedidoRealizado'))->name('stock.pedidoRealizado');
         Route::get('/stock', [StockImprimir::class, 'generateReport'])->name('stockImprimir');
+        Route::get('/actualizar-factura', fn() => view('stock.actualizarFactura'))->name('stock.actualizarFactura');
     });
 
     // Rutas para reportes y comprobantes
