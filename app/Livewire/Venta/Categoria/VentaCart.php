@@ -92,7 +92,16 @@ class VentaCart extends Component
         } */
         $countCar = Car::count();
         $tipoVentas=TipoVenta::all();
-        $clientes=Cliente::all();
+        $clientes = Cliente::where('activo', $this->active)
+            ->when(!empty($this->d), function ($query) {
+                $query->where(function ($sub) {
+                    $sub->where('nombre', 'like', '%'.$this->d.'%')
+                        ->orWhere('apellido', 'like', '%'.$this->d.'%')
+                        ->orWhere('dni', 'like', '%'.$this->d.'%')
+                        ->orWhere('telefono', 'like', '%'.$this->d.'%');
+                });
+            })
+            ->orderBy('apellido')->orderBy('nombre')->get();
         $categoris=Categoria::all();
         $this->cancelarBoton();
 
@@ -354,6 +363,10 @@ class VentaCart extends Component
 
          Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();
          $this->cliente_id='';
+         $this->clienteConfirmado=false;
+         $this->clienteSeleccionadoNombre='';
+         $this->clienteSeleccionadoApellido='';
+         $this->clienteSeleccionadoId=null;
          $this->tipo_id='';
          $this->cancelarBoton();
          return redirect()->route('venta.reporte',['operacion'=>$operacion,'volver'=>'venta.ventaCard']);
@@ -365,10 +378,57 @@ class VentaCart extends Component
      public $activo=1;
 
      public $confirmingClienteAdd=false;
+
+     // --- Búsqueda de cliente (mismo criterio que Venta Express) ---
+     public $d = '';
+     public $clienteConfirmado = false;
+     public $clienteSeleccionadoNombre = '';
+     public $clienteSeleccionadoApellido = '';
+     public $clienteSeleccionadoId = null;
+
+     public function seleccionarCliente($id)
+     {
+         $this->cliente_id = $id;
+         $cliente = Cliente::find($id);
+         if ($cliente) {
+             $this->clienteSeleccionadoNombre = $cliente->nombre;
+             $this->clienteSeleccionadoApellido = $cliente->apellido;
+             $this->clienteSeleccionadoId = $id;
+         }
+         $this->d = '';
+     }
+
+     public function limpiarCliente()
+     {
+         $this->cliente_id = '';
+         $this->clienteConfirmado = false;
+         $this->clienteSeleccionadoNombre = '';
+         $this->clienteSeleccionadoApellido = '';
+         $this->clienteSeleccionadoId = null;
+         $this->d = '';
+     }
+
      public function confirmarClienteAdd()
      {
+         if (empty($this->cliente_id)) {
+             session()->flash('error', 'Debe seleccionar un cliente');
+             return;
+         }
+         $cliente = Cliente::find($this->cliente_id);
+         if (!$cliente) {
+             session()->flash('error', 'Cliente no encontrado');
+             return;
+         }
+         $this->clienteConfirmado = true;
+         $this->clienteSeleccionadoNombre = $cliente->nombre;
+         $this->clienteSeleccionadoApellido = $cliente->apellido;
+         $this->clienteSeleccionadoId = $cliente->id;
+         $this->d = '';
+     }
 
-         $this->confirmingClienteAdd=true;
+     public function abrirModalCliente()
+     {
+         $this->confirmingClienteAdd = true;
      }
 
      public function saveCliente(){
@@ -397,6 +457,10 @@ class VentaCart extends Component
      {   $this->cancelarBoton();
          Car::truncate();
          $this->cliente_id='';
+         $this->clienteConfirmado=false;
+         $this->clienteSeleccionadoNombre='';
+         $this->clienteSeleccionadoApellido='';
+         $this->clienteSeleccionadoId=null;
          $this->tipo_id='';
          return redirect()->route('venta.ventaCard');
      }

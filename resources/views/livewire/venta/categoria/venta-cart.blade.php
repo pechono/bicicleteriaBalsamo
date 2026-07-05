@@ -163,19 +163,71 @@
        
         <div class="flex flex-wrap items-start md:items-stretch  border p-4">
             <!-- Selección de Cliente -->
-            <div class="w-full md:w-1/3 h-1/4 flex flex-col rounded-lg border shadow-lg p-4">
-                <div class="text-lg px-5">Seleccionar Cliente</div>
-                <select id="cliente_id" class="block w-full mt-4 text-1xl rounded-md" name="cliente_id" wire:model='cliente_id'>
-                    <option value="">Seleccionar...</option>
-                    @foreach ($clientes as $cliente)
-                        <option value="{{ $cliente->id }}">
-                            {{ $cliente->apellido }} , {{ $cliente->nombre }}
-                        </option>
-                    @endforeach
-                </select>
-                <button wire:click='confirmarClienteAdd' class="text-white bg-green-500 hover:bg-green-300 rounded-md w-full py-2 px-5 mt-2">
-                    Agregar Cliente
-                </button>
+            <div class="w-full md:w-1/3 flex flex-col rounded-lg border shadow-lg p-4">
+                <div class="text-lg font-semibold text-gray-700 mb-2">Cliente</div>
+                @if(!$clienteConfirmado)
+                    {{-- Buscador --}}
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" wire:model.live="d" placeholder="Buscar (nombre, apellido, DNI o teléfono)..."
+                               class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    @if(!empty($d))
+                        <div class="mt-3">
+                            <div class="text-sm text-gray-600 mb-2">Resultados: {{ $clientes->count() }}</div>
+                            @if($clientes->isNotEmpty())
+                                <div class="max-h-56 overflow-y-auto border border-gray-200 rounded-lg">
+                                    @foreach ($clientes as $cliente)
+                                        <div wire:click="seleccionarCliente({{ $cliente->id }})"
+                                             class="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-0 transition {{ $cliente_id == $cliente->id ? 'bg-blue-100' : '' }}">
+                                            <div class="font-medium text-gray-900">{{ $cliente->apellido }}, {{ $cliente->nombre }}</div>
+                                            <div class="text-xs text-gray-500 mt-1">@if($cliente->dni) DNI: {{ $cliente->dni }} @endif @if($cliente->telefono) | Tel: {{ $cliente->telefono }} @endif</div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-6 bg-gray-50 rounded-lg">
+                                    <p class="text-gray-500 text-sm">No se encontraron clientes para "{{ $d }}"</p>
+                                    <button wire:click="abrirModalCliente" class="mt-3 inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition">+ Crear nuevo cliente</button>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if($cliente_id && !$clienteConfirmado)
+                        @php $clienteSeleccionado = $clientes->firstWhere('id', $cliente_id); @endphp
+                        @if($clienteSeleccionado)
+                            <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+                                <div><span class="text-xs text-blue-600">A confirmar:</span><div class="font-medium text-blue-800">{{ $clienteSeleccionado->apellido }}, {{ $clienteSeleccionado->nombre }}</div></div>
+                                <button wire:click="limpiarCliente" class="text-red-500 hover:text-red-700">✕</button>
+                            </div>
+                        @endif
+                        <button wire:click="confirmarClienteAdd" class="text-white bg-green-500 hover:bg-green-600 rounded-md w-full py-2 px-5 mt-3 transition">✓ Confirmar Cliente</button>
+                    @endif
+
+                    @if(empty($d) && !$cliente_id)
+                        <div class="text-center py-8">
+                            <p class="text-gray-500">Buscar cliente</p>
+                            <p class="text-xs text-gray-400 mt-1">Nombre, apellido, DNI o teléfono</p>
+                            <button wire:click="abrirModalCliente" class="mt-3 inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition">+ Crear nuevo cliente</button>
+                        </div>
+                    @endif
+                @else
+                    {{-- Cliente confirmado --}}
+                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white">✓</div>
+                            <div>
+                                <div class="text-xs text-green-600 font-medium">Cliente confirmado</div>
+                                <div class="text-lg font-bold text-gray-800">{{ $clienteSeleccionadoApellido }}, {{ $clienteSeleccionadoNombre }}</div>
+                            </div>
+                        </div>
+                        <button wire:click="limpiarCliente" class="text-red-500 hover:text-red-700 bg-white rounded-full p-2 shadow-sm" title="Cambiar cliente">✕</button>
+                    </div>
+                @endif
                 <x-input-error for="cliente_id" class="mt-2" />
             </div>
             <div class="w-full md:w-1/3 h-full flex  flex-col rounded-lg border shadow-lg p-4 ">
