@@ -118,28 +118,17 @@
     <x-slot name="content">
         <div class="col-span-6 sm:col-span-4 text-xl my-10">
            
-            <table class="table-auto w-full rounded-md mt-10">
-                <tr>
-                   
-                    <td class="px-4 py-2 border border-white bg-sky-400/50 text-lg ">Articulo</td>
-                    <td class="px-4 py-2 border border-white bg-sky-400/50 text-lg ">Presentacion</td>
-                </tr>
-                <tr>
-                    <td class="rounder border px-4 py-2" >{{ $art->id }} - {{ $art->articulo }}</td>
-                    <td class="rounder border px-4 py-2" >{{ $art->presentacion }} - {{ $art->unidad }}</td>
-
-                </tr>
-                <tr>
-                    <td class="px-4 py-2 border border-white bg-sky-400/50 text-lg ">Precio Inicial</td>
-                    <td class="px-4 py-2 border border-white bg-sky-400/50 text-lg ">Precio Final</td>
-                </tr>
-                <tr>
-                    <td class="rounder border px-4 py-2" >{{ $art->precioI }}</td>
-                    <td class="rounder border px-4 py-2" >{{ $art->precioF }}</td>
-
-                </tr>
-
-            </table>
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 text-base">
+                    <span class="font-mono text-xs text-gray-500">#{{ $art->id }}</span>
+                    <span class="font-semibold text-gray-800 dark:text-gray-200 ml-2">{{ $art->articulo }}</span>
+                    <span class="text-gray-500 ml-1">{{ $art->presentacion }} - {{ $art->unidad }}</span>
+                </div>
+                <div class="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700 text-base">
+                    <div class="px-4 py-2"><div class="text-xs text-gray-500 uppercase tracking-wide">Precio inicial</div><div class="font-semibold text-gray-800 dark:text-gray-200">${{ $art->precioI }}</div></div>
+                    <div class="px-4 py-2"><div class="text-xs text-gray-500 uppercase tracking-wide">Precio final</div><div class="font-semibold text-gray-800 dark:text-gray-200">${{ $art->precioF }}</div></div>
+                </div>
+            </div>
             <div class="col-span-6 sm:col-span-4 mt-2 grid grid-flow-col justify-stretch " >
                 <div class="mr-2">
                     <x-label for="precioI" value="Precio Inicial"  class=" text-xl "/>
@@ -162,8 +151,8 @@
                 </div>
             </div>
         </div>
-        <div class="flex justify-end items-center  bg-sky-400/50 p-1">
-            <button wire:click='nuevoPrecio({{ $art->id }})' class="bg-green-500 hover:bg-green-700 text-white  py-2 px-4 rounded text-lg" >Cambiar Precio</button>
+        <div class="flex justify-end items-center p-1 mt-4">
+            <button wire:click='nuevoPrecio({{ $art->id }})' class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded text-lg" >Cambiar Precio</button>
         </div>
     </x-slot>
 
