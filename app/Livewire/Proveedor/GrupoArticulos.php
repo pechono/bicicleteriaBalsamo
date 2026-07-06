@@ -25,6 +25,9 @@ class GrupoArticulos extends Component
     public $nombreGrupo = '';
     public $porsentaje = '';
 
+    /** Modal "ingresar artículo" (elegir de la lista de artículos sin grupo). */
+    public $ingresarModal = false;
+
     /** Máximo de disponibles a mostrar (para no traer miles). */
     public const LIMITE_DISPONIBLES = 50;
 
@@ -49,6 +52,21 @@ class GrupoArticulos extends Component
     public function seleccionarGrupo($id): void
     {
         $this->grupoId = $id;
+        $this->buscar = '';
+    }
+
+    public function abrirIngresar(): void
+    {
+        if (!$this->grupoId) {
+            return;
+        }
+        $this->buscar = '';
+        $this->ingresarModal = true;
+    }
+
+    public function cerrarIngresar(): void
+    {
+        $this->ingresarModal = false;
         $this->buscar = '';
     }
 
@@ -122,25 +140,26 @@ class GrupoArticulos extends Component
                 ->get();
         }
 
-        // Disponibles: del proveedor elegido, que NO estén en ningún grupo, con buscador.
+        // Disponibles: TODOS los artículos activos que NO estén en ningún grupo, con buscador.
+        // (No se filtra por proveedor: el usuario elige a mano cuáles van al grupo.)
         $disponibles = collect();
         $totalDisponibles = 0;
-        if ($grupo) {
+        if ($grupo && $this->ingresarModal) {
             $base = Articulo::query()
-                ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
                 ->leftJoin('grupos_articulos', 'grupos_articulos.articulo_id', '=', 'articulos.id')
+                ->leftJoin('stocks', 'stocks.articulo_id', '=', 'articulos.id')
                 ->leftJoin('categorias', 'categorias.id', '=', 'articulos.categoria_id')
-                ->where('stocks.proveedor_id', $this->proveedorId)
                 ->whereNull('grupos_articulos.articulo_id')
                 ->when(trim($this->buscar), fn($q) => \App\Support\Busqueda::palabras(
                     $q, $this->buscar,
                     ['articulos.articulo', 'articulos.codigo', 'stocks.codigo_proveedor']
                 ));
 
-            $totalDisponibles = (clone $base)->count('articulos.id');
+            $totalDisponibles = (clone $base)->distinct()->count('articulos.id');
 
             $disponibles = $base
-                ->select('articulos.id', 'articulos.codigo', 'articulos.articulo', 'articulos.precioI', 'categorias.categoria')
+                ->select('articulos.id', 'articulos.codigo', 'articulos.articulo', 'articulos.precioI', 'articulos.precioF', 'categorias.categoria')
+                ->distinct()
                 ->orderBy('articulos.articulo')
                 ->limit(self::LIMITE_DISPONIBLES)
                 ->get();

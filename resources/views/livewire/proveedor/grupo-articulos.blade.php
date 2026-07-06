@@ -53,80 +53,81 @@
 
     {{-- Paso 3: gestionar artículos del grupo seleccionado --}}
     @if ($grupo)
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-            {{-- En el grupo --}}
-            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <div class="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 border-b border-gray-200 dark:border-gray-700">
-                    <h4 class="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
-                        En el grupo «{{ $grupo->NombreGrupo }}» ({{ $enGrupo->count() }})
-                    </h4>
-                </div>
-                <div class="max-h-[55vh] overflow-y-auto">
-                    <table class="min-w-full text-sm">
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                            @forelse ($enGrupo as $a)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td class="px-3 py-2">
-                                        <div class="text-gray-800 dark:text-gray-100">{{ $a->articulo }}</div>
-                                        <div class="text-xs text-gray-400">{{ $a->codigo }} · {{ $a->categoria }} · ${{ $a->precioF }}</div>
-                                    </td>
-                                    <td class="px-3 py-2 text-right w-24">
-                                        <button wire:click="quitar({{ $a->id }})"
-                                            class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-md">Quitar</button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr><td class="px-3 py-6 text-center text-gray-400 italic">Todavía no hay artículos en este grupo.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+        <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 border-b border-gray-200 dark:border-gray-700">
+                <h4 class="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+                    En el grupo «{{ $grupo->NombreGrupo }}» ({{ $enGrupo->count() }})
+                </h4>
+                <button wire:click="abrirIngresar"
+                    class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md">+ Ingresar artículo</button>
             </div>
-
-            {{-- Disponibles --}}
-            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                    <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                        Disponibles del proveedor
-                        <span class="text-gray-400 font-normal">({{ $totalDisponibles }})</span>
-                    </h4>
-                    <input type="text" wire:model.live.debounce.350ms="buscar"
-                        placeholder="Buscar por nombre o código…"
-                        class="block w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
-                </div>
-                <div class="max-h-[55vh] overflow-y-auto">
-                    <table class="min-w-full text-sm">
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                            @forelse ($disponibles as $a)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td class="px-3 py-2">
-                                        <div class="text-gray-800 dark:text-gray-100">{{ $a->articulo }}</div>
-                                        <div class="text-xs text-gray-400">{{ $a->codigo }} · {{ $a->categoria }} · ${{ $a->precioI }}</div>
-                                    </td>
-                                    <td class="px-3 py-2 text-right w-24">
-                                        <button wire:click="agregar({{ $a->id }})"
-                                            class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-md">Agregar</button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr><td class="px-3 py-6 text-center text-gray-400 italic">
-                                    @if ($buscar) Nada coincide con «{{ $buscar }}». @else No hay artículos disponibles para este proveedor. @endif
-                                </td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    @if ($totalDisponibles > $disponibles->count())
-                        <div class="px-3 py-2 text-xs text-center text-gray-400 border-t border-gray-100 dark:border-gray-700">
-                            Mostrando {{ $disponibles->count() }} de {{ $totalDisponibles }}. Afiná la búsqueda para ver más.
-                        </div>
-                    @endif
-                </div>
+            <div class="max-h-[55vh] overflow-y-auto">
+                <table class="min-w-full text-sm">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse ($enGrupo as $a)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="px-3 py-2">
+                                    <div class="text-gray-800 dark:text-gray-100">{{ $a->articulo }}</div>
+                                    <div class="text-xs text-gray-400">{{ $a->codigo }} · {{ $a->categoria }} · ${{ $a->precioF }}</div>
+                                </td>
+                                <td class="px-3 py-2 text-right w-24">
+                                    <button wire:click="quitar({{ $a->id }})"
+                                        class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-md">Quitar</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td class="px-3 py-8 text-center text-gray-400 italic">Todavía no hay artículos en este grupo. Tocá «Ingresar artículo» para agregar.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     @elseif ($proveedorId)
         <p class="text-sm text-gray-400 italic">Seleccioná un grupo para gestionar sus artículos.</p>
     @endif
+
+    {{-- Modal: ingresar artículo (elegir de los que no tienen grupo) --}}
+    <x-dialog-modal wire:model.live="ingresarModal" maxWidth="2xl">
+        <x-slot name="title">
+            Ingresar artículos @if ($grupo) al grupo «{{ $grupo->NombreGrupo }}» @endif
+        </x-slot>
+        <x-slot name="content">
+            <input type="text" wire:model.live.debounce.350ms="buscar"
+                placeholder="Buscar por nombre o código…"
+                class="block w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm mb-3">
+            <p class="text-xs text-gray-500 mb-2">Artículos sin grupo <span class="text-gray-400">({{ $totalDisponibles }})</span></p>
+            <div class="max-h-[55vh] overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+                <table class="min-w-full text-sm">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse ($disponibles as $a)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="px-3 py-2">
+                                    <div class="text-gray-800 dark:text-gray-100">{{ $a->articulo }}</div>
+                                    <div class="text-xs text-gray-400">{{ $a->codigo }} · {{ $a->categoria }} · ${{ $a->precioF }}</div>
+                                </td>
+                                <td class="px-3 py-2 text-right w-24">
+                                    <button wire:click="agregar({{ $a->id }})"
+                                        class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-md">Agregar</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td class="px-3 py-8 text-center text-gray-400 italic">
+                                @if ($buscar) Nada coincide con «{{ $buscar }}». @else No hay artículos sin grupo. @endif
+                            </td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                @if ($totalDisponibles > $disponibles->count())
+                    <div class="px-3 py-2 text-xs text-center text-gray-400 border-t border-gray-100 dark:border-gray-700">
+                        Mostrando {{ $disponibles->count() }} de {{ $totalDisponibles }}. Afiná la búsqueda para ver más.
+                    </div>
+                @endif
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <x-secondary-button wire:click="cerrarIngresar">Listo</x-secondary-button>
+        </x-slot>
+    </x-dialog-modal>
 
     {{-- Modal crear grupo --}}
     <x-dialog-modal wire:model.live="crearGrupoModal" maxWidth="md">
