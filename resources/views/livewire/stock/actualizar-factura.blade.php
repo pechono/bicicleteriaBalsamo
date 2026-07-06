@@ -86,6 +86,83 @@
         </div>
     @endif
 
+    {{-- No está en stock, pero sí en el catálogo: dar de alta --}}
+    @if ($enCatalogo)
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-amber-300 dark:border-amber-700 p-5">
+            <div class="mb-4 rounded-md bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 text-sm">
+                No está en stock todavía, pero lo encontré en el <b>catálogo</b> de este proveedor. Completá los datos y dalo de alta con lo recibido.
+            </div>
+
+            @if ($grupos->isEmpty())
+                <div class="mb-4 rounded-md bg-red-50 border border-red-200 text-red-700 px-3 py-2 text-sm">
+                    ⚠️ Este proveedor no tiene <b>grupos</b> definidos (el grupo fija el % de ganancia). Creá al menos uno en
+                    <a href="{{ route('proveedor.crearGrupo') }}" class="underline font-semibold">Proveedores → Crear grupo</a> y volvé a buscar.
+                </div>
+            @endif
+
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Nombre del artículo</label>
+                <input type="text" wire:model="aNombre" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                @error('aNombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                <p class="text-[11px] text-gray-400 mt-1">Código: <b>{{ $codigo }}</b> · Público de lista (ref.): ${{ number_format($aPublicoLista, 0, ',', '.') }}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Costo (de la factura)</label>
+                    <input type="number" wire:model.live="aCosto" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('aCosto') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Grupo (define la ganancia)</label>
+                    <select wire:model.live="aGrupoId" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                        <option value="">— Seleccionar —</option>
+                        @foreach ($grupos as $g)
+                            <option value="{{ $g->id }}">{{ $g->NombreGrupo }} ({{ $g->porsentaje }}%)</option>
+                        @endforeach
+                    </select>
+                    @error('aGrupoId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">IVA a sumar (%)</label>
+                    <input type="number" wire:model.live="aIva" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <p class="text-[11px] text-gray-400 mt-1">21 si el proveedor discrimina IVA, 0 si ya lo incluye.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Precio de venta</label>
+                    <input type="number" wire:model="aPrecioVenta" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('aPrecioVenta') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <p class="text-[11px] text-gray-400 mt-1">= (costo + IVA) + % del grupo. Editable.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Cantidad recibida (stock inicial)</label>
+                    <input type="number" wire:model="aStock" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('aStock') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Stock mínimo</label>
+                    <input type="number" wire:model="aStockMinimo" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('aStockMinimo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-4 pt-3 border-t">
+                <button wire:click="buscar" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold rounded-md">Cancelar</button>
+                <button wire:click="darDeAlta" wire:loading.attr="disabled" wire:target="darDeAlta"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-md">
+                    <span wire:loading.remove wire:target="darDeAlta">Dar de alta</span>
+                    <span wire:loading wire:target="darDeAlta">Dando de alta…</span>
+                </button>
+            </div>
+        </div>
+    @endif
+
     {{-- toast --}}
     <div x-data="{ show:false, message:'', type:'success' }"
          x-on:notify.window="show=true; message=$event.detail[0]; type=$event.detail[1]||'success'; setTimeout(()=>show=false,4000)"
