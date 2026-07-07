@@ -107,6 +107,7 @@ class StockLivewire extends Component
         $edit=Articulo::where('activo',$this->active)
         ->select('articulos.id','articulos.codigo', 'articulos.articulo',  'articulos.presentacion',
         'articulos.descuento', 'articulos.unidadVenta', 'articulos.suelto', 'articulos.activo','stocks.proveedor_id',
+        'articulos.precioI','articulos.precioF','articulos.detalles',
         'stocks.stock','stocks.stockMinimo','unidads.unidad','articulos.categoria_id','stocks.codigo_proveedor')
         ->join('stocks', 'stocks.articulo_id','=','articulos.id')
         ->join('unidads', 'unidads.id','articulos.unidad_id')
@@ -116,6 +117,10 @@ class StockLivewire extends Component
             $this->articulo=$edit->articulo;
             $this->editCategoriaId=$edit->categoria_id;
             $this->unidadVenta=$edit->unidadVenta;
+            $this->precioI=$edit->precioI;
+            $this->precioF=$edit->precioF;
+            $this->descuento=$edit->descuento;
+            $this->detalles=$edit->detalles;
             $this->stockMinimo=$edit->stockMinimo;
             $this->stock=$edit->stock;
             $this->proveedor_id=$edit->proveedor_id;
@@ -123,10 +128,14 @@ class StockLivewire extends Component
 
     }
     protected $rules=[
+        'articulo'=>'required|string|min:2',
         'stock'=>'required|numeric',
         'stockMinimo'=>'required|numeric',
         'proveedor_id'=>'required|numeric',
         'editCategoriaId'=>'required|exists:categorias,id',
+        'precioI'=>'required|numeric|min:0',
+        'precioF'=>'required|numeric|min:0',
+        'descuento'=>'nullable|numeric|min:0',
     ];
 
 
@@ -149,7 +158,27 @@ class StockLivewire extends Component
                 'stockMinimo' => $this->stockMinimo,
                 'proveedor_id' => $this->proveedor_id
             ]);
-         Articulo::whereKey($id)->update(['categoria_id' => $this->editCategoriaId]);
+
+         $art = Articulo::find($id);
+         $precioCambio = $art && ((int) $art->precioI !== (int) $this->precioI || (int) $art->precioF !== (int) $this->precioF);
+
+         Articulo::whereKey($id)->update([
+                'articulo'     => $this->articulo,
+                'codigo'       => $this->codigo,
+                'categoria_id' => $this->editCategoriaId,
+                'precioI'      => (int) $this->precioI,
+                'precioF'      => (int) $this->precioF,
+                'descuento'    => (int) ($this->descuento ?: 0),
+                'detalles'     => $this->detalles,
+            ]);
+
+         if ($precioCambio) {
+             HistoriasPrecio::create([
+                 'articulo_id' => $id,
+                 'precioIcial' => (int) $this->precioI,
+                 'precioFinal' => (int) $this->precioF,
+             ]);
+         }
 
          $this->ConfirmarCambioStock=false;
          $this->confirmingArticuloEdit=false;

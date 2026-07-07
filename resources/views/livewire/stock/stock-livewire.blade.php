@@ -208,11 +208,30 @@
         <x-slot name="title">✏️ Editar Stock</x-slot>
         <x-slot name="content">
             <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
-                <div class="bg-gray-50 rounded-lg px-4 py-3">
-                    <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold">Artículo</p>
-                    <p class="text-gray-800 font-medium mt-0.5">{{ is_string($articulo) ? $articulo : '' }}</p>
-                    <p class="text-xs text-gray-400 font-mono mt-0.5">ID: {{ $idArt ?? '' }} · Cód: {{ $codigo ?? '' }}</p>
+                <div class="text-xs text-gray-400 font-mono">ID: {{ $idArt ?? '' }}</div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Nombre</label>
+                    <x-input type="text" wire:model="articulo" class="mt-1 block w-full text-sm"/>
+                    <x-input-error for="articulo" class="mt-1"/>
                 </div>
+
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Código</label>
+                        <x-input type="text" wire:model="codigo" class="mt-1 block w-full text-sm"/>
+                    </div>
+                    <div class="w-1/2">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Categoría</label>
+                        <select wire:model="editCategoriaId" class="mt-1 block w-full text-sm border-gray-300 rounded-lg shadow-sm">
+                            @foreach($categorias as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="editCategoriaId" class="mt-1"/>
+                    </div>
+                </div>
+
                 <div>
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Proveedor</label>
                     <select wire:model="proveedor_id" class="mt-1 block w-full text-sm border-gray-300 rounded-lg shadow-sm">
@@ -223,15 +242,30 @@
                     </select>
                     <x-input-error for="proveedor_id" class="mt-1"/>
                 </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Categoría</label>
-                    <select wire:model="editCategoriaId" class="mt-1 block w-full text-sm border-gray-300 rounded-lg shadow-sm">
-                        @foreach($categorias as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
-                        @endforeach
-                    </select>
-                    <x-input-error for="editCategoriaId" class="mt-1"/>
+
+                <div class="flex gap-3">
+                    <div class="w-1/3">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio costo</label>
+                        <x-input type="number" wire:model="precioI" class="mt-1 block w-full text-sm"/>
+                        <x-input-error for="precioI" class="mt-1"/>
+                    </div>
+                    <div class="w-1/3">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio venta</label>
+                        <x-input type="number" wire:model="precioF" class="mt-1 block w-full text-sm"/>
+                        <x-input-error for="precioF" class="mt-1"/>
+                    </div>
+                    <div class="w-1/3">
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Desc. %</label>
+                        <x-input type="number" wire:model="descuento" class="mt-1 block w-full text-sm"/>
+                        <x-input-error for="descuento" class="mt-1"/>
+                    </div>
                 </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Detalles</label>
+                    <x-input type="text" wire:model="detalles" class="mt-1 block w-full text-sm"/>
+                </div>
+
                 <div class="flex gap-3">
                     <div class="w-1/2">
                         <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock Mínimo</label>
