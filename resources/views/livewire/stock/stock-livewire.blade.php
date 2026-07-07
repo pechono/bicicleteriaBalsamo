@@ -207,10 +207,10 @@
     <x-dialog-modal wire:model.live="confirmingArticuloEdit" maxWidth="md">
         <x-slot name="title">✏️ Editar Stock</x-slot>
         <x-slot name="content">
-            <div class="space-y-3">
+            <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
                 <div class="bg-gray-50 rounded-lg px-4 py-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold">Artículo</p>
-                    <p class="text-gray-800 font-medium mt-0.5">{{ $articulo ?? '' }}</p>
+                    <p class="text-gray-800 font-medium mt-0.5">{{ is_string($articulo) ? $articulo : '' }}</p>
                     <p class="text-xs text-gray-400 font-mono mt-0.5">ID: {{ $idArt ?? '' }} · Cód: {{ $codigo ?? '' }}</p>
                 </div>
                 <div>
@@ -258,7 +258,7 @@
     <x-dialog-modal wire:model.live="ConfirmarCambioStock" maxWidth="sm">
         <x-slot name="title">⚠️ Confirmar cambio</x-slot>
         <x-slot name="content">
-            <p class="text-gray-600">¿Confirma actualizar el stock del artículo <strong>{{ $articulo ?? '' }}</strong>?</p>
+            <p class="text-gray-600">¿Confirma actualizar el stock del artículo <strong>{{ is_string($articulo) ? $articulo : '' }}</strong>?</p>
         </x-slot>
         <x-slot name="footer">
             <x-secondary-button wire:click="$set('ConfirmarCambioStock', false)">Cancelar</x-secondary-button>
