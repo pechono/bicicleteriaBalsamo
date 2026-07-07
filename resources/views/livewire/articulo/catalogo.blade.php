@@ -149,6 +149,15 @@
                         @endif
                     </div>
                     <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Categoría *</label>
+                        <select wire:model="pCategoriaId" class="mt-1 block w-full text-sm rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            @foreach ($categorias as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
+                            @endforeach
+                        </select>
+                        @error('pCategoriaId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase">Nombre</label>
                         <input type="text" wire:model="pNombre" class="mt-1 block w-full text-sm rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         @error('pNombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror

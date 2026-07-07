@@ -42,6 +42,7 @@ class Catalogo extends Component
     public $pStock = 0;
     public $pStockMinimo = 0;
     public $pGrupoId = '';
+    public $pCategoriaId = ''; // categoría (default General; editable para ordenar)
     public $pPorcentaje = 0; // % de ganancia del grupo (editable)
     public $pIva = 0;        // % de IVA a sumar (21 si el proveedor lo discrimina, 0 si ya está incluido)
 
@@ -64,6 +65,7 @@ class Catalogo extends Component
         $this->pStock        = 0;
         $this->pStockMinimo  = 0;
         $this->pGrupoId      = '';
+        $this->pCategoriaId  = Categoria::firstOrCreate(['categoria' => 'General'])->id;
         $this->pPorcentaje   = 0;
         // Si el proveedor discrimina IVA (iva_incluido = false), hay que sumarle el 21%.
         $ivaIncluido = Proveedor::whereKey($row->proveedor_id)->value('iva_incluido');
@@ -95,7 +97,7 @@ class Catalogo extends Component
 
     public function cerrarPromover()
     {
-        $this->reset(['promoverId', 'promoverProveedorId', 'pNombre', 'pCodigo', 'pCosto', 'pPublicoLista', 'pPrecioVenta', 'pStock', 'pStockMinimo', 'pGrupoId', 'pPorcentaje', 'pIva']);
+        $this->reset(['promoverId', 'promoverProveedorId', 'pNombre', 'pCodigo', 'pCosto', 'pPublicoLista', 'pPrecioVenta', 'pStock', 'pStockMinimo', 'pGrupoId', 'pCategoriaId', 'pPorcentaje', 'pIva']);
         $this->resetErrorBag();
     }
 
@@ -104,11 +106,13 @@ class Catalogo extends Component
         $this->validate([
             'pNombre'      => 'required|string|min:2',
             'pGrupoId'     => 'required|exists:grupos,id',
+            'pCategoriaId' => 'required|exists:categorias,id',
             'pPrecioVenta' => 'required|numeric|min:1',
             'pStock'       => 'required|numeric|min:0',
             'pStockMinimo' => 'required|numeric|min:0',
         ], [
             'pGrupoId.required'     => 'Elegí el grupo.',
+            'pCategoriaId.required' => 'Elegí la categoría.',
             'pPrecioVenta.required' => 'Poné el precio de venta.',
             'pStock.required'       => 'Poné el stock.',
         ]);
@@ -122,7 +126,7 @@ class Catalogo extends Component
             return;
         }
 
-        $categoriaId = Categoria::firstOrCreate(['categoria' => 'General'])->id;
+        $categoriaId = (int) $this->pCategoriaId;
         $unidadId = Unidad::query()->value('id') ?? Unidad::create(['unidad' => 'Unidad'])->id;
         $abreviatura = Proveedor::whereKey($row->proveedor_id)->value('abreviatura');
 
@@ -287,7 +291,8 @@ class Catalogo extends Component
         $gruposPromover = $this->promoverProveedorId
             ? Grupos::where('proveedor_id', $this->promoverProveedorId)->orderBy('NombreGrupo')->get()
             : collect();
+        $categorias = Categoria::orderBy('categoria')->get();
 
-        return view('livewire.articulo.catalogo', compact('items', 'proveedores', 'gruposPromover', 'usdCount', 'usdCotiz', 'conAumento', 'conBaja'));
+        return view('livewire.articulo.catalogo', compact('items', 'proveedores', 'gruposPromover', 'categorias', 'usdCount', 'usdCotiz', 'conAumento', 'conBaja'));
     }
 }

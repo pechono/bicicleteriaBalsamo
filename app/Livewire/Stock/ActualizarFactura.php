@@ -50,6 +50,7 @@ class ActualizarFactura extends Component
     public $aStock = 0;
     public $aStockMinimo = 0;
     public $aGrupoId = '';
+    public $aCategoriaId = ''; // categoría (default General; editable para ordenar)
     public $aPorcentaje = 0; // % de ganancia del grupo
     public $aIva = 0;        // 21 si el proveedor discrimina IVA, 0 si ya lo incluye
     public $aPrecioVenta = 0;
@@ -99,6 +100,7 @@ class ActualizarFactura extends Component
                 $this->aStock        = 0;
                 $this->aStockMinimo  = 0;
                 $this->aGrupoId      = '';
+                $this->aCategoriaId  = Categoria::firstOrCreate(['categoria' => 'General'])->id;
                 $this->aPorcentaje   = 0;
                 $ivaIncluido = Proveedor::whereKey($this->proveedor_id)->value('iva_incluido');
                 $this->aIva  = $ivaIncluido ? 0 : 21;
@@ -152,19 +154,21 @@ class ActualizarFactura extends Component
             'aNombre'      => 'required|string|min:2',
             'aCosto'       => 'required|numeric|min:0',
             'aGrupoId'     => 'required|exists:grupos,id',
+            'aCategoriaId' => 'required|exists:categorias,id',
             'aPrecioVenta' => 'required|numeric|min:1',
             'aStock'       => 'required|numeric|min:0',
             'aStockMinimo' => 'required|numeric|min:0',
         ], [
             'aNombre.required'      => 'Poné el nombre.',
             'aGrupoId.required'     => 'Elegí el grupo (define la ganancia).',
+            'aCategoriaId.required' => 'Elegí la categoría.',
             'aPrecioVenta.required' => 'Poné el precio de venta.',
             'aStock.required'       => 'Poné la cantidad recibida.',
             'aStockMinimo.required' => 'Poné el stock mínimo.',
         ]);
 
         $row = ListaArticulo::findOrFail($this->listaId);
-        $categoriaId = Categoria::firstOrCreate(['categoria' => 'General'])->id;
+        $categoriaId = (int) $this->aCategoriaId;
         $unidadId = Unidad::query()->value('id') ?? Unidad::create(['unidad' => 'Unidad'])->id;
         $abreviatura = Proveedor::whereKey($row->proveedor_id)->value('abreviatura');
 
@@ -218,7 +222,7 @@ class ActualizarFactura extends Component
         });
 
         $nombre = $this->aNombre;
-        $this->reset(['codigo', 'encontrado', 'enCatalogo', 'listaId', 'aNombre', 'aCosto', 'aPublicoLista', 'aStock', 'aStockMinimo', 'aGrupoId', 'aPorcentaje', 'aIva', 'aPrecioVenta']);
+        $this->reset(['codigo', 'encontrado', 'enCatalogo', 'listaId', 'aNombre', 'aCosto', 'aPublicoLista', 'aStock', 'aStockMinimo', 'aGrupoId', 'aCategoriaId', 'aPorcentaje', 'aIva', 'aPrecioVenta']);
         $this->dispatch('notify', 'Artículo dado de alta con stock ✓', 'success');
         session()->flash('message', "«{$nombre}» dado de alta en stock.");
     }
@@ -282,6 +286,7 @@ class ActualizarFactura extends Component
             'grupos' => $this->proveedor_id
                 ? Grupos::where('proveedor_id', $this->proveedor_id)->orderBy('NombreGrupo')->get()
                 : collect(),
+            'categorias' => Categoria::orderBy('categoria')->get(),
         ]);
     }
 }

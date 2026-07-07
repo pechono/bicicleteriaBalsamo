@@ -125,6 +125,19 @@
                 </div>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Categoría</label>
+                    <select wire:model="aCategoriaId" class="block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                        @foreach ($categorias as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
+                        @endforeach
+                    </select>
+                    @error('aCategoriaId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <p class="text-[11px] text-gray-400 mt-1">Por defecto «General». Cambiala para ordenar.</p>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">IVA a sumar (%)</label>

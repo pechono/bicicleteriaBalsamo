@@ -64,6 +64,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/grupo', fn() => view('articulo.articuloGrupo'))->name('articulo.articuloGrupo');
         Route::get('/importar-lista', fn() => view('articulo.importarLista'))->name('articulo.importarLista');
         Route::get('/catalogo', fn() => view('articulo.catalogo'))->name('articulo.catalogo');
+        Route::get('/categorias', fn() => view('articulo.categorias'))->name('articulo.categorias');
         Route::get('/mano-de-obra', fn() => view('articulo.manoDeObra'))->name('articulo.manoDeObra');
 
     });
