@@ -97,6 +97,8 @@ class StockLivewire extends Component
     public $idArt, $codigo, $articulo, $presentacion, $unidad_id, $descuento, $unidadVenta,
             $precioF, $precioI, $caducidad, $detalles, $suelto, $porcentaje, $proveedor_id, $stock, $stockMinimo;
 
+    public $editCategoriaId; // categoría del modal de editar (separada del filtro $categoria_id)
+
     public $confirmingArticuloEdit=false;
     public $ConfirmarCambioStock=false;
 
@@ -111,8 +113,8 @@ class StockLivewire extends Component
         ->find($artEdit);
             $this->idArt=$edit->id ;
             $this->codigo=$edit->codigo;
-            $this->articulo=$edit->articulo.'   '.$edit->presentacion .'- '.$edit->unidad;
-            $this->categoria_id=$edit->categoria_id;
+            $this->articulo=$edit->articulo;
+            $this->editCategoriaId=$edit->categoria_id;
             $this->unidadVenta=$edit->unidadVenta;
             $this->stockMinimo=$edit->stockMinimo;
             $this->stock=$edit->stock;
@@ -123,7 +125,8 @@ class StockLivewire extends Component
     protected $rules=[
         'stock'=>'required|numeric',
         'stockMinimo'=>'required|numeric',
-        'proveedor_id'=>'required|numeric'
+        'proveedor_id'=>'required|numeric',
+        'editCategoriaId'=>'required|exists:categorias,id',
     ];
 
 
@@ -141,12 +144,12 @@ class StockLivewire extends Component
      public function CambiarStock($id)
      {
          $this->validate();
-         $stock = Stock::where('articulo_id',$id);
-            $stock->update([
+         Stock::where('articulo_id',$id)->update([
                 'stock' => $this->stock,
                 'stockMinimo' => $this->stockMinimo,
                 'proveedor_id' => $this->proveedor_id
             ]);
+         Articulo::whereKey($id)->update(['categoria_id' => $this->editCategoriaId]);
 
          $this->ConfirmarCambioStock=false;
          $this->confirmingArticuloEdit=false;

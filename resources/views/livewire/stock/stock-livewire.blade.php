@@ -223,6 +223,15 @@
                     </select>
                     <x-input-error for="proveedor_id" class="mt-1"/>
                 </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Categoría</label>
+                    <select wire:model="editCategoriaId" class="mt-1 block w-full text-sm border-gray-300 rounded-lg shadow-sm">
+                        @foreach($categorias as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->categoria }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error for="editCategoriaId" class="mt-1"/>
+                </div>
                 <div class="flex gap-3">
                     <div class="w-1/2">
                         <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock Mínimo</label>
