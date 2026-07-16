@@ -58,28 +58,24 @@
                                                             wire:click.stop="abrirCajaVenta({{ $articulo->id }})"
                                                             wire:confirm="Queda poco suelto. ¿Abrir una caja? (+{{ $link->cantidad }} unidades · quedan {{ $link->caja_stock }} caja(s))"
                                                             title="Abrir caja (+{{ $link->cantidad }} unidades)"
-                                                            class="min-w-[2.5rem] h-8 px-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold animate-pulse">{{ $articulo->stock }}</button>
+                                                            class="inline-flex items-center gap-1 min-w-[2.5rem] h-9 px-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold animate-pulse">🔓 {{ $articulo->stock }}</button>
                                                     @else
                                                         <span class="{{ $bajo ? 'text-red-600 font-bold' : ($articulo->suelto == 1 ? 'text-emerald-600 font-semibold' : '') }}">{{ $articulo->stock }}</span>
                                                         @if ($articulo->suelto == 1)<span class="text-xs text-gray-400"> u.</span>@endif
                                                     @endif
                                                 </td>
-                                                <td class="rounder border flex p-1 flex-wrap">
-                                                    @if ($this->estaEnCarrito($articulo->id))
-
-                                                        <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded-lg ">
-                                                            Elim
-                                                        </button>
-                                                        <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="ml-1 flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold p-2 rounded-lg "">
-                                                            Mod
-                                                        </button> 
-                                                       
-                                                    @else
-                                                        <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold p-2 rounded-lg ">
-                                                            Agregar
-                                                        </button>
-
-                                                    @endif
+                                                <td class="rounder border p-1">
+                                                    <div class="flex items-center justify-center gap-1">
+                                                        @if ($this->estaEnCarrito($articulo->id))
+                                                            <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" title="Quitar"
+                                                                class="h-9 w-9 flex items-center justify-center rounded-xl bg-red-500 hover:bg-red-600 text-white text-base">🗑️</button>
+                                                            <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" title="Modificar"
+                                                                class="h-9 w-9 flex items-center justify-center rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-base">✏️</button>
+                                                        @else
+                                                            <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" title="Agregar"
+                                                                class="h-9 w-9 flex items-center justify-center rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-base">➕</button>
+                                                        @endif
+                                                    </div>
                                                 </td>
                                             </tr>      
                                         @endif
@@ -110,7 +106,7 @@
                                                         <button type="button"
                                                             wire:click.stop="abrirCajaVenta({{ $articulo->id }})"
                                                             wire:confirm="Queda poco suelto. ¿Abrir una caja? (+{{ $link->cantidad }} unidades · quedan {{ $link->caja_stock }} caja(s))"
-                                                            class="mt-1 px-2 h-7 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold animate-pulse">🔓 Stock {{ $articulo->stock }}</button>
+                                                            class="mt-1 px-2.5 h-8 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-bold animate-pulse inline-flex items-center gap-1">🔓 {{ $articulo->stock }}</button>
                                                     @else
                                                         <div class="text-[10px] uppercase {{ $bajo ? 'text-red-600 font-bold' : 'text-gray-400' }}">Stock {{ $articulo->stock }}@if($articulo->suelto == 1) u.@endif</div>
                                                     @endif
@@ -118,10 +114,10 @@
                                             </div>
                                             <div class="mt-3 flex gap-2">
                                                 @if ($this->estaEnCarrito($articulo->id))
-                                                    <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-lg bg-red-500 hover:bg-red-700 text-white font-bold">Elim</button>
-                                                    <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold">Mod</button>
+                                                    <button wire:click="deletCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold flex items-center justify-center gap-1">🗑️ Quitar</button>
+                                                    <button wire:click="modCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center justify-center gap-1">✏️ Modificar</button>
                                                 @else
-                                                    <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold">Agregar</button>
+                                                    <button wire:click="addCar({{ $articulo->id }})" wire:loading.attr="disabled" class="flex-1 h-10 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center justify-center gap-1">➕ Agregar</button>
                                                 @endif
                                             </div>
                                         </div>
