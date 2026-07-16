@@ -36,7 +36,7 @@
                                 <tbody>
                                     @foreach ($articulos as $articulo)                
                                     
-                                        @if (!$this->stockInsufisinte($articulo->id))
+                                        @if (!$this->stockInsufisinte($articulo->id) || (isset($sueltoLinks[$articulo->id]) && $sueltoLinks[$articulo->id]->caja_stock >= 1))
                                             <tr wire:key="{{ $articulo->id }}"
                                                 class="cursor-pointer {{ $this->estaEnCarrito($articulo->id) ? 'hover:text-white hover:bg-red-400' : 'hover:text-white hover:bg-green-300' }}"
                                                 wire:dblclick="{{ $estaEnCarrito ? 'deletCar('.$articulo->id.')' : 'addCar('.$articulo->id.')' }}"
@@ -47,11 +47,21 @@
                                                 <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->articulo }}-{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
                                                 <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->unidadVenta }}</td>
                                                 <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">{{ $articulo->precioF }}</td>
-                                                <td class="rounder border px-4 py-2 {{ $this->Ofeta($articulo->id) ? 'text-green-500 font-bold':'' }}">
-                                                    @if ($articulo->suelto == 1)
-                                                        <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
+                                                <td class="rounder border px-4 py-2">
+                                                    @php
+                                                        $link = $sueltoLinks[$articulo->id] ?? null;
+                                                        $bajo = $articulo->stock <= $articulo->stockMinimo;
+                                                        $puedeAbrir = $articulo->suelto == 1 && $link && $link->caja_stock >= 1;
+                                                    @endphp
+                                                    @if ($puedeAbrir && $bajo)
+                                                        <button type="button"
+                                                            wire:click.stop="abrirCajaVenta({{ $articulo->id }})"
+                                                            wire:confirm="Queda poco suelto. ¿Abrir una caja? (+{{ $link->cantidad }} unidades · quedan {{ $link->caja_stock }} caja(s))"
+                                                            title="Abrir caja (+{{ $link->cantidad }} unidades)"
+                                                            class="min-w-[2.5rem] h-8 px-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold animate-pulse">{{ $articulo->stock }}</button>
                                                     @else
-                                                        {{ $articulo->stock }}
+                                                        <span class="{{ $bajo ? 'text-red-600 font-bold' : ($articulo->suelto == 1 ? 'text-emerald-600 font-semibold' : '') }}">{{ $articulo->stock }}</span>
+                                                        @if ($articulo->suelto == 1)<span class="text-xs text-gray-400"> u.</span>@endif
                                                     @endif
                                                 </td>
                                                 <td class="rounder border flex p-1 flex-wrap">
@@ -82,7 +92,7 @@
                             {{-- tarjetas mobile (resultados de búsqueda) --}}
                             <div class="md:hidden space-y-2">
                                 @foreach ($articulos as $articulo)
-                                    @if (!$this->stockInsufisinte($articulo->id))
+                                    @if (!$this->stockInsufisinte($articulo->id) || (isset($sueltoLinks[$articulo->id]) && $sueltoLinks[$articulo->id]->caja_stock >= 1))
                                         <div wire:key="m{{ $articulo->id }}" class="rounded-xl border p-3 {{ $this->estaEnCarrito($articulo->id) ? 'border-brand-300 bg-brand-50' : 'border-gray-200' }}">
                                             <div class="flex justify-between gap-2">
                                                 <div class="min-w-0">
@@ -91,7 +101,19 @@
                                                 </div>
                                                 <div class="text-right shrink-0">
                                                     <div class="font-bold text-gray-800">${{ $articulo->precioF }}</div>
-                                                    <div class="text-[10px] text-gray-400 uppercase">Stock {{ $articulo->stock }}</div>
+                                                    @php
+                                                        $link = $sueltoLinks[$articulo->id] ?? null;
+                                                        $bajo = $articulo->stock <= $articulo->stockMinimo;
+                                                        $puedeAbrir = $articulo->suelto == 1 && $link && $link->caja_stock >= 1;
+                                                    @endphp
+                                                    @if ($puedeAbrir && $bajo)
+                                                        <button type="button"
+                                                            wire:click.stop="abrirCajaVenta({{ $articulo->id }})"
+                                                            wire:confirm="Queda poco suelto. ¿Abrir una caja? (+{{ $link->cantidad }} unidades · quedan {{ $link->caja_stock }} caja(s))"
+                                                            class="mt-1 px-2 h-7 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold animate-pulse">🔓 Stock {{ $articulo->stock }}</button>
+                                                    @else
+                                                        <div class="text-[10px] uppercase {{ $bajo ? 'text-red-600 font-bold' : 'text-gray-400' }}">Stock {{ $articulo->stock }}@if($articulo->suelto == 1) u.@endif</div>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="mt-3 flex gap-2">
@@ -547,6 +569,15 @@
                 </x-secondary-button>
             </x-slot>
         </x-dialog-modal>
+
+        {{-- toast --}}
+        <div x-data="{ show:false, message:'', type:'success' }"
+             x-on:notify.window="show=true; message=$event.detail[0]; type=$event.detail[1]||'success'; setTimeout(()=>show=false,4000)"
+             x-show="show" x-transition x-cloak
+             class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 text-white"
+             :class="{ 'bg-green-500': type==='success', 'bg-yellow-500': type==='warning', 'bg-red-500': type==='error' }">
+            <p x-text="message"></p>
+        </div>
 
 </div>
 

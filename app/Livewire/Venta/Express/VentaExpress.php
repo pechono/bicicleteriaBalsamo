@@ -8,6 +8,7 @@ use App\Models\Cliente;
 use App\Models\Ofertas;
 use App\Models\Operacion;
 use App\Models\Stock;
+use App\Models\Suelto;
 use App\Models\TipoVenta;
 use App\Models\Venta;
 use Carbon\CarbonPeriod;
@@ -165,14 +166,41 @@ class VentaExpress extends Component
         // 7. Llamar al método cancelarBoton
         $this->cancelarBoton();
 
+        // Vínculos suelto→caja con el stock de la caja (para "abrir caja" desde la venta).
+        $sueltoLinks = Suelto::query()
+            ->join('stocks', 'stocks.articulo_id', '=', 'sueltos.caja_id')
+            ->whereNotNull('sueltos.caja_id')
+            ->select('sueltos.articulo_id', 'sueltos.caja_id', 'sueltos.cantidad', 'stocks.stock as caja_stock')
+            ->get()->keyBy('articulo_id');
+
         return view('livewire.venta.express.venta-express', compact(
             'inTheCar',
             'articulos',
             'countCar',
             'tipoVentas',
             'clientes',
-            'total'
+            'total',
+            'sueltoLinks'
         ));
+    }
+
+    /** Abre una caja desde la venta: descuenta 1 caja y suma las unidades al suelto. */
+    public function abrirCajaVenta($sueltoArticuloId)
+    {
+        $link = Suelto::where('articulo_id', $sueltoArticuloId)->whereNotNull('caja_id')->first();
+        if (!$link) {
+            return;
+        }
+        $stockCaja = Stock::where('articulo_id', $link->caja_id)->first();
+        if (!$stockCaja || $stockCaja->stock < 1) {
+            $this->dispatch('notify', 'No hay cajas en stock para abrir', 'error');
+            return;
+        }
+        DB::transaction(function () use ($link) {
+            Stock::where('articulo_id', $link->caja_id)->decrement('stock', 1);
+            Stock::where('articulo_id', $link->articulo_id)->increment('stock', (int) $link->cantidad);
+        });
+        $this->dispatch('notify', 'Caja abierta: +' . $link->cantidad . ' unidades', 'success');
     }
 
     public function seleccionarCliente($id)
