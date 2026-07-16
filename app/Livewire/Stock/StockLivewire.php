@@ -11,6 +11,7 @@ use App\Models\Proveedor;
 use App\Models\Stock;
 use App\Models\Suelto;
 use App\Models\Unidad;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -73,7 +74,12 @@ class StockLivewire extends Component
             ? Grupos::where('proveedor_id', $this->proveedor_id)->orderBy('NombreGrupo')->get()
             : collect();
 
-        return view('livewire.stock.stock-livewire', compact('articulos', 'categorias', 'proveedores', 'gruposActivar'));
+        // Vínculos caja↔suelto: por artículo suelto (su cantidad/caja) y qué cajas ya tienen suelto.
+        $vinculos = Suelto::whereNotNull('caja_id')->get();
+        $sueltos = $vinculos->keyBy('articulo_id');
+        $cajasConSuelto = $vinculos->pluck('caja_id')->all();
+
+        return view('livewire.stock.stock-livewire', compact('articulos', 'categorias', 'proveedores', 'gruposActivar', 'sueltos', 'cajasConSuelto'));
     }
     public function sortby($field)
     {
@@ -278,5 +284,123 @@ class StockLivewire extends Component
          $this->activarArt = false;
          $this->reset(['articuloId', 'nombreActivar', 'precioI', 'precioF', 'stock', 'stockMinimo',
                        'iva_incluido', 'grupoActivar', 'margenActivar']);
+     }
+
+     // ── Generar suelto desde una caja cerrada ──────────────────────
+     public $sueltoModal = false;
+     public $cajaId;
+     public $cajaNombre;
+     public $cajaCodigo;
+     public $cajaPrecioF;
+     public $sUnidades;
+     public $sPrecioUnit;
+     public $sStockInicial = 0;
+
+     public function abrirGenerarSuelto($id)
+     {
+         $art = Articulo::find($id);
+         if (!$art) { return; }
+         $this->cajaId        = $art->id;
+         $this->cajaNombre    = $art->articulo;
+         $this->cajaCodigo    = $art->codigo;
+         $this->cajaPrecioF   = (int) $art->precioF;
+         $this->sUnidades     = '';
+         $this->sPrecioUnit   = '';
+         $this->sStockInicial = 0;
+         $this->resetErrorBag();
+         $this->sueltoModal = true;
+     }
+
+     /** Sugiere el precio unitario = precio caja ÷ unidades (redondeado hacia arriba). */
+     public function updatedSUnidades($value)
+     {
+         $n = (int) $value;
+         $this->sPrecioUnit = ($n > 0) ? (int) ceil(((int) $this->cajaPrecioF) / $n) : '';
+     }
+
+     public function guardarSuelto()
+     {
+         $this->validate([
+             'sUnidades'     => 'required|integer|min:2',
+             'sPrecioUnit'   => 'required|numeric|min:1',
+             'sStockInicial' => 'required|numeric|min:0',
+         ], [
+             'sUnidades.required'   => 'Poné cuántas unidades trae la caja.',
+             'sUnidades.min'        => 'La caja debe traer al menos 2 unidades.',
+             'sPrecioUnit.required' => 'Poné el precio del suelto.',
+         ]);
+
+         $caja = Articulo::find($this->cajaId);
+         if (!$caja) { return; }
+         $stockCaja = Stock::where('articulo_id', $caja->id)->first();
+
+         DB::transaction(function () use ($caja, $stockCaja) {
+             $suelto = Articulo::create([
+                 'articulo'     => $caja->articulo . ' Suelto',
+                 'codigo'       => $caja->codigo ? $caja->codigo . 'S' : null,
+                 'categoria_id' => $caja->categoria_id,
+                 'presentacion' => $caja->presentacion ?: '-',
+                 'unidad_id'    => $caja->unidad_id,
+                 'descuento'    => 0,
+                 'unidadVenta'  => 'Unidad',
+                 'precioF'      => (int) round($this->sPrecioUnit),
+                 'precioI'      => (int) round(((int) $caja->precioI) / max(1, (int) $this->sUnidades)),
+                 'caducidad'    => $caja->caducidad ?: 'No',
+                 'detalles'     => $caja->detalles ?: '-',
+                 'suelto'       => 1,
+                 'activo'       => 1,
+             ]);
+
+             Stock::create([
+                 'articulo_id'      => $suelto->id,
+                 'proveedor_id'     => $stockCaja->proveedor_id ?? null,
+                 'codigo_proveedor' => $stockCaja->codigo_proveedor ?? null,
+                 'stock'            => (int) $this->sStockInicial,
+                 'stockMinimo'      => 0,
+             ]);
+
+             // Vínculo caja→suelto
+             Suelto::create([
+                 'articulo_id' => $suelto->id,
+                 'caja_id'     => $caja->id,
+                 'cantidad'    => (int) $this->sUnidades,
+             ]);
+
+             HistoriasPrecio::create([
+                 'articulo_id' => $suelto->id,
+                 'precioIcial' => (int) $suelto->precioI,
+                 'precioFinal' => (int) $suelto->precioF,
+             ]);
+
+             // Copia la asociación de grupo de la caja (si tiene).
+             $grupo = GruposArticulos::where('articulo_id', $caja->id)->value('grupo_id');
+             if ($grupo) {
+                 GruposArticulos::firstOrCreate(['grupo_id' => $grupo, 'articulo_id' => $suelto->id]);
+             }
+         });
+
+         $this->sueltoModal = false;
+         $this->dispatch('notify', 'Suelto generado ✓', 'success');
+         session()->flash('message', 'Se generó el suelto de «' . $this->cajaNombre . '».');
+     }
+
+     /** Abre una caja: descuenta 1 caja y suma las unidades por caja al stock del suelto. */
+     public function abrirCaja($sueltoArticuloId)
+     {
+         $link = Suelto::where('articulo_id', $sueltoArticuloId)->whereNotNull('caja_id')->first();
+         if (!$link) {
+             $this->dispatch('notify', 'Este suelto no está vinculado a una caja', 'warning');
+             return;
+         }
+         $stockCaja = Stock::where('articulo_id', $link->caja_id)->first();
+         if (!$stockCaja || $stockCaja->stock < 1) {
+             $this->dispatch('notify', 'No hay cajas en stock para abrir', 'error');
+             return;
+         }
+         DB::transaction(function () use ($link) {
+             Stock::where('articulo_id', $link->caja_id)->decrement('stock', 1);
+             Stock::where('articulo_id', $link->articulo_id)->increment('stock', (int) $link->cantidad);
+         });
+         $this->dispatch('notify', 'Caja abierta: +' . $link->cantidad . ' unidades al suelto', 'success');
      }
 }

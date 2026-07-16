@@ -109,7 +109,18 @@
                     <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}{{ $articulo->codigo ? '-'.$articulo->codigo : '' }}</td>
                     <td class="rounder border px-4 py-2">
-                        {{ $articulo->articulo }}
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span>{{ $articulo->articulo }}</span>
+                            @if($articulo->suelto == 1)
+                                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                    🔓 Suelto @isset($sueltos[$articulo->id])<span class="opacity-70">· ×{{ $sueltos[$articulo->id]->cantidad }}</span>@endisset
+                                </span>
+                            @elseif(in_array($articulo->id, $cajasConSuelto))
+                                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+                                    📦 Caja
+                                </span>
+                            @endif
+                        </div>
                         @if($articulo->detalles && $articulo->detalles !== '')
                             <span class="block text-sm text-gray-400">{{ $articulo->detalles }}</span>
                         @endif
@@ -120,11 +131,8 @@
                     <td class="rounder border px-4 py-2">{{ $articulo->precioF }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->stockMinimo }}</td>
                     <td class="rounder border px-4 py-2">
-                        @if($articulo->suelto == 1)
-                            <div class="w-8 h-8 p-2 grid justify-items-center content-center bg-green-400 rounded-full">{{ $articulo->stock }}</div>
-                        @else
-                            {{ $articulo->stock }}
-                        @endif
+                        <span class="{{ $articulo->suelto == 1 ? 'font-semibold text-emerald-700 dark:text-emerald-300' : '' }}">{{ $articulo->stock }}</span>
+                        @if($articulo->suelto == 1)<span class="text-xs text-gray-400"> u.</span>@endif
                     </td>
                     @admin
                     <td class="rounder border px-4 py-2">
@@ -134,11 +142,23 @@
                                 Activar
                             </button>
                         @else
-                            <div class="flex items-center gap-1">
+                            <div class="flex items-center gap-1 flex-wrap">
                                 <button wire:click="confirmarArticuloEdit({{ $articulo->id }})"
                                         class="rounded bg-brand-600 hover:bg-brand-500 text-white h-8 px-3">
                                     Editar
                                 </button>
+                                @if($articulo->suelto == 1 && isset($sueltos[$articulo->id]))
+                                    <button wire:click="abrirCaja({{ $articulo->id }})"
+                                            wire:confirm="¿Abrir una caja? Descuenta 1 caja y suma {{ $sueltos[$articulo->id]->cantidad }} unidades al suelto."
+                                            class="rounded bg-emerald-600 hover:bg-emerald-500 text-white h-8 px-3">
+                                        🔓 Abrir caja
+                                    </button>
+                                @elseif($articulo->suelto != 1 && !in_array($articulo->id, $cajasConSuelto))
+                                    <button wire:click="abrirGenerarSuelto({{ $articulo->id }})"
+                                            class="rounded bg-amber-500 hover:bg-amber-400 text-white h-8 px-3">
+                                        Generar suelto
+                                    </button>
+                                @endif
                                 <button wire:click="confirmarArticuloDeletion({{ $articulo->id }})"
                                         class="rounded bg-red-500 hover:bg-red-400 text-white h-8 px-3">
                                     Quitar
@@ -166,8 +186,15 @@
                     <div class="min-w-0">
                         <div class="font-semibold text-gray-800 dark:text-gray-100">{{ $articulo->articulo }}</div>
                         <div class="text-xs text-gray-400 font-mono">{{ $articulo->codigo_proveedor }}{{ $articulo->codigo ? '-'.$articulo->codigo : '' }}</div>
+                        @if($articulo->suelto == 1)
+                            <span class="inline-flex items-center gap-1 mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                🔓 Suelto @isset($sueltos[$articulo->id])· ×{{ $sueltos[$articulo->id]->cantidad }}@endisset
+                            </span>
+                        @elseif(in_array($articulo->id, $cajasConSuelto))
+                            <span class="inline-flex items-center gap-1 mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">📦 Caja</span>
+                        @endif
                         @if($articulo->detalles && $articulo->detalles !== '')
-                            <div class="text-xs text-gray-400">{{ $articulo->detalles }}</div>
+                            <div class="text-xs text-gray-400 mt-1">{{ $articulo->detalles }}</div>
                         @endif
                     </div>
                     <div class="text-right shrink-0">
@@ -181,11 +208,18 @@
                     <div><span class="block text-[10px] text-gray-400 uppercase">Desc</span>{{ $articulo->descuento }}%</div>
                 </div>
                 @admin
-                <div class="mt-3 flex gap-2">
+                <div class="mt-3 flex gap-2 flex-wrap">
                     @if($articulo->activo != 1)
                         <button wire:click="ActivarArticuloEdit({{ $articulo->id }})" class="flex-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white h-10 font-medium">Activar</button>
                     @else
                         <button wire:click="confirmarArticuloEdit({{ $articulo->id }})" class="flex-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white h-10 font-medium">Editar</button>
+                        @if($articulo->suelto == 1 && isset($sueltos[$articulo->id]))
+                            <button wire:click="abrirCaja({{ $articulo->id }})"
+                                    wire:confirm="¿Abrir una caja? Descuenta 1 caja y suma {{ $sueltos[$articulo->id]->cantidad }} unidades al suelto."
+                                    class="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white h-10 font-medium">🔓 Abrir caja</button>
+                        @elseif($articulo->suelto != 1 && !in_array($articulo->id, $cajasConSuelto))
+                            <button wire:click="abrirGenerarSuelto({{ $articulo->id }})" class="flex-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-white h-10 font-medium">Generar suelto</button>
+                        @endif
                         <button wire:click="confirmarArticuloDeletion({{ $articulo->id }})" class="flex-1 rounded-lg bg-red-500 hover:bg-red-400 text-white h-10 font-medium">Quitar</button>
                     @endif
                 </div>
@@ -373,5 +407,53 @@
             <x-primary-button class="ms-2" wire:click="ConfirmarActivar()">Activar</x-primary-button>
         </x-slot>
     </x-dialog-modal>
+
+    {{-- ═══════════════════════════════════════════════════════════ --}}
+    {{-- MODAL GENERAR SUELTO                                        --}}
+    {{-- ═══════════════════════════════════════════════════════════ --}}
+    <x-dialog-modal wire:model.live="sueltoModal" maxWidth="md">
+        <x-slot name="title">🔓 Generar suelto</x-slot>
+        <x-slot name="content">
+            <div class="space-y-3">
+                <div class="bg-gray-50 dark:bg-gray-700/40 rounded-lg px-4 py-3 text-sm">
+                    <p class="text-gray-800 dark:text-gray-100 font-medium">{{ $cajaNombre }}</p>
+                    <p class="text-xs text-gray-400 font-mono">Cód: {{ $cajaCodigo }} · Precio caja: ${{ number_format((int)$cajaPrecioF,0,',','.') }}</p>
+                    <p class="text-xs text-gray-500 mt-1">Se creará un artículo suelto con código <b>{{ $cajaCodigo }}S</b>.</p>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Unidades por caja</label>
+                    <x-input type="number" wire:model.live.debounce.400ms="sUnidades" class="mt-1 block w-full" placeholder="ej: 12" />
+                    <x-input-error for="sUnidades" class="mt-1" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Precio del suelto (por unidad)</label>
+                    <x-input type="number" wire:model="sPrecioUnit" class="mt-1 block w-full" />
+                    <x-input-error for="sPrecioUnit" class="mt-1" />
+                    @if($sUnidades && (int)$sUnidades > 0)
+                        <p class="text-[11px] text-gray-400 mt-1">Sugerido = precio caja ÷ {{ (int)$sUnidades }} = ${{ number_format((int)ceil((int)$cajaPrecioF/(int)$sUnidades),0,',','.') }}. El suelto suele ser más caro: subilo si hace falta.</p>
+                    @endif
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Stock inicial del suelto (unidades)</label>
+                    <x-input type="number" wire:model="sStockInicial" class="mt-1 block w-full" />
+                    <x-input-error for="sStockInicial" class="mt-1" />
+                    <p class="text-[11px] text-gray-400 mt-1">Podés dejar 0 y usar «Abrir caja» para pasar cajas a unidades.</p>
+                </div>
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$set('sueltoModal', false)">Cancelar</x-secondary-button>
+            <x-primary-button class="ms-2" wire:click="guardarSuelto">Generar</x-primary-button>
+        </x-slot>
+    </x-dialog-modal>
+
+    {{-- toast --}}
+    <div x-data="{ show:false, message:'', type:'success' }"
+         x-on:notify.window="show=true; message=$event.detail[0]; type=$event.detail[1]||'success'; setTimeout(()=>show=false,4000)"
+         x-show="show" x-transition x-cloak
+         class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 text-white"
+         :class="{ 'bg-green-500': type==='success', 'bg-yellow-500': type==='warning', 'bg-red-500': type==='error' }">
+        <p x-text="message"></p>
+    </div>
 
 </div>
