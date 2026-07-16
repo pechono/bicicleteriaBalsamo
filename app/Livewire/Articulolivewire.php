@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Articulo;
 use App\Models\Categoria;
+use App\Models\Grupos;
+use App\Models\GruposArticulos;
 use App\Models\HistoriasPrecio;
 use App\Models\Ofertas;
 use App\Models\Proveedor;
@@ -55,7 +57,10 @@ class Articulolivewire extends Component
         $this->categorias=Categoria::All();
         $unidades=Unidad::all();
         $proveedores=Proveedor::all();
-        return view('livewire.articulolivewire', compact('articulos','unidades', 'proveedores'));
+        $grupos = $this->proveedor_id
+            ? Grupos::where('proveedor_id', $this->proveedor_id)->orderBy('NombreGrupo')->get()
+            : collect();
+        return view('livewire.articulolivewire', compact('articulos','unidades', 'proveedores', 'grupos'));
     }
     public function sortby($field)
     {
@@ -109,6 +114,9 @@ class Articulolivewire extends Component
          $this->stockMinimo='';
          $this->stock='';
          $this->proveedor_id='';
+         $this->grupo_id='';
+         $this->porcentaje='';
+         $this->iva=0;
      }
 
     public $articulo, $categoria_id, $presentacion, $unidad_id;
@@ -117,11 +125,44 @@ class Articulolivewire extends Component
 
     public $detalles, $suelto, $porcentaje, $idArtitulo;
     public $proveedor_id, $stock, $stockMinimo;
+    public $grupo_id;      // grupo elegido (define el % automáticamente)
+    public $iva = 0;       // 21 si el proveedor discrimina IVA, 0 si ya lo incluye
 
+    /** Precio de venta = (costo + IVA) + % de ganancia. Automático. */
     public function calcular()
     {
-        $this->precioF=(($this->precioI *$this->porcentaje)/(100))+$this->precioI;
+        if (!$this->confirmingArticuloAdd) {
+            return; // solo autocalcula en el alta, no en la edición
+        }
+        $conIva = (float) $this->precioI * (1 + (float) $this->iva / 100);
+        $this->precioF = (int) round($conIva * (1 + (float) $this->porcentaje / 100));
     }
+
+    /** Al elegir proveedor: setea IVA (según iva_incluido) y limpia el grupo. */
+    public function updatedProveedorId($value)
+    {
+        if (!$this->confirmingArticuloAdd) {
+            return;
+        }
+        $this->grupo_id = '';
+        $this->porcentaje = 0;
+        $ivaIncluido = $value ? Proveedor::whereKey($value)->value('iva_incluido') : true;
+        $this->iva = $ivaIncluido ? 0 : 21;
+        $this->calcular();
+    }
+
+    /** Al elegir el grupo: toma su % y recalcula (sin botón). */
+    public function updatedGrupoId($value)
+    {
+        if (!$this->confirmingArticuloAdd) {
+            return;
+        }
+        $this->porcentaje = $value ? (float) (Grupos::whereKey($value)->value('porsentaje') ?? 0) : 0;
+        $this->calcular();
+    }
+
+    public function updatedPorcentaje() { $this->calcular(); }
+    public function updatedPrecioI() { $this->calcular(); }
 
     public $confirmingArticuloAdd=false;
     public $confirmingArticuloEdit=false;
@@ -175,7 +216,7 @@ class Articulolivewire extends Component
             'proveedor_id'=>'required'
         ]);
 
-        Articulo::create([
+        $ultimo = Articulo::create([
             'articulo'=>  $this->articulo,
             'categoria_id'=>  $this->categoria_id,
             'presentacion'=>  $this->presentacion,
@@ -189,35 +230,21 @@ class Articulolivewire extends Component
             'suelto'=>  $this->suelto,
             'activo'=>1
         ]);
-        try {
-            Articulo::create([
-                'articulo'=>  $this->articulo,
-                'categoria_id'=>  $this->categoria_id,
-                'presentacion'=>  $this->presentacion,
-                'unidad_id'=>  $this->unidad_id,
-                'descuento'=>  $this->descuento,
-                'unidadVenta'=>  $this->unidadVenta,
-                'precioF'=>  $this->precioF,
-                'precioI'=>  $this->precioI,
-                'caducidad'=>  $this->caducidad,
-                'detalles'=>  $this->detalles,
-                'suelto'=>  $this->suelto,
-                'activo'=>1
-            ]);        
-        } 
-            catch (\Exception $e) {
-            dd($e->getMessage());
-        }
-        
 
-
-        $ultimo=Articulo::latest()->first();
         Stock::create([
             'articulo_id'=>$ultimo->id,
             'stockMinimo'=>$this->stockMinimo,
             'stock'=>$this->stock,
             'proveedor_id'=>$this->proveedor_id
         ]);
+
+        // Si se eligió grupo, asociarlo (para los aumentos por grupo).
+        if($this->grupo_id){
+            GruposArticulos::firstOrCreate([
+                'grupo_id'=>$this->grupo_id,
+                'articulo_id'=>$ultimo->id
+            ]);
+        }
 
         if($this->suelto==1){
             Suelto::create([

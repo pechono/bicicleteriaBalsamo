@@ -275,27 +275,37 @@
                     <x-input-error for="'unidadVenta" class="mt-2" />
                 </div>
             </div>
-            <div class="col-span-6 sm:col-span-4 mt-2 grid grid-flow-col justify-stretch" >
+            <div class="col-span-6 sm:col-span-4 mt-2 grid grid-flow-col justify-stretch gap-2" >
                 <div class="">
-                    <x-label for="precioI" value="'Precio Inicial" />
-                    <x-input id="precioI" type="text" class="mt-1 block w-full" wire:model='precioI' placeholder="0"/>
+                    <x-label for="precioI" value="Precio de costo" />
+                    <x-input id="precioI" type="text" class="mt-1 block w-full" wire:model.live.debounce.500ms='precioI' placeholder="0"/>
                     <x-input-error for="precioI" class="mt-2" />
                 </div>
                 <div>
-                    <x-label for="precioF" value="Precio Final" />
+                    <x-label for="porcentaje" value="% Ganancia" />
+                    <x-input id="porcentaje" type="text" class="mt-1 block w-full" wire:model.live.debounce.500ms='porcentaje' placeholder="0"/>
+                    <x-input-error for="porcentaje" class="mt-2" />
+                </div>
+                <div>
+                    <x-label for="precioF" value="Precio de venta (auto)" />
                     <x-input id="precioF" type="text" class="mt-1 block w-full" wire:model='precioF' placeholder="0"/>
                     <x-input-error for="precioF" class="mt-2" />
                 </div>
-                <div>
-                    <x-label for="porecentaje" value="Porecentaje" />
-                    <x-input id="porecentaje" type="text" class="mt-1 block w-full" wire:model='porcentaje' placeholder="0"/>
-                    <x-input-error for="porcentaje" class="mt-2" />
-                </div>
-                <div class="mt-2 justify-stretch">
-                    <x-label for="porecentaje" value="calcular Porcentaje" />
-                    <button wire:click='calcular()' class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " >Calcular Precio</button>
-                </div>
             </div>
+            @if($precioI)
+                <div class="col-span-6 sm:col-span-4 mt-2 text-sm rounded-md bg-gray-50 dark:bg-gray-700/40 px-3 py-2 text-gray-700 dark:text-gray-200">
+                    Costo: <b>${{ number_format((float)$precioI,0,',','.') }}</b>
+                    @if($iva > 0)
+                        <span class="text-orange-500 font-semibold">+ IVA {{ $iva }}%</span>
+                        = <b>${{ number_format((float)$precioI*(1+$iva/100),0,',','.') }}</b>
+                    @else
+                        <span class="text-gray-400">(IVA incluido)</span>
+                    @endif
+                    <span class="mx-1">·</span>
+                    Venta (+{{ rtrim(rtrim(number_format((float)($porcentaje ?: 0),2,',','.'),'0'),',') }}%):
+                    <b class="text-brand-600 dark:text-brand-400">${{ number_format((float)$precioF,0,',','.') }}</b>
+                </div>
+            @endif
 
             <div class="col-span-6 sm:col-span-4 mt-2 grid grid-flow-col justify-stretch " >
                 <div>
@@ -321,7 +331,7 @@
         {{-- -----------------------------------stock--------------------------------- --}}
             <div class="col-span-6 sm:col-span-4 mt-2 rounded">
                 <x-label for="proveedor" value="{{ __('Proveedor') }}" />
-                <select id="proveedor"  class="block mt-1 w-full"  wire:model='proveedor_id' class="rounded"/>
+                <select id="proveedor" class="block mt-1 w-full rounded" wire:model.live='proveedor_id'>
                 <option value="">Seleccionar...</option>
                 @foreach ($proveedores as $proveedor)
                         <option value="{{ $proveedor->id}}"  >
@@ -329,8 +339,22 @@
                         </option>
                     @endforeach
                 </select>
-                <x-input-error for="categoria" class="mt-2" />
+                <x-input-error for="proveedor_id" class="mt-2" />
+            </div>
 
+            <div class="col-span-6 sm:col-span-4 mt-2 rounded">
+                <x-label value="Grupo (fija el % y calcula la venta con IVA)" />
+                <select class="block mt-1 w-full rounded" wire:model.live='grupo_id'>
+                    <option value="">— Sin grupo (poné el % a mano) —</option>
+                    @foreach ($grupos as $g)
+                        <option value="{{ $g->id }}">{{ $g->NombreGrupo }} ({{ rtrim(rtrim(number_format($g->porsentaje,2,',','.'),'0'),',') }}%)</option>
+                    @endforeach
+                </select>
+                @if($proveedor_id && $grupos->isEmpty())
+                    <p class="text-xs text-amber-600 mt-1">Este proveedor no tiene grupos. Podés poner el % a mano.</p>
+                @elseif(!$proveedor_id)
+                    <p class="text-xs text-gray-400 mt-1">Elegí un proveedor para ver sus grupos.</p>
+                @endif
             </div>
 
             <div class="col-span-6 sm:col-span-4 mt-2 grid grid-flow-col justify-stretch" >
