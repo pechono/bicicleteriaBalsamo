@@ -337,7 +337,7 @@ class StockLivewire extends Component
          DB::transaction(function () use ($caja, $stockCaja) {
              $suelto = Articulo::create([
                  'articulo'     => $caja->articulo . ' Suelto',
-                 'codigo'       => $caja->codigo ? $caja->codigo . 'S' : null,
+                 'codigo'       => $caja->codigo ? $caja->codigo . '¬S' : null,
                  'categoria_id' => $caja->categoria_id,
                  'presentacion' => $caja->presentacion ?: '-',
                  'unidad_id'    => $caja->unidad_id,

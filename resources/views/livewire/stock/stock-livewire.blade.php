@@ -416,7 +416,7 @@
                 <div class="bg-gray-50 dark:bg-gray-700/40 rounded-lg px-4 py-3 text-sm">
                     <p class="text-gray-800 dark:text-gray-100 font-medium">{{ $cajaNombre }}</p>
                     <p class="text-xs text-gray-400 font-mono">Cód: {{ $cajaCodigo }} · Precio caja: ${{ number_format((int)$cajaPrecioF,0,',','.') }}</p>
-                    <p class="text-xs text-gray-500 mt-1">Se creará un artículo suelto con código <b>{{ $cajaCodigo }}S</b>.</p>
+                    <p class="text-xs text-gray-500 mt-1">Se creará un artículo suelto con código <b>{{ $cajaCodigo }}¬S</b>.</p>
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Unidades por caja</label>
