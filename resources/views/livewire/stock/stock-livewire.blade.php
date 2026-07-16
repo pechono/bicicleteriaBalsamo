@@ -150,14 +150,12 @@
                                 @if($articulo->suelto == 1 && isset($sueltos[$articulo->id]))
                                     <button wire:click="abrirCaja({{ $articulo->id }})"
                                             wire:confirm="¿Abrir una caja? Descuenta 1 caja y suma {{ $sueltos[$articulo->id]->cantidad }} unidades al suelto."
-                                            class="rounded bg-emerald-600 hover:bg-emerald-500 text-white h-8 px-3">
-                                        🔓 Abrir caja
-                                    </button>
+                                            title="Abrir caja (+{{ $sueltos[$articulo->id]->cantidad }} unidades)"
+                                            class="rounded-full bg-emerald-600 hover:bg-emerald-500 text-white h-8 w-8 flex items-center justify-center shrink-0">🔓</button>
                                 @elseif($articulo->suelto != 1 && !in_array($articulo->id, $cajasConSuelto))
                                     <button wire:click="abrirGenerarSuelto({{ $articulo->id }})"
-                                            class="rounded bg-amber-500 hover:bg-amber-400 text-white h-8 px-3">
-                                        Generar suelto
-                                    </button>
+                                            title="Generar suelto"
+                                            class="rounded-full bg-amber-500 hover:bg-amber-400 text-white h-8 w-8 flex items-center justify-center font-bold shrink-0">S</button>
                                 @endif
                                 <button wire:click="confirmarArticuloDeletion({{ $articulo->id }})"
                                         class="rounded bg-red-500 hover:bg-red-400 text-white h-8 px-3">
