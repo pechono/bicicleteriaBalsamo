@@ -45,6 +45,9 @@ Route::get('/mobile/ingreso/{token}', function ($token) {
     return view('mobile.ingreso-qr', ['nroIngreso' => $nro, 'token' => $token]);
 })->name('mobile.ingreso.qr');
 
+// ── Portal del cliente mayorista (link con token, sin login) ─────
+Route::get('/portal/{token}', [\App\Http\Controllers\PortalController::class, 'show'])->name('portal.mayorista');
+
 // Redirigir /register al login (registro deshabilitado)
 Route::redirect('/register', '/login');
 
