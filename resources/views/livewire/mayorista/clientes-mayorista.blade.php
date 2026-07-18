@@ -62,6 +62,11 @@
                         </td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-2">
+                                <button wire:click="enviarAcceso({{ $c['id'] }})" class="p-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition" title="Enviar acceso al portal por WhatsApp">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                </button>
                                 <button wire:click="editar({{ $c['id'] }})" class="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-lg transition" title="Editar">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -125,6 +130,12 @@
                     <x-label value="Dirección" />
                     <x-input type="text" class="mt-1 block w-full" wire:model="direccion" />
                 </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" wire:model="cuenta_corriente_habilitada" class="rounded text-teal-600" />
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Habilitar cuenta corriente (el cliente la ve en su portal)</span>
+                    </label>
+                </div>
                 @if($editingId)
                 <div class="md:col-span-2">
                     <label class="flex items-center gap-2 cursor-pointer">
@@ -152,5 +163,14 @@
             <x-danger-button class="ms-3" wire:click="eliminar">Desactivar</x-danger-button>
         </x-slot>
     </x-dialog-modal>
+
+    {{-- toast --}}
+    <div x-data="{ show:false, message:'', type:'success' }"
+         x-on:notify.window="show=true; message=$event.detail[0]; type=$event.detail[1]||'success'; setTimeout(()=>show=false,4000)"
+         x-show="show" x-transition x-cloak
+         class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 text-white"
+         :class="{ 'bg-green-500': type==='success', 'bg-yellow-500': type==='warning', 'bg-red-500': type==='error' }">
+        <p x-text="message"></p>
+    </div>
 
 </div>

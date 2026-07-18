@@ -4,9 +4,12 @@ namespace App\Livewire\Mayorista;
 
 use Livewire\Component;
 use App\Models\ClienteMayorista;
+use App\Livewire\Traits\WithWhatsApp;
 
 class ClientesMayorista extends Component
 {
+    use WithWhatsApp;
+
     public array  $clientes = [];
     public bool   $modalForm = false;
     public bool   $modalDelete = false;
@@ -22,6 +25,7 @@ class ClientesMayorista extends Component
     public string $direccion = '';
     public float  $porcentaje_extra = 0;
     public bool   $activo = true;
+    public bool   $cuenta_corriente_habilitada = false;
 
     protected $rules = [
         'nombre'           => 'required|string|min:2',
@@ -31,6 +35,7 @@ class ClientesMayorista extends Component
         'cuit'             => 'nullable|string',
         'direccion'        => 'nullable|string',
         'porcentaje_extra' => 'required|numeric|min:0',
+        'cuenta_corriente_habilitada' => 'boolean',
     ];
 
     public function mount(): void
@@ -56,6 +61,7 @@ class ClientesMayorista extends Component
     {
         $this->reset(['editingId','nombre','apellido','telefono','email','cuit','direccion','porcentaje_extra']);
         $this->activo = true;
+        $this->cuenta_corriente_habilitada = false;
         $this->modalForm = true;
     }
 
@@ -71,6 +77,7 @@ class ClientesMayorista extends Component
         $this->direccion       = $c->direccion ?? '';
         $this->porcentaje_extra = (float)$c->porcentaje_extra;
         $this->activo          = (bool)$c->activo;
+        $this->cuenta_corriente_habilitada = (bool)$c->cuenta_corriente_habilitada;
         $this->modalForm       = true;
     }
 
@@ -86,6 +93,7 @@ class ClientesMayorista extends Component
             'direccion'        => $this->direccion,
             'porcentaje_extra' => $this->porcentaje_extra,
             'activo'           => $this->activo,
+            'cuenta_corriente_habilitada' => $this->cuenta_corriente_habilitada,
         ];
         if ($this->editingId) {
             ClienteMayorista::find($this->editingId)->update($data);
@@ -94,6 +102,22 @@ class ClientesMayorista extends Component
         }
         $this->modalForm = false;
         $this->cargarClientes();
+    }
+
+    /** Envía por WhatsApp el link del portal al cliente. */
+    public function enviarAcceso(int $id): void
+    {
+        $c = ClienteMayorista::findOrFail($id);
+        if (empty(trim((string) $c->telefono))) {
+            $this->notify('El cliente no tiene teléfono cargado', 'warning');
+            return;
+        }
+        $msg = "¡Hola {$c->nombre}! 👋\n\n"
+             . "Este es tu acceso al portal de Bicicletería Bálsamo, donde podés ver los productos disponibles"
+             . ($c->cuenta_corriente_habilitada ? ' y el estado de tu cuenta corriente' : '')
+             . ":\n\n" . $c->portalUrl() . "\n\n"
+             . "El link es personal, guardalo. ¡Gracias!";
+        $this->sendWhatsAppMessage($c->telefono, $msg);
     }
 
     public function confirmarEliminar(int $id): void
