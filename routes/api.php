@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Mobile\IngresoAltaMobileController;
 use App\Http\Controllers\Api\Mobile\TallerProcesoMobileController;
 use App\Http\Controllers\Api\Mobile\CierreMobileController;
 use App\Http\Controllers\Api\Mobile\ClienteMobileController;
+use App\Http\Controllers\Api\Mobile\TallerInfoMobileController;
 
 // ============================================================
 // 📱 API MOBILE — App de taller de bicicletas
@@ -67,6 +68,11 @@ Route::prefix('mobile')->group(function () {
         Route::get('/venta/clientes',                          [VentaMobileController::class, 'buscarCliente']);
         Route::get('/venta/tipos',                             [VentaMobileController::class, 'tiposVenta']);
         Route::post('/venta/procesar',                         [VentaMobileController::class, 'procesarVenta']);
+
+        // Cuenta Mecánico y Calendario
+        Route::get('/mecanico/cuenta',                         [TallerInfoMobileController::class, 'cuentaMecanico']);
+        Route::post('/mecanico/cuenta/{mecanicoId}/cerrar',    [TallerInfoMobileController::class, 'cerrarCuenta']);
+        Route::get('/calendario',                              [TallerInfoMobileController::class, 'calendario']);
 
         // Cierre de Caja — Admin
         Route::get('/cierre/resumen',  [CierreMobileController::class, 'resumen']);
