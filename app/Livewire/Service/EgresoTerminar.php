@@ -521,9 +521,16 @@ class EgresoTerminar extends Component
     $nro_egreso = NroEgreso::latest()->first();
     $idegreso = $nro_egreso->id;
 
+    // ingreso_bici_id debe ser el id de ingreso_bicis (NO bicis.id que hay en $this->idBici).
+    $ingresoBiciId = DB::table('ingreso_bicis')->where('nro_ingreso', $this->nro)->value('id');
+    if (!$ingresoBiciId) {
+        $this->dispatch('notify', 'No se encontró el ingreso de esta bici', 'error');
+        return;
+    }
+
     foreach($inTheCar as $car) {
         EgresoBici::create([
-            'ingreso_bici_id' => $this->idBici,
+            'ingreso_bici_id' => $ingresoBiciId,
             'articulo_id' => $car->articulo_id,
             'cantidad' => $car->cantidad,
             'precio_inicial' => $car->precioI,
