@@ -1,61 +1,42 @@
 <div class="space-y-6 p-4 ">
-    <!-- Buscadores separados -->
-    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 w-7/12 ">
-        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <svg class="w-6 h-6 mr-2 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            Buscar Ingresos
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-            <!-- Buscador por N° de Ingreso -->
-            <div class="w-fit">
-                <label class=" text-sm font-medium text-gray-600 mb-1 flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
-                    </svg>
-                    N° de Ingreso
-                </label>
+    <!-- Controles (full width, compacto) -->
+    <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 w-full">
+        <div class="flex flex-col lg:flex-row lg:items-end gap-3">
+            <!-- Buscar por N° -->
+            <div class="lg:w-40">
+                <label class="text-xs font-medium text-gray-500 mb-1 block">N° de Ingreso</label>
                 <input
                     wire:model.live="searchIngreso"
                     type="text"
-                    placeholder="Ej: 8, 15, 23..."
-                    class="w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-lg shadow-sm"
+                    placeholder="Ej: 8, 15..."
+                    class="w-full text-sm border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-lg shadow-sm"
                 />
             </div>
-            
-            <!-- Buscador por Datos del Cliente -->
-            <div class="w-full">
-                <label class=" text-sm font-medium text-gray-600 mb-1 flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    Cliente (nombre, apellido, DNI, teléfono)
-                </label>
+
+            <!-- Buscar por cliente -->
+            <div class="flex-1 min-w-[200px]">
+                <label class="text-xs font-medium text-gray-500 mb-1 block">Cliente (nombre, apellido, DNI, teléfono)</label>
                 <input
                     wire:model.live="searchCliente"
                     type="text"
                     placeholder="Buscar por datos del cliente..."
-                    class="w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-lg shadow-sm"
+                    class="w-full text-sm border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-lg shadow-sm"
                 />
             </div>
-                {{-- --------------------- --}}
-                <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-600 mb-1 block">Estado</label>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(['todo'=>'Todas','pendiente'=>'Pendiente','terminado'=>'Terminado'] as $val => $label)
-                            <button type="button" wire:click="$set('filtroEstado','{{ $val }}')"
-                                class="px-3 py-1.5 rounded-full text-sm font-medium transition
-                                    {{ $filtroEstado === $val ? 'bg-brand-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                                {{ $label }}
-                            </button>
-                        @endforeach
-                    </div>
+
+            <!-- Estado -->
+            <div>
+                <label class="text-xs font-medium text-gray-500 mb-1 block">Estado</label>
+                <div class="flex flex-wrap gap-1.5">
+                    @foreach(['todo'=>'Todas','pendiente'=>'Pendiente','terminado'=>'Terminado'] as $val => $label)
+                        <button type="button" wire:click="$set('filtroEstado','{{ $val }}')"
+                            class="px-3 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap
+                                {{ $filtroEstado === $val ? 'bg-brand-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                            {{ $label }}
+                        </button>
+                    @endforeach
                 </div>
-
-
-                {{-- ---------------------------------- --}}
+            </div>
         </div>
         
         <!-- Indicadores de búsqueda activa -->
