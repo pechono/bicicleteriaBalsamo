@@ -28,7 +28,7 @@
             <div>
                 <label class="text-xs font-medium text-gray-500 mb-1 block">Estado</label>
                 <div class="flex flex-wrap gap-1.5">
-                    @foreach(['todo'=>'Todas','pendiente'=>'Pendiente','terminado'=>'Terminado'] as $val => $label)
+                    @foreach(['todo'=>'Todas','pendiente'=>'Pendiente','terminado'=>'Terminado','entregado'=>'Entregadas'] as $val => $label)
                         <button type="button" wire:click="$set('filtroEstado','{{ $val }}')"
                             class="px-3 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap
                                 {{ $filtroEstado === $val ? 'bg-brand-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
@@ -171,6 +171,14 @@
                                             </a>
                                         @endif
   
+                                        {{-- Retiró: solo aparece al expandir (Ver) --}}
+                                        <button
+                                            wire:click="marcarRetirado({{ $cliente->nro_ingreso }})"
+                                            wire:confirm="¿El cliente retiró la bici? Se marca como Entregada y sale de la lista (no se borra nada)."
+                                            class="inline-flex items-center px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium rounded-lg transition-all duration-200 shadow-sm ml-1">
+                                            Retiró
+                                        </button>
+
                                     @else
                                         <button
                                         wire:click="verCliente({{ $cliente->nro_ingreso }})"
@@ -180,12 +188,6 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
                                         Ver
-                                    </button>
-                                    <button
-                                        wire:click="marcarRetirado({{ $cliente->nro_ingreso }})"
-                                        wire:confirm="¿El cliente retiró la bici? Se marca como Entregada y sale de la lista (no se borra nada)."
-                                        class="inline-flex items-center px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium rounded-lg transition-all duration-200 shadow-sm ml-1">
-                                        Retiró
                                     </button>
                                     @endif
                                     

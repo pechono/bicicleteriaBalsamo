@@ -67,8 +67,11 @@ public $operacionNro;
             ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
             ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
 
-            // Mostrar SOLO Pendiente y Terminado (oculta Entregado)
-            ->whereIn('nro_ingresos.estado', ['Pendiente', 'Terminado'])
+            // Por defecto muestra SOLO Pendiente y Terminado (oculta Entregado).
+            // Si se elige el filtro "Entregadas", se permite verlas.
+            ->when($this->filtroEstado !== 'entregado', function ($query) {
+                return $query->whereIn('nro_ingresos.estado', ['Pendiente', 'Terminado']);
+            })
 
             // FILTRO POR ESTADO (NUEVO)
             ->when($this->filtroEstado != 'todo', function ($query) {
