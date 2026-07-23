@@ -41,76 +41,18 @@
                 />
             </div>
                 {{-- --------------------- --}}
-                <div class="relative inline-flex p-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200"
-    x-data="{ selected: @entangle('filtroEstado') }">
-    
-    <!-- Fondo animado (ajustado para 4 opciones) -->
-    <div class="absolute top-1 bottom-1 rounded-full bg-white shadow-md transition-all duration-300"
-        :style="{
-            width: 'calc(25% - 4px)', 
-            left: selected == 'todo' ? '4px' : 
-                  (selected == 'pendiente' ? 'calc(25% - 0px)' : 
-                  (selected == 'terminado' ? 'calc(50% - 0px)' : 
-                  'calc(75% - 0px)'))
-        }">
-    </div>
-    
-    <!-- Opción: Todo -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="todo" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'todo' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Todo
-        </span>
-    </label>
-    
-    <!-- Opción: Pendiente -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="pendiente" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'pendiente' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Pendiente
-        </span>
-    </label>
-    
-    <!-- Opción: Terminado -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="terminado" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'terminado' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Terminado
-        </span>
-    </label>
-    
-    <!-- Opción: Entregado -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="entregado" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'entregado' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Entregado
-        </span>
-    </label>
-</div>
+                <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-gray-600 mb-1 block">Estado</label>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach(['todo'=>'Todas','pendiente'=>'Pendiente','terminado'=>'Terminado'] as $val => $label)
+                            <button type="button" wire:click="$set('filtroEstado','{{ $val }}')"
+                                class="px-3 py-1.5 rounded-full text-sm font-medium transition
+                                    {{ $filtroEstado === $val ? 'bg-brand-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                                {{ $label }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
 
 
                 {{-- ---------------------------------- --}}
@@ -194,6 +136,9 @@
                                 <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
                                     #{{ $cliente->nro_ingreso }}
                                 </span>
+                                @isset($precios[$cliente->nro_ingreso])
+                                    <div class="text-xs font-semibold text-emerald-600 mt-1">${{ number_format($precios[$cliente->nro_ingreso]->monto, 0, ',', '.') }}</div>
+                                @endisset
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->nombre }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->apellido }}</td>
@@ -246,7 +191,7 @@
                                         @endif
   
                                     @else
-                                        <button 
+                                        <button
                                         wire:click="verCliente({{ $cliente->nro_ingreso }})"
                                         class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,6 +199,12 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
                                         Ver
+                                    </button>
+                                    <button
+                                        wire:click="marcarRetirado({{ $cliente->nro_ingreso }})"
+                                        wire:confirm="¿El cliente retiró la bici? Se marca como Entregada y sale de la lista (no se borra nada)."
+                                        class="inline-flex items-center px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium rounded-lg transition-all duration-200 shadow-sm ml-1">
+                                        Retiró
                                     </button>
                                     @endif
                                     

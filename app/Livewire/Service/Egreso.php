@@ -66,8 +66,10 @@ public $operacionNro;
             ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
             ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
             ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
-                        
-            
+
+            // Mostrar SOLO Pendiente y Terminado (oculta Entregado)
+            ->whereIn('nro_ingresos.estado', ['Pendiente', 'Terminado'])
+
             // FILTRO POR ESTADO (NUEVO)
             ->when($this->filtroEstado != 'todo', function ($query) {
                 return $query->where('nro_ingresos.estado', $this->filtroEstado);
@@ -99,9 +101,26 @@ public $operacionNro;
             )
             ->distinct()
             ->get();
-            
-        
-        return view('livewire.service.egreso', compact('clientes'));
+
+        // Precio (monto del egreso) por nro de ingreso — SOLO para mostrar, no altera nada.
+        $precios = DB::table('egreso_bicis as e')
+            ->join('ingreso_bicis as i', 'i.bici_id', '=', 'e.ingreso_bici_id')
+            ->join('nro_egresos as ne', 'ne.id', '=', 'e.nro_egreso')
+            ->select('i.nro_ingreso', 'ne.monto')
+            ->distinct()
+            ->get()
+            ->keyBy('nro_ingreso');
+
+        return view('livewire.service.egreso', compact('clientes', 'precios'));
+    }
+
+    /**
+     * El cliente retiró la bici: se marca como Entregado y sale de la lista.
+     * No borra nada, solo cambia el estado (queda oculto de esta vista).
+     */
+    public function marcarRetirado($nro_ingreso)
+    {
+        NroIngreso::where('id', $nro_ingreso)->update(['estado' => 'Entregado']);
     }
 
 
