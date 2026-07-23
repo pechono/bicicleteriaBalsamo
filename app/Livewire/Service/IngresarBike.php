@@ -20,7 +20,6 @@ class IngresarBike extends Component
     /* ================== CLIENTE ================== */
     public $dni;
     public $cliente;
-    public $confirmandoCliente = false; // modal para confirmar que es el cliente correcto
 
     public function buscarCliente()
     {
@@ -30,22 +29,7 @@ class IngresarBike extends Component
             $this->confirmingClienteAdd = true;
         } else {
             $this->confirmingClienteAdd = false;
-            $this->confirmandoCliente = true; // pedir confirmación
         }
-    }
-
-    /** El usuario confirma que el cliente es el correcto. */
-    public function confirmarClienteOk()
-    {
-        $this->confirmandoCliente = false;
-    }
-
-    /** No es el cliente / hay que buscar otro: limpia la selección. */
-    public function cambiarCliente()
-    {
-        $this->cliente = null;
-        $this->confirmandoCliente = false;
-        $this->buscarCli = '';
     }
 
     /* Búsqueda en vivo de clientes (nombre/apellido/DNI) con lista para elegir */
@@ -66,7 +50,6 @@ class IngresarBike extends Component
         $this->cliente = Cliente::find($id);
         $this->confirmingClienteAdd = false;
         $this->buscarCli = '';
-        $this->confirmandoCliente = true; // pedir confirmación de que es el cliente correcto
     }
 
     /* ================== DATOS BICI ================== */

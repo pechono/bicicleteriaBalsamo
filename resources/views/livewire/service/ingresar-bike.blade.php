@@ -54,34 +54,13 @@
             </div>
 
             <button
-                wire:click="cambiarCliente"
+                wire:click="$set('cliente', null)"
                 class="text-sm text-red-600 hover:underline"
             >
                 Cambiar cliente
             </button>
         </div>
     @endif
-
-    {{-- Modal: confirmar que es el cliente correcto (nombre y teléfono) --}}
-    <x-dialog-modal wire:model.live="confirmandoCliente" maxWidth="md">
-        <x-slot name="title">¿Es este el cliente?</x-slot>
-        <x-slot name="content">
-            @if($cliente)
-                <div class="space-y-3">
-                    <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
-                        <div class="text-lg font-bold text-gray-800">{{ $cliente->apellido }}, {{ $cliente->nombre }}</div>
-                        <div class="text-sm text-gray-600 mt-1">DNI: <b>{{ $cliente->dni ?: '—' }}</b></div>
-                        <div class="text-sm text-gray-600">Teléfono: <b class="{{ $cliente->telefono ? '' : 'text-red-500' }}">{{ $cliente->telefono ?: '— sin teléfono cargado —' }}</b></div>
-                    </div>
-                    <p class="text-sm text-gray-500">Confirmá con la persona que el nombre y el teléfono sean correctos antes de continuar.</p>
-                </div>
-            @endif
-        </x-slot>
-        <x-slot name="footer">
-            <x-secondary-button wire:click="cambiarCliente">No, buscar otro</x-secondary-button>
-            <x-primary-button class="ms-2" wire:click="confirmarClienteOk">Sí, es correcto</x-primary-button>
-        </x-slot>
-    </x-dialog-modal>
 
     {{-- ================= CONTENIDO ================= --}}
     @if($cliente)
