@@ -82,7 +82,7 @@ class TerminarVentaProceso extends Component
             )
             ->join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
             ->leftJoin('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-            ->join('ingreso_bicis', 'ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
             ->where('ingreso_bicis.nro_ingreso', $nro_ingreso)
             ->distinct('egreso_bicis.id')  // Distinct por ID de egreso
             ->get();
@@ -460,7 +460,7 @@ NroEgreso::join('egreso_bicis', 'egreso_bicis.nro_egreso', '=', 'nro_egresos.id'
         // ✅ Versión mínima corregida (solo arregla el error, pero mantiene N+1)
 
         return EgresoBici::join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
-            ->join('ingreso_bicis', 'ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
             ->where('ingreso_bicis.nro_ingreso', $this->nroI)
             ->where('articulos.id', $id)
             ->exists();

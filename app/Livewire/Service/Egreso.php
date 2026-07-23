@@ -46,7 +46,7 @@ public $operacionNro;
 {
     $operacion = DB::table('nro_egresos')
         ->join('egreso_bicis', 'egreso_bicis.nro_egreso', '=', 'nro_egresos.id')
-        ->join('ingreso_bicis', 'ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+        ->join('ingreso_bicis', 'egreso_bicis.ingreso_bici_id', '=', 'ingreso_bicis.id')
         ->where('ingreso_bicis.nro_ingreso', $nro)
         ->select('nro_egresos.operacion')
         ->first();
@@ -166,7 +166,7 @@ public $operacionNro;
             )
             ->join('articulos', 'articulos.id', '=', 'egreso_bicis.articulo_id')
             ->leftJoin('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-            ->join('ingreso_bicis', 'ingreso_bicis.id', '=', 'egreso_bicis.ingreso_bici_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'egreso_bicis.ingreso_bici_id')
             ->where('ingreso_bicis.nro_ingreso', $nro)
             ->distinct('egreso_bicis.id')  // Distinct por ID de egreso
             ->get();
