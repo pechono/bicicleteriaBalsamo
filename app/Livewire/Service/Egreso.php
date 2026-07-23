@@ -27,7 +27,7 @@ class Egreso extends Component
     public $q;
     use WithPagination;
     
-    public $filtroEstado = 'todo'; // Valor por defecto
+    public $filtroEstado = 'activos'; // Por defecto: oculta las Entregadas (muestra las que siguen en el taller)
     
     protected $paginationTheme = 'tailwind';
     
@@ -68,8 +68,12 @@ public $operacionNro;
             ->join('nro_ingresos', 'nro_ingresos.id', '=', 'ingreso_bicis.nro_ingreso')
                         
             
-            // FILTRO POR ESTADO (NUEVO)
-            ->when($this->filtroEstado != 'todo', function ($query) {
+            // FILTRO POR ESTADO
+            // 'activos' = todo lo que NO está Entregado; 'todo' = sin filtro; el resto = estado exacto.
+            ->when($this->filtroEstado === 'activos', function ($query) {
+                return $query->where('nro_ingresos.estado', '!=', 'Entregado');
+            })
+            ->when(!in_array($this->filtroEstado, ['todo', 'activos']), function ($query) {
                 return $query->where('nro_ingresos.estado', $this->filtroEstado);
             })
             
@@ -95,9 +99,13 @@ public $operacionNro;
                 'bicis.color',
                 'marcas.marca',
                 'tipo_bikes.tipo',
-                'nro_ingresos.estado'
+                'nro_ingresos.estado',
+                'nro_ingresos.detalles',
+                'nro_ingresos.fecha_retiro',
+                'nro_ingresos.created_at as fecha'
             )
             ->distinct()
+            ->orderByDesc('ingreso_bicis.nro_ingreso')
             ->get();
             
         

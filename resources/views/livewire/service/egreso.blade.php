@@ -1,6 +1,6 @@
 <div class="space-y-6 p-4 ">
     <!-- Buscadores separados -->
-    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 w-7/12 ">
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 w-full ">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg class="w-6 h-6 mr-2 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -41,76 +41,19 @@
                 />
             </div>
                 {{-- --------------------- --}}
-                <div class="relative inline-flex p-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200"
-    x-data="{ selected: @entangle('filtroEstado') }">
-    
-    <!-- Fondo animado (ajustado para 4 opciones) -->
-    <div class="absolute top-1 bottom-1 rounded-full bg-white shadow-md transition-all duration-300"
-        :style="{
-            width: 'calc(25% - 4px)', 
-            left: selected == 'todo' ? '4px' : 
-                  (selected == 'pendiente' ? 'calc(25% - 0px)' : 
-                  (selected == 'terminado' ? 'calc(50% - 0px)' : 
-                  'calc(75% - 0px)'))
-        }">
-    </div>
-    
-    <!-- Opción: Todo -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="todo" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'todo' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Todo
-        </span>
-    </label>
-    
-    <!-- Opción: Pendiente -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="pendiente" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'pendiente' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Pendiente
-        </span>
-    </label>
-    
-    <!-- Opción: Terminado -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="terminado" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'terminado' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Terminado
-        </span>
-    </label>
-    
-    <!-- Opción: Entregado -->
-    <label class="relative z-10 cursor-pointer">
-        <input type="radio" 
-            name="filtro_estado" 
-            wire:model="filtroEstado"
-            wire:click="actualizarFiltro"
-            value="entregado" 
-            class="sr-only">
-        <span class="inline-block px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap"
-            :class="selected == 'entregado' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'">
-            Entregado
-        </span>
-    </label>
-</div>
+                <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-gray-600 mb-1 block">Estado</label>
+                    <div class="flex flex-wrap gap-2">
+                        @php $filtros = ['activos'=>'🔧 Activos','pendiente'=>'Pendiente','terminado'=>'Terminado','entregado'=>'Entregado','todo'=>'Todos']; @endphp
+                        @foreach($filtros as $val => $label)
+                            <button type="button" wire:click="$set('filtroEstado','{{ $val }}')"
+                                class="px-3 py-1.5 rounded-full text-sm font-medium transition
+                                    {{ $filtroEstado === $val ? 'bg-brand-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                                {{ $label }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
 
 
                 {{-- ---------------------------------- --}}
@@ -161,7 +104,7 @@
                 
                 <!-- Contador de resultados -->
                 <span class="px-3 py-1 bg-white/20 text-white rounded-full text-sm">
-                     resultados
+                    {{ $clientes->count() }} resultado{{ $clientes->count() == 1 ? '' : 's' }}
                 </span>
             </div>
             
@@ -194,6 +137,9 @@
                                 <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
                                     #{{ $cliente->nro_ingreso }}
                                 </span>
+                                @if($cliente->fecha)
+                                    <div class="text-[11px] text-gray-400 mt-1">{{ \Carbon\Carbon::parse($cliente->fecha)->format('d/m/Y') }}</div>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->nombre }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->apellido }}</td>
@@ -211,7 +157,20 @@
                                     {{ $cliente->color }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->estado }}</td>
+                            <td class="px-4 py-3 text-sm border-r">
+                                @php
+                                    $col = match(strtolower($cliente->estado ?? '')) {
+                                        'pendiente' => 'bg-amber-100 text-amber-700',
+                                        'terminado' => 'bg-blue-100 text-blue-700',
+                                        'entregado' => 'bg-emerald-100 text-emerald-700',
+                                        default => 'bg-gray-100 text-gray-600',
+                                    };
+                                @endphp
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold {{ $col }}">{{ $cliente->estado }}</span>
+                                @if($cliente->fecha_retiro)
+                                    <div class="text-[11px] text-gray-400 mt-1">Retiro: {{ \Carbon\Carbon::parse($cliente->fecha_retiro)->format('d/m/Y') }}</div>
+                                @endif
+                            </td>
 
                             <td class="px-4 py-3 text-sm text-gray-700 border-r min-w-fit">
                                     
