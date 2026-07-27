@@ -170,15 +170,6 @@
                                                 Imprimir Comprobante
                                             </a>
                                         @endif
-  
-                                        {{-- Retiró: solo aparece al expandir (Ver) --}}
-                                        <button
-                                            wire:click="marcarRetirado({{ $cliente->nro_ingreso }})"
-                                            wire:confirm="¿El cliente retiró la bici? Se marca como Entregada y sale de la lista (no se borra nada)."
-                                            class="inline-flex items-center px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium rounded-lg transition-all duration-200 shadow-sm ml-1">
-                                            Retiró
-                                        </button>
-
                                     @else
                                         <button
                                         wire:click="verCliente({{ $cliente->nro_ingreso }})"
@@ -198,6 +189,20 @@
 
                             <!-- Fila expandible con artículos -->
                             @if ($ver == $cliente->nro_ingreso)
+                                    {{-- Acción destacada: eliminar / cliente retiró (roja, separada, para no tocarla por error) --}}
+                                    <tr class="bg-red-50">
+                                        <td colspan="10" class="px-6 py-3">
+                                            <div class="flex items-center justify-between gap-3 flex-wrap">
+                                                <span class="text-sm text-red-700">Si el cliente ya retiró la bici, sacala de la lista:</span>
+                                                <button
+                                                    wire:click="marcarRetirado({{ $cliente->nro_ingreso }})"
+                                                    wire:confirm="¿ELIMINAR el ingreso #{{ $cliente->nro_ingreso }}? El cliente retiró la bici → el registro se desactiva y sale de la lista (no se borra: queda como Entregado)."
+                                                    class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg shadow-md ring-2 ring-red-300">
+                                                    🗑️ Eliminar (cliente retiró)
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     @if($cliente->estado=='Terminado')
                                     <tr> 
                                         
