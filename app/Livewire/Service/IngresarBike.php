@@ -52,6 +52,25 @@ class IngresarBike extends Component
         $this->buscarCli = '';
     }
 
+    /**
+     * Cliente ya registrado que coincide por teléfono o DNI (mientras se carga uno nuevo).
+     * Sirve para avisar y evitar duplicados.
+     */
+    public function getClienteExistenteProperty()
+    {
+        $tel = trim((string) $this->telefono);
+        $dni = trim((string) $this->dni2);
+        if ($tel === '' && $dni === '') {
+            return null;
+        }
+        return Cliente::where('activo', 1)
+            ->where(function ($q) use ($tel, $dni) {
+                if ($tel !== '') $q->orWhere('telefono', $tel);
+                if ($dni !== '') $q->orWhere('dni', $dni);
+            })
+            ->first();
+    }
+
     /* ================== DATOS BICI ================== */
     public $colors;
     public $brands;
@@ -305,6 +324,12 @@ public function guardarIngreso()
                 'telefono'=>'required|string|max:20',
                 'dni2'=>'nullable|string|max:20|unique:clientes,dni',
             ]);
+         // Evitar duplicados: si ya existe por teléfono o DNI, avisar y no crear.
+         if ($this->clienteExistente) {
+             $c = $this->clienteExistente;
+             $this->addError('telefono', "Ya existe un cliente con ese teléfono o DNI: {$c->apellido}, {$c->nombre}. Usalo con «Usar este cliente».");
+             return;
+         }
          Cliente::create([
              'apellido'=>$this->apellido,
              'nombre'=>$this->nombre,

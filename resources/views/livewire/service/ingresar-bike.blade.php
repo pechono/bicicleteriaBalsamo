@@ -16,6 +16,15 @@
                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
             </div>
 
+            {{-- Cargar cliente nuevo sin necesidad de buscar primero --}}
+            <div class="mt-2 flex items-center justify-center gap-2 text-sm text-gray-500">
+                <span>o</span>
+                <button type="button" wire:click="confirmarClienteAdd"
+                    class="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700 font-semibold">
+                    ➕ Cargar cliente nuevo
+                </button>
+            </div>
+
             @if(mb_strlen(trim($buscarCli)) >= 2)
                 <div class="mt-3">
                     <div class="text-xs text-gray-500 mb-1">{{ $this->clientesEncontrados->count() }} resultado(s)</div>
@@ -484,6 +493,20 @@
                 {{ __('Cargar Cliente') }}
             </x-slot>
             <x-slot name="content">
+                @if($this->clienteExistente)
+                    <div class="col-span-6 mb-3 rounded-lg bg-amber-50 border border-amber-300 p-3">
+                        <div class="text-sm text-amber-800 font-semibold">⚠️ Cliente encontrado (mismo teléfono o DNI)</div>
+                        <div class="text-sm text-gray-700 mt-1">
+                            {{ $this->clienteExistente->apellido }}, {{ $this->clienteExistente->nombre }}
+                            @if($this->clienteExistente->dni) · DNI: {{ $this->clienteExistente->dni }} @endif
+                            · Tel: {{ $this->clienteExistente->telefono ?: '-' }}
+                        </div>
+                        <button type="button" wire:click="seleccionarCliente({{ $this->clienteExistente->id }})"
+                            class="mt-2 inline-flex items-center px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-lg">
+                            Usar este cliente
+                        </button>
+                    </div>
+                @endif
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="apellido" value="{{ __('Apellido') }}" />
                     <x-input id="apellido" type="text" class="mt-1 block w-full" wire:model="apellido" name='apellido' />
@@ -500,13 +523,13 @@
                 <div class="col-span-6 sm:col-span-4 mt-2">
                     <div>
                         <x-label for="dni2" value="DNI " />
-                        <x-input id="dni2" type="text" class="mt-1 block w-full" wire:model='dni2' placeholder="DNI"/>
+                        <x-input id="dni2" type="text" class="mt-1 block w-full" wire:model.live.debounce.400ms='dni2' placeholder="DNI"/>
                         <x-input-error for="dni2" class="mt-2" />
                     </div>
                 </div>
                 <div class="col-span-6 sm:col-span-4 mt-2">
                     <x-label for="telefono" value="{{ __('Telefono') }}" />
-                    <x-input id="telefono" type="text" class="mt-1 block w-full" wire:model="telefono"  />
+                    <x-input id="telefono" type="text" class="mt-1 block w-full" wire:model.live.debounce.400ms="telefono"  />
                     <x-input-error for="telefono" class="mt-2" />
                 </div>
             </x-slot>

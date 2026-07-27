@@ -73,14 +73,10 @@ class IngresoImp extends Component
      */
     public function imprimirComprobante()
     {
-        // Validar que haya fecha de retiro
-        if (!$this->fecha_retiro) {
-            $this->dispatch('notify', 'Primero seleccioná una fecha estimada de entrega', 'warning');
-            return;
+        // La fecha es OPCIONAL: si se cargó, se guarda; si no, se imprime/envía igual.
+        if ($this->fecha_retiro) {
+            $this->actualizarFechaRetiro();
         }
-
-        // Guardar fecha
-        $this->actualizarFechaRetiro();
 
         // Obtener datos de la bici para el WhatsApp
         $bicicleta = Bici::join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
@@ -149,11 +145,11 @@ class IngresoImp extends Component
 
      public function enviarWhatsApp()
 {
-    if (!$this->fecha_retiro) {
-        $this->dispatch('notify', 'Primero seleccioná una fecha estimada de entrega', 'warning');
-        return;
+    // La fecha es opcional: se puede enviar el WhatsApp sin ella (usa el texto sin fecha).
+    if ($this->fecha_retiro) {
+        $this->actualizarFechaRetiro();
     }
-    
+
     $bicicleta = Bici::join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
         ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
         ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
