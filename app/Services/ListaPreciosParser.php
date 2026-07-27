@@ -37,6 +37,7 @@ class ListaPreciosParser
             'dalsanto' => $this->parseDalSanto($rutaArchivo),
             'vega'     => $this->parseVega($rutaArchivo),
             'cairo'    => $this->parseCairo($rutaArchivo),
+            'cletta'   => $this->parseCletta($rutaArchivo),
             default    => throw new \InvalidArgumentException("Formato no soportado: {$formato}"),
         };
     }
@@ -138,6 +139,55 @@ class ListaPreciosParser
                 $public = $costo;
             }
             $items[] = ['codigo' => $codigo, 'articulo' => $desc, 'precioI' => $costo, 'precioF' => $public];
+        }
+
+        return $items;
+    }
+
+    /**
+     * Cletta Bicipartes: encabezado con "CODIGO" / "DESCRIPCION" / "COSTO C/IVA".
+     * Un solo precio (costo con IVA incluido). El descuento del proveedor NO se
+     * aplica acá: lo aplica el importador según los % elegidos en la UI.
+     */
+    public function parseCletta(string $rutaArchivo): array
+    {
+        $sheet  = $this->cargarHoja($rutaArchivo);
+        $maxCol = $sheet->getHighestDataColumn();
+        $maxRow = $sheet->getHighestDataRow();
+
+        $colCodigo = $colDesc = $colCosto = null;
+        $filaDatos = null;
+
+        for ($fila = 1; $fila <= min($maxRow, 20); $fila++) {
+            $valores = $sheet->rangeToArray("A{$fila}:{$maxCol}{$fila}", null, false, false, true)[$fila] ?? [];
+            foreach ($valores as $colLetra => $valor) {
+                $txt = mb_strtoupper(trim((string) $valor));
+                if ($txt === 'CÓDIGO' || $txt === 'CODIGO')        $colCodigo = $colLetra;
+                if ($txt === 'DESCRIPCIÓN' || $txt === 'DESCRIPCION') $colDesc = $colLetra;
+                if (str_contains($txt, 'COSTO'))                    $colCosto  = $colLetra;
+            }
+            if ($colCodigo && $colCosto) {
+                $filaDatos = $fila + 1;
+                break;
+            }
+        }
+
+        if (!$filaDatos) {
+            return []; // no parece una lista de Cletta
+        }
+        $colDesc = $colDesc ?? 'C';
+
+        $items = [];
+        for ($fila = $filaDatos; $fila <= $maxRow; $fila++) {
+            $valores = $sheet->rangeToArray("A{$fila}:{$maxCol}{$fila}", null, false, false, true)[$fila] ?? [];
+            $codigo = trim((string) ($valores[$colCodigo] ?? ''));
+            $desc   = trim((string) ($valores[$colDesc] ?? ''));
+            $costo  = $this->normalizarPrecio($valores[$colCosto] ?? null);
+
+            if ($codigo === '' || $desc === '' || $costo <= 0) {
+                continue;
+            }
+            $items[] = ['codigo' => $codigo, 'articulo' => $desc, 'precioI' => $costo, 'precioF' => $costo];
         }
 
         return $items;

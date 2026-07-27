@@ -65,6 +65,24 @@
                 @error('cotizacion') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Descuento general (%) <span class="text-gray-400 font-normal">se resta al costo</span>
+                </label>
+                <input type="number" step="0.01" min="0" max="100" wire:model.live="descuentoGeneral" placeholder="0"
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
+                @error('descuentoGeneral') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Descuento extra cubiertas (%) <span class="text-gray-400 font-normal">acumulativo, códigos «CUB…»</span>
+                </label>
+                <input type="number" step="0.01" min="0" max="100" wire:model.live="descuentoCubiertas" placeholder="0"
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm">
+                @error('descuentoCubiertas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Archivo (.xlsx / .pdf)</label>
                 <input type="file" wire:model="archivo" accept=".xlsx,.xls,.pdf"

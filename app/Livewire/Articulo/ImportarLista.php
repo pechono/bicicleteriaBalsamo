@@ -48,7 +48,14 @@ class ImportarLista extends Component
 
     public const PREVIEW_LIMIT = 50;
 
+    /** % de descuento general del proveedor (se resta al costo). 0 = sin descuento. */
+    public $descuentoGeneral = 0;
+
+    /** % de descuento EXTRA para cubiertas (código que empieza con "CUB"), acumulativo. */
+    public $descuentoCubiertas = 0;
+
     public const FORMATOS = [
+        'cletta'   => 'Cletta Bicipartes (Excel: costo c/IVA)',
         'cairo'    => 'El Cairo (Excel: costo + público)',
         'vega'     => 'Vega (Excel: 1 precio/costo)',
         'dalsanto' => 'Dal Santo (Excel)',
@@ -62,7 +69,36 @@ class ImportarLista extends Component
             'proveedor_id' => 'required|exists:proveedors,id',
             'formato'      => 'required|in:' . implode(',', array_keys(self::FORMATOS)),
             'cotizacion'   => 'nullable|numeric|min:0',
+            'descuentoGeneral'   => 'nullable|numeric|min:0|max:100',
+            'descuentoCubiertas' => 'nullable|numeric|min:0|max:100',
         ];
+    }
+
+    /**
+     * Aplica los descuentos elegidos al costo de cada ítem (sin tocar el archivo).
+     * General a todo; extra acumulativo a las cubiertas (código que empieza con "CUB").
+     * Con ambos en 0 no cambia nada (así no afecta a los otros proveedores).
+     */
+    private function aplicarDescuentos(array $items): array
+    {
+        $g = max(0, (float) $this->descuentoGeneral) / 100;
+        $c = max(0, (float) $this->descuentoCubiertas) / 100;
+        if ($g <= 0 && $c <= 0) {
+            return $items;
+        }
+        foreach ($items as &$it) {
+            $factor = 1 - $g;
+            if (stripos((string) ($it['codigo'] ?? ''), 'CUB') === 0) {
+                $factor *= (1 - $c); // 10 + 10 acumulativo
+            }
+            foreach (['precioI', 'precioF', 'precio'] as $k) {
+                if (isset($it[$k])) {
+                    $it[$k] = (float) $it[$k] * $factor;
+                }
+            }
+        }
+        unset($it);
+        return $items;
     }
 
     protected $messages = [
@@ -96,7 +132,8 @@ class ImportarLista extends Component
         );
 
         $this->total = count($items);
-        $this->preview = array_slice($items, 0, self::PREVIEW_LIMIT);
+        // La vista previa muestra el costo YA con los descuentos aplicados.
+        $this->preview = $this->aplicarDescuentos(array_slice($items, 0, self::PREVIEW_LIMIT));
 
         if ($this->total === 0) {
             $this->addError('archivo', 'No se detectaron artículos. Verifique que el archivo corresponda al formato elegido.');
@@ -131,6 +168,9 @@ class ImportarLista extends Component
             $extension = pathinfo($this->rutaArchivo, PATHINFO_EXTENSION);
             $items = $parser->parse(Storage::disk('local')->path($this->rutaArchivo), $extension, $this->formato);
         }
+
+        // Aplica los descuentos del proveedor al costo antes de guardar.
+        $items = $this->aplicarDescuentos($items);
 
         $esUsd  = $this->cotizacion && (float) $this->cotizacion > 0;
         $factor = $esUsd ? (float) $this->cotizacion : 1.0;
