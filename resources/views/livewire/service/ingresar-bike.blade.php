@@ -127,7 +127,15 @@
 
             {{-- Colores --}}
             <div class="bg-white shadow rounded p-3">
-                <h3 class="font-semibold mb-1">Color</h3>
+                <div class="flex justify-between items-center mb-1">
+                    <h3 class="font-semibold">Color</h3>
+                    <button
+                        wire:click="$set('modalColor', true)"
+                        class="text-xs px-2 py-1 bg-brand-600 text-white rounded hover:bg-brand-700"
+                    >
+                        ➕ Agregar
+                    </button>
+                </div>
                 <div class="flex flex-wrap gap-2 text-sm">
                     @foreach($colors as $color)
                         <label class="flex items-center gap-1">
@@ -427,6 +435,44 @@
                             @endforeach
                         </ul>
 
+                    </div>
+                </div>
+            @endif
+
+            @if($modalColor)
+                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div class="bg-white w-full max-w-md rounded shadow-lg p-4 relative">
+                        <h2 class="text-lg font-semibold mb-3">Agregar Color</h2>
+
+                        <input
+                            type="text"
+                            wire:model.defer="nuevoColor"
+                            placeholder="Nombre del color"
+                            class="w-full border rounded px-2 py-1 mb-3 text-sm"
+                        >
+                        <x-input-error for="nuevoColor" class="mb-2" />
+
+                        <div class="flex justify-end gap-2 mb-3">
+                            <button
+                                wire:click="$set('modalColor', false)"
+                                class="px-3 py-1 text-sm border rounded"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                wire:click="guardarColor"
+                                class="px-3 py-1 text-sm bg-brand-600 text-white rounded hover:bg-brand-700"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+
+                        <h3 class="text-sm font-semibold mb-1">Colores cargados</h3>
+                        <ul class="max-h-40 overflow-y-auto text-sm border rounded p-2">
+                            @foreach($colors as $color)
+                                <li class="border-b last:border-b-0 py-1">{{ $color->color }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
             @endif

@@ -218,6 +218,22 @@ public function guardarMarca()
     $this->brands = Marca::orderBy('marca')->get();
 }
 
+public function guardarColor()
+{
+    $this->validate([
+        'nuevoColor' => 'required|string|max:100',
+    ]);
+
+    Color::create([
+        'color' => $this->nuevoColor,
+    ]);
+
+    $this->nuevoColor = '';
+    $this->modalColor = false;
+
+    $this->colors = Color::orderBy('color')->get();
+}
+
 
 public function guardarIngreso()
 {
