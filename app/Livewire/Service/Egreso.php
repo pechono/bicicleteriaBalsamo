@@ -120,10 +120,14 @@ public $operacionNro;
     /**
      * El cliente retiró la bici: se marca como Entregado y sale de la lista.
      * No borra nada, solo cambia el estado (queda oculto de esta vista).
+     * SOLO se permite si sigue Pendiente: si ya está Terminada (reparada),
+     * no puede retirarse sin proceso, así que no se hace nada.
      */
     public function marcarRetirado($nro_ingreso)
     {
-        NroIngreso::where('id', $nro_ingreso)->update(['estado' => 'Entregado']);
+        NroIngreso::where('id', $nro_ingreso)
+            ->where('estado', 'Pendiente')
+            ->update(['estado' => 'Entregado']);
     }
 
 

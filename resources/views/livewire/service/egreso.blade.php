@@ -189,11 +189,13 @@
 
                             <!-- Fila expandible con artículos -->
                             @if ($ver == $cliente->nro_ingreso)
-                                    {{-- Acción destacada: eliminar / cliente retiró (roja, separada, para no tocarla por error) --}}
+                                    {{-- Acción destacada: eliminar / cliente retiró (roja, separada, para no tocarla por error).
+                                         Solo cuando está PENDIENTE: si ya está Terminada, se reparó y no puede retirarse sin proceso. --}}
+                                    @if($cliente->estado=='Pendiente' || $cliente->estado=='pendiente')
                                     <tr class="bg-red-50">
                                         <td colspan="10" class="px-6 py-3">
                                             <div class="flex items-center justify-between gap-3 flex-wrap">
-                                                <span class="text-sm text-red-700">Si el cliente ya retiró la bici, sacala de la lista:</span>
+                                                <span class="text-sm text-red-700">Si el cliente retira la bici sin repararla, sacala de la lista:</span>
                                                 <button
                                                     wire:click="marcarRetirado({{ $cliente->nro_ingreso }})"
                                                     wire:confirm="¿ELIMINAR el ingreso #{{ $cliente->nro_ingreso }}? El cliente retiró la bici → el registro se desactiva y sale de la lista (no se borra: queda como Entregado)."
@@ -203,6 +205,7 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    @endif
                                     @if($cliente->estado=='Terminado')
                                     <tr> 
                                         
