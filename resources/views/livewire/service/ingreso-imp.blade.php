@@ -101,6 +101,22 @@
                 @endif
             </div>
 
+            {{-- ===== Estado del WhatsApp (discreto): enviado / en cola / falló + reenviar ===== --}}
+            @php $wa = $this->estadoWa; @endphp
+            @if($wa)
+                <div class="mt-2 text-right text-xs text-gray-500">
+                    @if($wa->enviado)
+                        <span class="text-green-600">✓ WhatsApp enviado</span>
+                        <button wire:click="reenviarWhatsApp" wire:confirm="¿Volver a enviar el WhatsApp de este ingreso?" class="ml-1 text-gray-400 hover:text-blue-600 underline">reenviar</button>
+                    @elseif($wa->error)
+                        <span class="text-red-500">✗ No se envió</span>
+                        <button wire:click="reenviarWhatsApp" class="ml-1 text-blue-500 hover:text-blue-700 underline">reenviar</button>
+                    @else
+                        <span class="text-amber-600">⏳ En cola…</span>
+                    @endif
+                </div>
+            @endif
+
             {{-- Notificaciones toast --}}
             <div x-data="{ show: false, message: '', type: 'success' }"
                  x-on:notify.window="show = true; message = $event.detail[0]; type = $event.detail[1] || 'success'; setTimeout(() => show = false, 5000)"

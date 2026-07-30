@@ -114,7 +114,26 @@ public $operacionNro;
             ->get()
             ->keyBy('nro_ingreso');
 
-        return view('livewire.service.egreso', compact('clientes', 'precios'));
+        // Estado del WhatsApp por nro de ingreso — SOLO para mostrar (enviado/en cola/falló).
+        // Se busca el último mensaje del cliente que menciona ese N° de ingreso (#0000).
+        $telefonos = $clientes->pluck('telefono')->filter()->unique()->values()->all();
+        $colaRows = empty($telefonos)
+            ? collect()
+            : \App\Models\WhatsAppQueue::whereIn('telefono', $telefonos)
+                ->orderBy('id')
+                ->get(['id', 'telefono', 'mensaje', 'enviado', 'error']);
+        $whatsapp = [];
+        foreach ($clientes as $c) {
+            $nroFmt = str_pad($c->nro_ingreso, 4, '0', STR_PAD_LEFT);
+            $match = $colaRows->last(function ($r) use ($c, $nroFmt) {
+                return $r->telefono == $c->telefono && str_contains((string) $r->mensaje, '#' . $nroFmt);
+            });
+            if ($match) {
+                $whatsapp[$c->nro_ingreso] = $match;
+            }
+        }
+
+        return view('livewire.service.egreso', compact('clientes', 'precios', 'whatsapp'));
     }
 
     /**
@@ -128,6 +147,36 @@ public $operacionNro;
         NroIngreso::where('id', $nro_ingreso)
             ->where('estado', 'Pendiente')
             ->update(['estado' => 'Entregado']);
+    }
+
+    /**
+     * Reintentar el WhatsApp de un ingreso: vuelve a ponerlo en la cola (limpia el error).
+     * Solo actúa sobre un mensaje ya encolado; no crea uno nuevo.
+     */
+    public function reenviarWhatsApp($nro_ingreso)
+    {
+        $tel = DB::table('bicis')
+            ->join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+            ->where('ingreso_bicis.nro_ingreso', $nro_ingreso)
+            ->value('clientes.telefono');
+
+        if (!$tel) {
+            return;
+        }
+
+        $nroFmt = str_pad($nro_ingreso, 4, '0', STR_PAD_LEFT);
+        $m = \App\Models\WhatsAppQueue::where('telefono', $tel)
+            ->where('mensaje', 'like', '%#' . $nroFmt . '%')
+            ->latest('id')
+            ->first();
+
+        if ($m) {
+            $m->update(['error' => null, 'enviado' => false]);
+            $this->dispatch('notify', 'WhatsApp puesto en cola de nuevo ✓', 'success');
+        } else {
+            $this->dispatch('notify', 'No hay un WhatsApp encolado para este ingreso', 'warning');
+        }
     }
 
 

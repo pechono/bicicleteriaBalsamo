@@ -206,6 +206,26 @@
                                         </td>
                                     </tr>
                                     @endif
+
+                                    {{-- Estado del WhatsApp (discreto): enviado / en cola / falló + reenviar --}}
+                                    @isset($whatsapp[$cliente->nro_ingreso])
+                                        @php $wa = $whatsapp[$cliente->nro_ingreso]; @endphp
+                                        <tr>
+                                            <td colspan="10" class="px-6 py-1.5 text-xs text-gray-500 border-b border-gray-100">
+                                                <span class="mr-1">WhatsApp:</span>
+                                                @if($wa->enviado)
+                                                    <span class="text-green-600">✓ enviado</span>
+                                                    <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" wire:confirm="¿Volver a enviar el WhatsApp de este ingreso?" class="ml-1 text-gray-400 hover:text-blue-600 underline">reenviar</button>
+                                                @elseif($wa->error)
+                                                    <span class="text-red-500">✗ no se envió</span>
+                                                    <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" class="ml-1 text-blue-500 hover:text-blue-700 underline">reenviar</button>
+                                                @else
+                                                    <span class="text-amber-600">⏳ en cola…</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endisset
+
                                     @if($cliente->estado=='Terminado')
                                     <tr> 
                                         

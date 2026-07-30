@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\IngresoBici;
 use App\Models\NroIngreso;
 use App\Models\Bici;
+use App\Models\WhatsAppQueue;         // 👈 estado del WhatsApp
 use App\Livewire\Traits\WithWhatsApp; // 👈 AGREGADO
 
 use Illuminate\Support\Facades\Log;   // 👈 AGREGADO
@@ -139,6 +140,45 @@ class IngresoImp extends Component
     public function ver()
     {
         return redirect()->route('service.ingresarBike');
+    }
+
+    /**
+     * Estado del WhatsApp de este ingreso (solo para mostrar de forma discreta).
+     * Busca en la cola el último mensaje del cliente que menciona este N° de ingreso.
+     * Devuelve la fila de la cola o null si nunca se encoló.
+     */
+    public function getEstadoWaProperty()
+    {
+        $tel = Bici::join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+            ->where('ingreso_bicis.nro_ingreso', $this->nro_ingreso)
+            ->value('clientes.telefono');
+
+        if (!$tel) {
+            return null;
+        }
+
+        $nroFmt = str_pad($this->nro_ingreso, 4, '0', STR_PAD_LEFT);
+
+        return WhatsAppQueue::where('telefono', $tel)
+            ->where('mensaje', 'like', '%#' . $nroFmt . '%')
+            ->latest('id')
+            ->first();
+    }
+
+    /**
+     * Reintentar el envío: vuelve a poner el mensaje en la cola (limpia el error).
+     * Si nunca se encoló, encola uno nuevo con enviarWhatsApp().
+     */
+    public function reenviarWhatsApp()
+    {
+        $m = $this->estadoWa;
+        if ($m) {
+            $m->update(['error' => null, 'enviado' => false]);
+            $this->notify('WhatsApp puesto en cola de nuevo ✓', 'success');
+        } else {
+            $this->enviarWhatsApp();
+        }
     }
 
 
