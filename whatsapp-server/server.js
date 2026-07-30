@@ -111,6 +111,29 @@ function iniciar() {
     });
 }
 
+// Resuelve el chatId real en WhatsApp. En Argentina el "9" del movil suele dar
+// problemas: getNumberId devuelve el ID como esta registrado aunque el 9 sobre o
+// falte. Se prueba tal cual, sin el 9 y con el 9. null = el numero no tiene WhatsApp.
+async function resolverChatId(to) {
+    const limpio = String(to).replace(/\D/g, '');
+    if (limpio.includes('@')) return to; // ya viene como chatId
+
+    const candidatos = [limpio];
+    if (limpio.startsWith('549')) {
+        candidatos.push('54' + limpio.slice(3)); // sin el 9
+    } else if (limpio.startsWith('54')) {
+        candidatos.push('549' + limpio.slice(2)); // con el 9
+    }
+
+    for (const num of candidatos) {
+        try {
+            const numberId = await client.getNumberId(num);
+            if (numberId) return numberId._serialized;
+        } catch (_) { /* sigue probando */ }
+    }
+    return null;
+}
+
 app.post('/send', async (req, res) => {
     if (tokenInvalido(req, res)) return;
     const { to, message } = req.body;
@@ -124,7 +147,11 @@ app.post('/send', async (req, res) => {
     }
 
     try {
-        const chatId = to.includes('@c.us') ? to : `${to}@c.us`;
+        const chatId = await resolverChatId(to);
+        if (!chatId) {
+            console.error('El numero no tiene WhatsApp: ' + to);
+            return res.status(422).json({ success: false, error: 'El numero no tiene WhatsApp' });
+        }
         await client.sendMessage(chatId, message);
         console.log('Mensaje enviado a ' + to);
         res.json({ success: true });
@@ -147,7 +174,11 @@ app.post('/send-media', async (req, res) => {
     }
 
     try {
-        const chatId = to.includes('@c.us') ? to : `${to}@c.us`;
+        const chatId = await resolverChatId(to);
+        if (!chatId) {
+            console.error('El numero no tiene WhatsApp: ' + to);
+            return res.status(422).json({ success: false, error: 'El numero no tiene WhatsApp' });
+        }
         const media = new MessageMedia('application/pdf', base64, filename || 'documento.pdf');
         await client.sendMessage(chatId, media, { caption: caption || '' });
         console.log('Archivo enviado a ' + to);
