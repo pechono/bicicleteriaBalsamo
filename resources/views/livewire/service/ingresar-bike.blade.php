@@ -354,55 +354,43 @@
         @endif
     </div>
 
-            {{-- @if($modalTipo)
-            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            @if($modalTipo)
+                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div class="bg-white w-full max-w-md rounded shadow-lg p-4 relative">
+                        <h2 class="text-lg font-semibold mb-3">Agregar Tipo</h2>
 
-                <div class="bg-white w-full max-w-md rounded shadow-lg p-4 relative">
-
-                    <h2 class="text-lg font-semibold mb-3">Agregar Tipo</h2>
-
-                    <div>
-                    <x-label for="nuevoTipo" value="nuevoTipo" />
-                        <x-input
-                            id="nuevoTipo"
+                        <input
                             type="text"
-                            class="mt-1 block w-full"
                             wire:model.defer="nuevoTipo"
-                        />
-
-                        <x-input-error for="nuevoTipo" class="mt-2" />
-                    </div>
-
-
-                    <div class="flex justify-end gap-2 mb-3">
-                        <button
-                            wire:click="$set('modalTipo', false)"
-                            class="px-3 py-1 text-sm border rounded"
+                            placeholder="Nombre del tipo de bicicleta"
+                            class="w-full border rounded px-2 py-1 mb-3 text-sm"
                         >
-                            Cancelar
-                        </button>
+                        <x-input-error for="nuevoTipo" class="mb-2" />
 
-                        <button
-                            wire:click="guardarTipo"
-                            class="px-3 py-1 text-sm bg-brand-600 text-white rounded hover:bg-brand-700"
-                        >
-                            Guardar Tipo
-                        </button>
+                        <div class="flex justify-end gap-2 mb-3">
+                            <button
+                                wire:click="$set('modalTipo', false)"
+                                class="px-3 py-1 text-sm border rounded"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                wire:click="guardarTipo"
+                                class="px-3 py-1 text-sm bg-brand-600 text-white rounded hover:bg-brand-700"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+
+                        <h3 class="text-sm font-semibold mb-1">Tipos cargados</h3>
+                        <ul class="max-h-40 overflow-y-auto text-sm border rounded p-2">
+                            @foreach($types as $type)
+                                <li class="border-b last:border-b-0 py-1">{{ $type->tipo }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-
-                    <h3 class="text-sm font-semibold mb-1">Tipos cargados</h3>
-
-                    <ul class="max-h-40 overflow-y-auto text-sm border rounded p-2">
-                        @foreach($types as $type)
-                            <li class="border-b last:border-b-0 py-1">
-                                {{ $type->tipo }}
-                            </li>
-                        @endforeach
-                    </ul>
-
                 </div>
-            </div>
-            @endif --}}
+            @endif
 
             @if($modalMarca)
                 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
