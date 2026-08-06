@@ -76,19 +76,6 @@
                     </td>
                     <td class="px-4 py-2">
                         <div class="flex items-center">
-                            <Button >Presentacion</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('unidadVenta')">Unidad Cantidad</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
                             <Button wire:click="sortby('precioI')">Precio Inicial</Button>
                             <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
                         </div>
@@ -96,18 +83,6 @@
                     <td class="px-4 py-2">
                         <div class="flex items-center">
                             <Button wire:click="sortby('precioF')">Precio Final</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('caducidad')">Cadc.</Button>
-                            <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center">
-                            <Button wire:click="sortby('detalles')">Detalles</Button>
                             <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
                         </div>
                     </td>
@@ -153,13 +128,8 @@
                     <td class="rounder border px-4 py-2">{{ $articulo->codigo_proveedor }}-{{ $articulo->codigo }}</td>
 
                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
-
-                    <td class="rounder border px-4 py-2">{{ $articulo->unidadVenta }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->precioI }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->precioF }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->caducidad }}</td>
-                    <td class="rounder border px-4 py-2">{{ $articulo->detalles }}</td>
                     <td class="rounder border px-4 py-2">{{ $articulo->stockMinimo }}</td>
                     <td class="rounder border px-4 py-2">
                         @if ($articulo->suelto==1)
