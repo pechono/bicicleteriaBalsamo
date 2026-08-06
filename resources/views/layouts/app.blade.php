@@ -25,6 +25,7 @@
             <div id="main" class="flex-1 transition-all duration-500">
                 <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 pl-14 md:pl-16">
                     @include('components.menu-info')
+                    @include('components.quick-access')
                 </header>
 
                 <main class="px-3 sm:px-4 pt-0.5 pb-6">

@@ -10,8 +10,6 @@
                             <tr>
                                 <td class="px-4 py-2"><div class="flex items-center" >Id</div></td>
                                 <td class="px-4 py-2"><div class="flex items-center">Articulo</div></td>
-                                <td class="px-4 py-2"><div class="flex items-center">Presentacion</div> </td>
-                                <td class="px-4 py-2"><div class="flex items-center">Unidad Cantidad</div></td>
                                 <td class="px-4 py-2"><div class="flex items-center">Precio Final</div></td>
                                 <td class="px-4 py-2"><div class="flex items-center"> Stock Minimo</div></td>
                                 <td class="px-4 py-2"><div class="flex items-center">Stock</div></td>
@@ -30,8 +28,6 @@
                                     <tr>
                                         <td class="rounder border px-4 py-2">{{ $item->articulo_id }}</td>
                                         <td class="rounder border px-4 py-2">{{ $item->articulo }}</td>
-                                        <td class="rounder border px-4 py-2">{{ $item->presentacion }}-{{ $item->unidad  }}</td>
-                                        <td class="rounder border px-4 py-2">{{ $item->unidadVenta }}</td>
                                         <td class="rounder border px-4 py-2">{{ $item->precioF  }}</td>
                                         <td class="rounder border px-4 py-2">{{ $item->stockMinimo }}</td>
                                         <td class="rounder border px-4 py-2">{{ $item->stock }}</td>
@@ -148,19 +144,7 @@
                                 </td>
                                 <td class="px-4 py-2">
                                     <div class="flex items-center">
-                                        <Button >Presentacion</Button>
-                                        <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-2">
-                                    <div class="flex items-center">
                                         <Button wire:click="sortby('descuento')">Desc.</Button>
-                                        <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-2">
-                                    <div class="flex items-center">
-                                        <Button wire:click="sortby('unidadVenta')">Unidad Cantidad</Button>
                                         <x-sort-icon sortFiel='telefono': sort-by='$sortBy' : sort-asc='$sortAsc/'>
                                     </div>
                                 </td>
@@ -233,9 +217,7 @@
                                     <td class="rounder border px-4 py-2">{{ $articulo->id }}</td>
                                     <td class="rounder border px-4 py-2">{{ $articulo->articulo }}</td>
                                     <td class="rounder border px-4 py-2">{{ $articulo->categoria }}</td>
-                                    <td class="rounder border px-4 py-2">{{ $articulo->presentacion }}-{{ $articulo->unidad }}</td>
                                     <td class="rounder border px-4 py-2">{{ $articulo->descuento }}</td>
-                                    <td class="rounder border px-4 py-2">{{ $articulo->unidadVenta }}</td>
                                     <td class="rounder border px-4 py-2">{{ $articulo->precioI }}</td>
                                     <td class="rounder border px-4 py-2">{{ $articulo->precioF }}</td>
                                     <td class="rounder border px-4 py-2">{{ $articulo->caducidad }}</td>
