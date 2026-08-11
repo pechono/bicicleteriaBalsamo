@@ -67,6 +67,12 @@ class PedidoLivewire extends Component
                 'articulos.caducidad', 'articulos.detalles', 'articulos.suelto', 'articulos.activo',
                 'stocks.stock', 'stocks.stockMinimo', 'stocks.proveedor_id',
                 'proveedors.nombre', 'stocks.codigo_proveedor')
+            // Pedido mínimo del proveedor (catálogo importado). Subconsulta para no duplicar filas.
+            ->addSelect(['pedido_minimo' => \App\Models\ListaArticulo::select('pedido_minimo')
+                ->whereColumn('lista_articulos.articulo_id', 'articulos.id')
+                ->whereColumn('lista_articulos.proveedor_id', 'stocks.proveedor_id')
+                ->limit(1)
+            ])
             ->join('categorias', 'categorias.id', '=', 'articulos.categoria_id')
             ->join('unidads', 'unidads.id', '=', 'articulos.unidad_id')
             ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')

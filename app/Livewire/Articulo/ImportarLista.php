@@ -206,6 +206,7 @@ class ImportarLista extends Component
                 'costo_usd'      => $esUsd ? $rawI : null,
                 'publico_usd'    => $esUsd ? $rawF : null,
                 'cotizacion'     => $esUsd ? $factor : null,
+                'pedido_minimo'  => $item['pedido_minimo'] ?? null, // solo Dal Santo lo trae
                 'created_at'     => $ahora,
                 'updated_at'     => $ahora,
             ];
@@ -217,7 +218,7 @@ class ImportarLista extends Component
             \App\Models\ListaArticulo::upsert(
                 $chunk,
                 ['proveedor_id', 'codigo'],
-                ['articulo', 'precio_costo', 'precio_publico', 'moneda', 'costo_usd', 'publico_usd', 'cotizacion', 'updated_at']
+                ['articulo', 'precio_costo', 'precio_publico', 'moneda', 'costo_usd', 'publico_usd', 'cotizacion', 'pedido_minimo', 'updated_at']
             );
         }
 

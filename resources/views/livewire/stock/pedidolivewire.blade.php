@@ -108,6 +108,9 @@
                         </div>
                     </td>
                     <td class="px-4 py-2">
+                        <div class="flex items-center" title="Pedido mínimo del proveedor">Mín.</div>
+                    </td>
+                    <td class="px-4 py-2">
                         <div class="flex items-center">
                            Solicitar
                         </div>
@@ -139,6 +142,7 @@
                         @endif
                     </td>
                     <td class="rounder border px-4 py-2">{{ $articulo->nombre }}</td>
+                    <td class="rounder border px-4 py-2 text-center font-semibold {{ $articulo->pedido_minimo ? 'text-sky-700' : 'text-gray-300' }}">{{ $articulo->pedido_minimo ?? '-' }}</td>
                     @php
                        $sta=false;
                     @endphp

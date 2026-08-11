@@ -42,22 +42,29 @@ class ListaPreciosParser
         };
     }
 
-    /** Dal Santo: B=codigo, C=detalle, D=precio. Datos desde fila 6. */
+    /** Dal Santo: B=codigo, C=detalle, D=precio, F=vtaminima (pedido mínimo). Datos desde fila 6. */
     public function parseDalSanto(string $rutaArchivo): array
     {
         $sheet = $this->cargarHoja($rutaArchivo, self::HOJA_DAL_SANTO);
         $items = [];
 
         foreach ($sheet->getRowIterator(6) as $row) {
-            $c = $this->celdas($row, 'A', 'D');
+            $c = $this->celdas($row, 'A', 'F');
             $codigo  = trim((string) ($c['B'] ?? ''));
             $detalle = trim((string) ($c['C'] ?? ''));
             $precio  = $this->normalizarPrecio($c['D'] ?? null);
+            $minimo  = (int) round((float) ($c['F'] ?? 0)); // vtaminima
 
             if ($codigo === '' || $detalle === '' || $precio <= 0) {
                 continue;
             }
-            $items[] = ['codigo' => $codigo, 'articulo' => $detalle, 'precioI' => $precio, 'precioF' => $precio];
+            $items[] = [
+                'codigo'        => $codigo,
+                'articulo'      => $detalle,
+                'precioI'       => $precio,
+                'precioF'       => $precio,
+                'pedido_minimo' => $minimo > 0 ? $minimo : null,
+            ];
         }
 
         return $items;
