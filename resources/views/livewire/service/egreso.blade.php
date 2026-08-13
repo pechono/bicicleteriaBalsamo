@@ -114,8 +114,19 @@
                         <!-- Fila principal -->
                         <tr class="hover:bg-brand-50 transition-colors duration-150 {{ $ver == $cliente->nro_ingreso ? 'bg-brand-50' : '' }}">
                             <td class="px-4 py-3 text-sm font-medium text-gray-900 border-r">
-                                <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
-                                    #{{ $cliente->nro_ingreso }}
+                                <span class="inline-flex items-center gap-1">
+                                    <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
+                                        #{{ $cliente->nro_ingreso }}
+                                    </span>
+                                    {{-- Aviso WhatsApp: 📵 no se envió (error) · ⏳ en cola --}}
+                                    @isset($whatsapp[$cliente->nro_ingreso])
+                                        @php $waRow = $whatsapp[$cliente->nro_ingreso]; @endphp
+                                        @if($waRow->error)
+                                            <span title="WhatsApp NO enviado. Abrí «Ver» para reenviarlo." class="cursor-help text-base leading-none">📵</span>
+                                        @elseif(!$waRow->enviado)
+                                            <span title="WhatsApp en cola (todavía no se envió)." class="cursor-help text-base leading-none">⏳</span>
+                                        @endif
+                                    @endisset
                                 </span>
                                 @isset($precios[$cliente->nro_ingreso])
                                     <div class="text-xs font-semibold text-emerald-600 mt-1">${{ number_format($precios[$cliente->nro_ingreso]->monto, 0, ',', '.') }}</div>
