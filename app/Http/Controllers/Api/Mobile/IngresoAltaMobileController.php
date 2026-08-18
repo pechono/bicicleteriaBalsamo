@@ -51,12 +51,78 @@ class IngresoAltaMobileController extends Controller
             'telefono' => 'required|string|max:20',
             'dni'      => 'nullable|string|max:20|unique:clientes,dni',
         ]);
+
+        // Evitar duplicados por teléfono o DNI (igual que IngresarBike::saveCliente web)
+        $tel = trim($data['telefono']);
+        $dni = trim((string) ($data['dni'] ?? ''));
+        $existente = Cliente::where('activo', 1)
+            ->where(function ($q) use ($tel, $dni) {
+                if ($tel !== '') $q->orWhere('telefono', $tel);
+                if ($dni !== '') $q->orWhere('dni', $dni);
+            })
+            ->first();
+
+        if ($existente) {
+            return response()->json([
+                'message'   => "Ya existe un cliente con ese teléfono o DNI: {$existente->apellido}, {$existente->nombre}.",
+                'existente' => [
+                    'id'       => $existente->id,
+                    'nombre'   => $existente->nombre,
+                    'apellido' => $existente->apellido,
+                    'dni'      => $existente->dni,
+                    'telefono' => $existente->telefono,
+                ],
+            ], 422);
+        }
+
         $data['activo'] = 1;
         $data['dni'] = ($data['dni'] ?? null) ?: null;
 
         $cliente = Cliente::create($data);
 
         return response()->json(['message' => 'Cliente creado.', 'cliente' => $cliente], 201);
+    }
+
+    /**
+     * PUT /api/mobile/ingreso-bici/cliente/{id}
+     * Modifica un cliente (igual que Clientelivewire::updateClient web).
+     */
+    public function actualizarCliente(Request $request, $id)
+    {
+        $cliente = Cliente::findOrFail($id);
+
+        $data = $request->validate([
+            'apellido' => 'required|string|max:255',
+            'nombre'   => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'dni'      => 'nullable|string|max:20|unique:clientes,dni,' . $cliente->id,
+        ]);
+
+        $data['dni'] = ($data['dni'] ?? null) ?: null;
+        $cliente->update($data);
+
+        return response()->json(['message' => 'Cliente actualizado.', 'cliente' => $cliente]);
+    }
+
+    /**
+     * GET /api/mobile/ingreso-bici/clientes?q=texto
+     * Búsqueda en vivo por nombre/apellido/DNI (igual que IngresarBike::clientesEncontrados web).
+     */
+    public function buscarClientes(Request $request)
+    {
+        $q = trim($request->input('q', ''));
+        if (mb_strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $clientes = Cliente::where('activo', 1)
+            ->where(fn($query) => \App\Support\Busqueda::palabras($query, $q, ['nombre', 'apellido', 'dni']))
+            ->orderBy('apellido')
+            ->select('id', 'nombre', 'apellido', 'dni', 'telefono')
+            ->limit(15)
+            ->get();
+
+        return response()->json($clientes);
     }
 
     /**

@@ -49,7 +49,9 @@ Route::prefix('mobile')->group(function () {
 
         // Alta de ingreso de bici (espeja IngresarBike + IngresoImp de la web)
         Route::get('/ingreso-bici/cliente',                    [IngresoAltaMobileController::class, 'buscarCliente']);
+        Route::get('/ingreso-bici/clientes',                   [IngresoAltaMobileController::class, 'buscarClientes']);
         Route::post('/ingreso-bici/cliente',                   [IngresoAltaMobileController::class, 'crearCliente']);
+        Route::put('/ingreso-bici/cliente/{id}',               [IngresoAltaMobileController::class, 'actualizarCliente']);
         Route::get('/ingreso-bici/datos',                      [IngresoAltaMobileController::class, 'datos']);
         Route::post('/ingreso-bici/marca',                     [IngresoAltaMobileController::class, 'crearMarca']);
         Route::post('/ingreso-bici/tipo',                      [IngresoAltaMobileController::class, 'crearTipo']);
