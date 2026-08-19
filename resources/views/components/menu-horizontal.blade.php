@@ -57,11 +57,6 @@
 
 <nav x-data="{ open: null }" x-on:click.outside="open = null" x-on:keydown.escape="open = null" class="contents">
 
-    {{-- Clientes (link directo a la gestión de clientes: alta/edición/baja) --}}
-    <a href="{{ route('cliente.index') }}" class="menuh-link {{ request()->routeIs('cliente.index') ? 'menuh-active' : '' }}">
-        👥 <span>Clientes</span>
-    </a>
-
     @foreach($grupos as $g)
         <div class="relative">
             <button type="button" x-on:click="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"

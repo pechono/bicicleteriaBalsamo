@@ -55,19 +55,27 @@
 
     {{-- ================= DATOS CLIENTE ================= --}}
     @if($cliente)
-        <div class="bg-cyan-50 border border-cyan-400 rounded p-3 flex justify-between items-center">
+        <div class="bg-cyan-50 border border-cyan-400 rounded p-3 flex justify-between items-center gap-3 flex-wrap">
             <div class="text-sm">
                 <strong>{{ $cliente->apellido }}, {{ $cliente->nombre }}</strong> |
                 DNI: {{ $cliente->dni }} |
                 Tel: {{ $cliente->telefono }}
             </div>
 
-            <button
-                wire:click="$set('cliente', null)"
-                class="text-sm text-red-600 hover:underline"
-            >
-                Cambiar cliente
-            </button>
+            <div class="flex items-center gap-3">
+                <button
+                    wire:click="abrirEditarCliente"
+                    class="text-sm text-blue-600 hover:underline font-semibold"
+                >
+                    ✏️ Ver / Editar datos
+                </button>
+                <button
+                    wire:click="$set('cliente', null)"
+                    class="text-sm text-red-600 hover:underline"
+                >
+                    Cambiar cliente
+                </button>
+            </div>
         </div>
     @endif
 
@@ -528,6 +536,43 @@
 
                 <x-secondary-button class="ms-3" wire:click="saveCliente()" wire:loading.attr="disabled">
                     {{ __('Guardar') }}
+                </x-secondary-button>
+            </x-slot>
+        </x-dialog-modal>
+
+        {{-- ----------- Ver / Editar datos del cliente seleccionado ----------- --}}
+        <x-dialog-modal wire:model.live="confirmingClienteEdit" maxWidth="2xl">
+            <x-slot name="title">
+                {{ __('Ver / Editar Cliente') }}
+            </x-slot>
+            <x-slot name="content">
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="eApellido" value="{{ __('Apellido') }}" />
+                    <x-input id="eApellido" type="text" class="mt-1 block w-full" wire:model="eApellido" />
+                    <x-input-error for="eApellido" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4 mt-2">
+                    <x-label for="eNombre" value="{{ __('Nombre') }}" />
+                    <x-input id="eNombre" type="text" class="mt-1 block w-full" wire:model="eNombre" />
+                    <x-input-error for="eNombre" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4 mt-2">
+                    <x-label for="eDni" value="{{ __('DNI') }}" />
+                    <x-input id="eDni" type="text" class="mt-1 block w-full" wire:model="eDni" placeholder="DNI" />
+                    <x-input-error for="eDni" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4 mt-2">
+                    <x-label for="eTelefono" value="{{ __('Teléfono') }}" />
+                    <x-input id="eTelefono" type="text" class="mt-1 block w-full" wire:model="eTelefono" />
+                    <x-input-error for="eTelefono" class="mt-2" />
+                </div>
+            </x-slot>
+            <x-slot name="footer">
+                <x-danger-button wire:click="$toggle('confirmingClienteEdit', false)" wire:loading.attr="disabled">
+                    {{ __('Cancelar') }}
+                </x-danger-button>
+                <x-secondary-button class="ms-3" wire:click="actualizarCliente" wire:loading.attr="disabled">
+                    {{ __('Guardar cambios') }}
                 </x-secondary-button>
             </x-slot>
         </x-dialog-modal>

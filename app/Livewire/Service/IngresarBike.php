@@ -343,4 +343,55 @@ public function guardarIngreso()
          $this->confirmingClienteAdd=false;
      }
      public $mostraBotonAddCliente=false;
+
+     /* ================== VER / EDITAR CLIENTE SELECCIONADO ================== */
+     public $confirmingClienteEdit = false;
+     public $eApellido, $eNombre, $eTelefono, $eDni;
+
+     /** Abre el modal con los datos del cliente ya seleccionado para verlos/editarlos. */
+     public function abrirEditarCliente()
+     {
+         if (!$this->cliente) {
+             return;
+         }
+         $this->eApellido = $this->cliente->apellido;
+         $this->eNombre   = $this->cliente->nombre;
+         $this->eTelefono = $this->cliente->telefono;
+         $this->eDni      = $this->cliente->dni;
+         $this->confirmingClienteEdit = true;
+     }
+
+     /** Guarda los cambios del cliente y refresca el recuadro. */
+     public function actualizarCliente()
+     {
+         if (!$this->cliente) {
+             return;
+         }
+         $this->validate([
+             'eApellido' => 'required|string|max:255',
+             'eNombre'   => 'required|string|max:255',
+             'eTelefono' => 'nullable|string|max:20',
+             'eDni'      => 'nullable|string|max:20',
+         ]);
+
+         $c = Cliente::find($this->cliente->id);
+         if (!$c) {
+             return;
+         }
+
+         // DNI único solo si cambió.
+         if ((string) $c->dni !== (string) $this->eDni) {
+             $this->validate(['eDni' => 'nullable|string|max:20|unique:clientes,dni']);
+             $c->dni = $this->eDni ?: null;
+         }
+
+         $c->apellido = $this->eApellido;
+         $c->nombre   = $this->eNombre;
+         $c->telefono = $this->eTelefono;
+         $c->save();
+
+         $this->cliente = $c->fresh();            // refresca el recuadro con los datos nuevos
+         $this->confirmingClienteEdit = false;
+         session()->flash('message', 'Datos del cliente actualizados.');
+     }
 }
