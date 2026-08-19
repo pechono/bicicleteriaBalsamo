@@ -17,21 +17,30 @@
     <div id="app">
         <x-banner />
 
-        <div class="min-h-screen flex bg">
-            <!-- Sidebar -->
-            @include('components.menu-desplegable')
+        <div class="min-h-screen bg">
+            <!-- PRUEBA: menú horizontal arriba (logo + opciones con submenús flotantes).
+                 Para volver al menú lateral: comentar este <header> y descomentar el bloque de abajo. -->
+            <header class="sticky top-0 z-40 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                @include('components.menu-info')       {{-- logo + reloj + usuario --}}
+                @include('components.menu-horizontal') {{-- opciones (submenús flotan, no empujan) --}}
+                @include('components.quick-access')    {{-- accesos rápidos --}}
+            </header>
 
-            <!-- Page Content -->
-            <div id="main" class="flex-1 transition-all duration-500">
-                <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 pl-14 md:pl-16">
-                    @include('components.menu-info')
-                    @include('components.quick-access')
-                </header>
-
-                <main class="px-3 sm:px-4 pt-0.5 pb-6">
-                    {{ $slot }}
-                </main>
+            {{-- ===== Menú lateral anterior (dejar por si se quiere volver) =====
+            <div class="flex">
+                @include('components.menu-desplegable')
+                <div id="main" class="flex-1 transition-all duration-500">
+                    <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 pl-14 md:pl-16">
+                        @include('components.menu-info')
+                        @include('components.quick-access')
+                    </header>
+                </div>
             </div>
+            ================================================================= --}}
+
+            <main class="px-3 sm:px-4 pt-2 pb-6">
+                {{ $slot }}
+            </main>
         </div>
     </div>
 
