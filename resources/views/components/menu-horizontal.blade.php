@@ -55,17 +55,17 @@
     $activoDe = fn($g) => collect($g['items'])->contains(fn($i) => request()->routeIs($i['route']));
 @endphp
 
-<nav x-data="{ open: null }" x-on:click.outside="open = null" x-on:keydown.escape="open = null" class="contents">
+<nav x-data="{ open: null }" x-on:click.window="open = null" x-on:keydown.escape="open = null" class="contents">
 
     @foreach($grupos as $g)
         <div class="relative">
-            <button type="button" x-on:click="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
+            <button type="button" x-on:click.stop="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
                     :class="open === '{{ $g['id'] }}' && 'menuh-open'"
                     class="menuh-link {{ $activoDe($g) ? 'menuh-active' : '' }}">
                 <span>{{ $g['icon'] }}</span><span>{{ $g['label'] }}</span>
                 <svg class="w-3 h-3 opacity-70" :class="open === '{{ $g['id'] }}' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition class="menuh-drop">
+            <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition x-on:click.stop class="menuh-drop">
                 @foreach($g['items'] as $it)
                     <a href="{{ route($it['route']) }}" @isset($it['blank']) target="_blank" @endisset
                        class="menuh-item {{ request()->routeIs($it['route']) ? 'menuh-item-active' : '' }}">{{ $it['label'] }}</a>
@@ -78,13 +78,13 @@
         <span class="hidden sm:inline w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></span>
         @foreach($gruposAdmin as $g)
             <div class="relative">
-                <button type="button" x-on:click="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
+                <button type="button" x-on:click.stop="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
                         :class="open === '{{ $g['id'] }}' && 'menuh-open'"
                         class="menuh-link {{ $activoDe($g) ? 'menuh-active' : '' }}">
                     <span>{{ $g['icon'] }}</span><span>{{ $g['label'] }}</span>
                     <svg class="w-3 h-3 opacity-70" :class="open === '{{ $g['id'] }}' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition class="menuh-drop">
+                <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition x-on:click.stop class="menuh-drop">
                     @foreach($g['items'] as $it)
                         <a href="{{ route($it['route']) }}" class="menuh-item {{ request()->routeIs($it['route']) ? 'menuh-item-active' : '' }}">{{ $it['label'] }}</a>
                     @endforeach
