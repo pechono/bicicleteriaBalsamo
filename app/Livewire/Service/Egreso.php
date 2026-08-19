@@ -122,14 +122,24 @@ public $operacionNro;
             : \App\Models\WhatsAppQueue::whereIn('telefono', $telefonos)
                 ->orderBy('id')
                 ->get(['id', 'telefono', 'mensaje', 'enviado', 'error']);
+        // Estado por nro de ingreso mirando TODAS las filas del cliente que mencionan ese #.
+        // Si ALGUNA se envió => 'enviado' (aunque haya un reintento posterior con error).
+        // Si ninguna se envió pero hay error => 'error'. Si solo está pendiente => 'cola'.
         $whatsapp = [];
         foreach ($clientes as $c) {
             $nroFmt = str_pad($c->nro_ingreso, 4, '0', STR_PAD_LEFT);
-            $match = $colaRows->last(function ($r) use ($c, $nroFmt) {
+            $matches = $colaRows->filter(function ($r) use ($c, $nroFmt) {
                 return $r->telefono == $c->telefono && str_contains((string) $r->mensaje, '#' . $nroFmt);
             });
-            if ($match) {
-                $whatsapp[$c->nro_ingreso] = $match;
+            if ($matches->isEmpty()) {
+                continue;
+            }
+            if ($matches->contains(fn ($r) => (bool) $r->enviado)) {
+                $whatsapp[$c->nro_ingreso] = 'enviado';
+            } elseif ($matches->contains(fn ($r) => !empty($r->error))) {
+                $whatsapp[$c->nro_ingreso] = 'error';
+            } else {
+                $whatsapp[$c->nro_ingreso] = 'cola';
             }
         }
 

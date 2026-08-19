@@ -120,10 +120,9 @@
                                     </span>
                                     {{-- Aviso WhatsApp: 📵 no se envió (error) · ⏳ en cola --}}
                                     @isset($whatsapp[$cliente->nro_ingreso])
-                                        @php $waRow = $whatsapp[$cliente->nro_ingreso]; @endphp
-                                        @if($waRow->error)
+                                        @if($whatsapp[$cliente->nro_ingreso] === 'error')
                                             <span title="WhatsApp NO enviado. Abrí «Ver» para reenviarlo." class="cursor-help text-base leading-none">📵</span>
-                                        @elseif(!$waRow->enviado)
+                                        @elseif($whatsapp[$cliente->nro_ingreso] === 'cola')
                                             <span title="WhatsApp en cola (todavía no se envió)." class="cursor-help text-base leading-none">⏳</span>
                                         @endif
                                     @endisset
@@ -224,10 +223,10 @@
                                         <tr>
                                             <td colspan="10" class="px-6 py-1.5 text-xs text-gray-500 border-b border-gray-100">
                                                 <span class="mr-1">WhatsApp:</span>
-                                                @if($wa->enviado)
+                                                @if($wa === 'enviado')
                                                     <span class="text-green-600">✓ enviado</span>
                                                     <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" wire:confirm="¿Volver a enviar el WhatsApp de este ingreso?" class="ml-1 text-gray-400 hover:text-blue-600 underline">reenviar</button>
-                                                @elseif($wa->error)
+                                                @elseif($wa === 'error')
                                                     <span class="text-red-500">✗ no se envió</span>
                                                     <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" class="ml-1 text-blue-500 hover:text-blue-700 underline">reenviar</button>
                                                 @else
