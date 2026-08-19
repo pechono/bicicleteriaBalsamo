@@ -1,7 +1,6 @@
-{{-- PRUEBA de menú horizontal: opciones en una fila; los submenús FLOTAN por encima
-     del contenido (no empujan nada hacia abajo). El menú lateral viejo queda intacto. --}}
+{{-- Menú horizontal en UNA línea (se embebe junto al logo). Los submenús FLOTAN
+     por encima del contenido (no empujan nada). El menú lateral viejo queda intacto. --}}
 @php
-    // Grupos con submenú (no-admin). Cada item: [route, label].
     $grupos = [
         ['id' => 'venta', 'icon' => '🛒', 'label' => 'Venta', 'items' => [
             ['route' => 'venta.ventaExpress',        'label' => '🚀 Venta Express'],
@@ -31,12 +30,10 @@
         ]],
         ['id' => 'mayorista', 'icon' => '🏬', 'label' => 'Mayorista', 'items' => [
             ['route' => 'mayorista.index',          'label' => '🛒 Venta Mayorista'],
-            ['route' => 'mayorista.clientes',       'label' => '👤 Clientes'],
+            ['route' => 'mayorista.clientes',       'label' => '👤 Clientes Mayorista'],
             ['route' => 'mayorista.cuentaCorriente','label' => '📋 Cuenta Corriente'],
         ]],
     ];
-
-    // Grupos solo-admin.
     $gruposAdmin = [
         ['id' => 'gestion', 'icon' => '⚙️', 'label' => 'Gestión', 'items' => [
             ['route' => 'articulo.articuloGrupo',        'label' => '📦 Artículo'],
@@ -55,84 +52,63 @@
             ['route' => 'oferta.ofertaGestion', 'label' => '⚙️ Operaciones'],
         ]],
     ];
+    $activoDe = fn($g) => collect($g['items'])->contains(fn($i) => request()->routeIs($i['route']));
 @endphp
 
-<nav x-data="{ open: null }" x-on:click.outside="open = null" x-on:keydown.escape="open = null"
-     class="menuh-bar border-t border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/60">
-    <div class="flex flex-wrap items-center gap-1 px-2 sm:px-4 py-1.5">
+<nav x-data="{ open: null }" x-on:click.outside="open = null" x-on:keydown.escape="open = null" class="contents">
 
-        {{-- Inicio (link directo) --}}
-        <a href="{{ route('dashboard') }}" class="menuh-link {{ request()->routeIs('dashboard') ? 'menuh-active' : '' }}">
-            🏠 <span>Inicio</span>
-        </a>
+    {{-- Clientes (link directo a la gestión de clientes: alta/edición/baja) --}}
+    <a href="{{ route('cliente.index') }}" class="menuh-link {{ request()->routeIs('cliente.index') ? 'menuh-active' : '' }}">
+        👥 <span>Clientes</span>
+    </a>
 
-        @php
-            $render = function ($g) {
-                $activo = collect($g['items'])->contains(fn($i) => request()->routeIs($i['route']));
-                return [$g, $activo];
-            };
-        @endphp
+    @foreach($grupos as $g)
+        <div class="relative">
+            <button type="button" x-on:click="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
+                    :class="open === '{{ $g['id'] }}' && 'menuh-open'"
+                    class="menuh-link {{ $activoDe($g) ? 'menuh-active' : '' }}">
+                <span>{{ $g['icon'] }}</span><span>{{ $g['label'] }}</span>
+                <svg class="w-3 h-3 opacity-70" :class="open === '{{ $g['id'] }}' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition class="menuh-drop">
+                @foreach($g['items'] as $it)
+                    <a href="{{ route($it['route']) }}" @isset($it['blank']) target="_blank" @endisset
+                       class="menuh-item {{ request()->routeIs($it['route']) ? 'menuh-item-active' : '' }}">{{ $it['label'] }}</a>
+                @endforeach
+            </div>
+        </div>
+    @endforeach
 
-        @foreach($grupos as $g)
-            @php [$g, $activo] = $render($g); @endphp
-            <div class="relative shrink-0">
+    <x-admin>
+        <span class="hidden sm:inline w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></span>
+        @foreach($gruposAdmin as $g)
+            <div class="relative">
                 <button type="button" x-on:click="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
                         :class="open === '{{ $g['id'] }}' && 'menuh-open'"
-                        class="menuh-link {{ $activo ? 'menuh-active' : '' }}">
+                        class="menuh-link {{ $activoDe($g) ? 'menuh-active' : '' }}">
                     <span>{{ $g['icon'] }}</span><span>{{ $g['label'] }}</span>
                     <svg class="w-3 h-3 opacity-70" :class="open === '{{ $g['id'] }}' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition.origin.top.left class="menuh-drop">
+                <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition class="menuh-drop">
                     @foreach($g['items'] as $it)
-                        <a href="{{ route($it['route']) }}" @isset($it['blank']) target="_blank" @endisset
-                           class="menuh-item {{ request()->routeIs($it['route']) ? 'menuh-item-active' : '' }}">
-                            {{ $it['label'] }}
-                        </a>
+                        <a href="{{ route($it['route']) }}" class="menuh-item {{ request()->routeIs($it['route']) ? 'menuh-item-active' : '' }}">{{ $it['label'] }}</a>
                     @endforeach
                 </div>
             </div>
         @endforeach
+    </x-admin>
 
-        <x-admin>
-            <span class="hidden sm:inline w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></span>
-            @foreach($gruposAdmin as $g)
-                @php [$g, $activo] = $render($g); @endphp
-                <div class="relative shrink-0">
-                    <button type="button" x-on:click="open = open === '{{ $g['id'] }}' ? null : '{{ $g['id'] }}'"
-                            :class="open === '{{ $g['id'] }}' && 'menuh-open'"
-                            class="menuh-link {{ $activo ? 'menuh-active' : '' }}">
-                        <span>{{ $g['icon'] }}</span><span>{{ $g['label'] }}</span>
-                        <svg class="w-3 h-3 opacity-70" :class="open === '{{ $g['id'] }}' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div x-show="open === '{{ $g['id'] }}'" x-cloak x-transition.origin.top.left class="menuh-drop">
-                        @foreach($g['items'] as $it)
-                            <a href="{{ route($it['route']) }}" class="menuh-item {{ request()->routeIs($it['route']) ? 'menuh-item-active' : '' }}">
-                                {{ $it['label'] }}
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            @endforeach
-        </x-admin>
-
-        {{-- Cierre de Caja (link directo) --}}
-        <a href="{{ route('cierre.cierreCaja') }}" class="menuh-link {{ request()->routeIs('cierre.cierreCaja') ? 'menuh-active' : '' }}">
-            🧾 <span>Cierre Caja</span>
-        </a>
-
-        {{-- Usuario (link directo) --}}
-        <a href="{{ route('profile') }}" class="menuh-link {{ request()->routeIs('profile') ? 'menuh-active' : '' }} ml-auto">
-            👤 <span class="hidden sm:inline">Mi cuenta</span>
-        </a>
-    </div>
+    {{-- Cierre de Caja (link directo) --}}
+    <a href="{{ route('cierre.cierreCaja') }}" class="menuh-link {{ request()->routeIs('cierre.cierreCaja') ? 'menuh-active' : '' }}">
+        🧾 <span>Cierre</span>
+    </a>
 </nav>
 
 <style>
     [x-cloak] { display: none !important; }
-    .menuh-bar { position: relative; z-index: 40; }
     .menuh-link {
         display: inline-flex; align-items: center; gap: .3rem;
-        padding: .4rem .7rem; border-radius: .5rem;
+        padding: .35rem .6rem; border-radius: .5rem;
         font-size: .8rem; font-weight: 600; color: #374151;
         white-space: nowrap; cursor: pointer; transition: background .15s, color .15s;
     }
@@ -140,7 +116,7 @@
     .menuh-active, .menuh-open { background: #16a34a !important; color: #fff !important; }
     .menuh-drop {
         position: absolute; left: 0; top: 100%; margin-top: .35rem;
-        min-width: 230px; max-height: 70vh; overflow-y: auto;
+        min-width: 230px; max-height: 75vh; overflow-y: auto;
         background: #fff; border: 1px solid #e5e7eb; border-radius: .7rem;
         box-shadow: 0 12px 30px rgba(0,0,0,.15); padding: .35rem; z-index: 60;
     }
@@ -152,7 +128,6 @@
     .menuh-item:hover { background: #f0fdf4; color: #065f46; }
     .menuh-item-active { background: #dcfce7; color: #065f46; font-weight: 600; }
     .rotate-180 { transform: rotate(180deg); }
-
     .dark .menuh-link { color: #d1d5db; }
     .dark .menuh-link:hover { background: #374151; }
     .dark .menuh-drop { background: #1f2937; border-color: #374151; }

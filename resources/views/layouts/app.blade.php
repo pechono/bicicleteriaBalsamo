@@ -18,12 +18,23 @@
         <x-banner />
 
         <div class="min-h-screen bg">
-            <!-- PRUEBA: menú horizontal arriba (logo + opciones con submenús flotantes).
+            <!-- PRUEBA: menú horizontal en UNA sola línea (logo + opciones + usuario).
+                 Los submenús flotan por encima del contenido (no empujan nada).
                  Para volver al menú lateral: comentar este <header> y descomentar el bloque de abajo. -->
             <header class="sticky top-0 z-40 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-                @include('components.menu-info')       {{-- logo + reloj + usuario --}}
-                @include('components.menu-horizontal') {{-- opciones (submenús flotan, no empujan) --}}
-                @include('components.quick-access')    {{-- accesos rápidos --}}
+                <div class="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-3 py-1.5">
+                    <a href="{{ route('dashboard') }}" class="shrink-0 mr-1 flex items-center" title="Inicio">
+                        <img src="{{ asset('images/logo-balsamo.png') }}" alt="Bicicletería Balsamo" class="h-8 w-auto">
+                    </a>
+
+                    {{-- Los items del menú (display:contents) fluyen en ESTA misma fila --}}
+                    @include('components.menu-horizontal')
+
+                    <div class="ml-auto flex items-center gap-2 shrink-0">
+                        @include('components.RealTimeClock')
+                        @livewire('user-info')
+                    </div>
+                </div>
             </header>
 
             {{-- ===== Menú lateral anterior (dejar por si se quiere volver) =====
