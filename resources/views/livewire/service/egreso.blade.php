@@ -130,17 +130,6 @@
                                 @isset($precios[$cliente->nro_ingreso])
                                     <div class="text-xs font-semibold text-emerald-600 mt-1">${{ number_format($precios[$cliente->nro_ingreso]->monto, 0, ',', '.') }}</div>
                                 @endisset
-
-                                {{-- Recordar retiro: solo en bicis Terminadas (listas), por si el cliente no viene --}}
-                                @if($cliente->estado == 'Terminado')
-                                    <button
-                                        wire:click="recordarRetiro({{ $cliente->nro_ingreso }})"
-                                        wire:confirm="¿Enviar un recordatorio por WhatsApp de que la bici ya está lista para retirar?"
-                                        title="Recordar al cliente que retire la bici"
-                                        class="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-medium rounded-full shadow-sm">
-                                        🔔 Recordar
-                                    </button>
-                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->nombre }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->apellido }}</td>
@@ -235,13 +224,20 @@
                                             <td colspan="10" class="px-6 py-1.5 text-xs text-gray-500 border-b border-gray-100">
                                                 <span class="mr-1">WhatsApp:</span>
                                                 @if($wa === 'enviado')
-                                                    <span class="text-green-600">✓ enviado</span>
+                                                    <span class="text-green-600">✓ enviado exitoso</span>
                                                     <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" wire:confirm="¿Volver a enviar el WhatsApp de este ingreso?" class="ml-1 text-gray-400 hover:text-blue-600 underline">reenviar</button>
                                                 @elseif($wa === 'error')
                                                     <span class="text-red-500">✗ no se envió</span>
                                                     <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" class="ml-1 text-blue-500 hover:text-blue-700 underline">reenviar</button>
                                                 @else
                                                     <span class="text-amber-600">⏳ en cola…</span>
+                                                @endif
+
+                                                {{-- Recordatorio de retiro: solo si la bici ya está Terminada (lista) --}}
+                                                @if($cliente->estado == 'Terminado')
+                                                    <button wire:click="recordarRetiro({{ $cliente->nro_ingreso }})"
+                                                        wire:confirm="¿Enviar un recordatorio por WhatsApp de que la bici ya está lista para retirar?"
+                                                        class="ml-2 text-amber-700 hover:text-amber-900 underline font-semibold">🔔 recordar retiro</button>
                                                 @endif
                                             </td>
                                         </tr>
