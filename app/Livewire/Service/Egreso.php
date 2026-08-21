@@ -189,6 +189,36 @@ public $operacionNro;
         }
     }
 
+    /**
+     * Recordatorio de retiro: encola un WhatsApp NUEVO avisando que la bici está lista
+     * para retirar (por si el cliente no vino a buscarla). No toca el estado.
+     */
+    public function recordarRetiro($nro_ingreso)
+    {
+        $datos = DB::table('bicis')
+            ->join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
+            ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+            ->where('ingreso_bicis.nro_ingreso', $nro_ingreso)
+            ->select('clientes.nombre', 'clientes.telefono', 'marcas.marca', 'bicis.color')
+            ->first();
+
+        if (!$datos || !$datos->telefono) {
+            $this->dispatch('notify', 'El cliente no tiene teléfono registrado', 'warning');
+            return;
+        }
+
+        $nroFmt = str_pad($nro_ingreso, 4, '0', STR_PAD_LEFT);
+        $nombre = $datos->nombre;
+        $marca  = $datos->marca ?? '';
+        $color  = $datos->color ?? '';
+
+        $mensaje = "🔔 *BICICLETERÍA BALSAMO* 🔔\n----------------------------\nHola {$nombre} 👋\nTe recordamos que tu bicicleta *#{$nroFmt}* ya está *lista para retirar*.\n\n🚲 {$marca} | {$color}\n----------------------------\n¡Te esperamos! 📍";
+
+        \App\Support\WhatsApp::encolarTexto($datos->telefono, $mensaje);
+        $this->dispatch('notify', 'Recordatorio de retiro enviado ✓', 'success');
+    }
+
 
 
     public $ver=false;

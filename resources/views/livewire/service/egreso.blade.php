@@ -282,9 +282,9 @@
                                                         </tbody>
                                                     </table>
 
-                                                    <!-- Botón a la par de la tabla -->
-                                                    <div class="flex-1 justify-center">
-                                                        <button 
+                                                    <!-- Botones a la par de la tabla -->
+                                                    <div class="flex-1 flex flex-col items-center justify-center gap-2">
+                                                        <button
                                                             wire:click="terminarProcesoVenta({{ $cliente->nro_ingreso }})" placeholder="Terminar Proceso"
                                                             class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all duration-200 shadow-sm hover:shadow" >
                                                             <h3>Entregar</h3>
@@ -292,6 +292,14 @@
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m11.99 7.5 3.75-3.75m0 0 3.75 3.75m-3.75-3.75v16.499H4.49" />
                                                             </svg>
 
+                                                        </button>
+
+                                                        {{-- Recordatorio de retiro: manda un WhatsApp nuevo si el cliente no vino a buscar la bici --}}
+                                                        <button
+                                                            wire:click="recordarRetiro({{ $cliente->nro_ingreso }})"
+                                                            wire:confirm="¿Enviar un recordatorio por WhatsApp de que la bici ya está lista para retirar?"
+                                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg shadow-sm hover:shadow transition">
+                                                            🔔 Recordar retiro
                                                         </button>
                                                     </div>
                                                 </div>
