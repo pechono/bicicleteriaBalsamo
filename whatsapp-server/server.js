@@ -147,11 +147,9 @@ app.post('/send', async (req, res) => {
     }
 
     try {
-        const chatId = await resolverChatId(to);
-        if (!chatId) {
-            console.error('El numero no tiene WhatsApp: ' + to);
-            return res.status(422).json({ success: false, error: 'El numero no tiene WhatsApp' });
-        }
+        // Resolver con getNumberId (arregla el 9 de Argentina). Si no resuelve,
+        // NO bloqueamos con 422: intentamos con el numero crudo (como antes).
+        const chatId = (await resolverChatId(to)) || (String(to).replace(/\D/g, '') + '@c.us');
         await client.sendMessage(chatId, message);
         console.log('Mensaje enviado a ' + to);
         res.json({ success: true });
@@ -174,11 +172,9 @@ app.post('/send-media', async (req, res) => {
     }
 
     try {
-        const chatId = await resolverChatId(to);
-        if (!chatId) {
-            console.error('El numero no tiene WhatsApp: ' + to);
-            return res.status(422).json({ success: false, error: 'El numero no tiene WhatsApp' });
-        }
+        // Resolver con getNumberId (arregla el 9 de Argentina). Si no resuelve,
+        // NO bloqueamos con 422: intentamos con el numero crudo (como antes).
+        const chatId = (await resolverChatId(to)) || (String(to).replace(/\D/g, '') + '@c.us');
         const media = new MessageMedia('application/pdf', base64, filename || 'documento.pdf');
         await client.sendMessage(chatId, media, { caption: caption || '' });
         console.log('Archivo enviado a ' + to);
