@@ -35,9 +35,23 @@ class EgresoTerminar extends Component
     public function mount($nro_ingreso)
     {
         $this->nro = $nro_ingreso;
-        $this->procesosCargar($this->nro);
-                 Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();
 
+        // Guarda: si el ingreso no tiene bici/cliente/marca/tipo completos, la pantalla
+        // rompía con 500 (acceso a datos null). Volvemos al listado con un aviso.
+        $completo = Cliente::join('bicis', 'bicis.cliente_id', '=', 'clientes.id')
+            ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
+            ->join('tipo_bikes', 'tipo_bikes.id', '=', 'bicis.tipo_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+            ->where('ingreso_bicis.nro_ingreso', $nro_ingreso)
+            ->exists();
+
+        if (!$completo) {
+            session()->flash('error', "El ingreso #{$nro_ingreso} no tiene datos completos de la bici (cliente/marca/tipo). No se puede terminar; revisá el ingreso.");
+            return redirect()->route('service.egresoBici');
+        }
+
+        $this->procesosCargar($this->nro);
+        Car::where('user_id', auth()->user()->id)->delete();//Car::truncate();
     }
 
 // A
@@ -146,7 +160,7 @@ class EgresoTerminar extends Component
         ->where('ingreso_bicis.nro_ingreso', $this->nro)
         ->first();
 
-        $this->idBici=$clientesBici->id;
+        $this->idBici = $clientesBici->id ?? null;
 
 
         // $nDetalles = NroIngreso::find($this->nro);
