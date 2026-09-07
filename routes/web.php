@@ -38,6 +38,14 @@ Route::get('/comprobante-ingreso/mobile/{nro}/{hash}', function ($nro, $hash) {
     return app(\App\Livewire\Print\ReporIngreso::class)->generateReport($nro);
 })->name('comprobante.ingreso.mobile');
 
+// ── Vista pública del monto a retirar (link del WhatsApp de "bici lista") ──
+// hash = sha256('retiro' . nro_ingreso . APP_KEY) – sin auth, vista liviana (sin PDF)
+Route::get('/retiro/{nro}/{hash}', function ($nro, $hash) {
+    $expected = hash('sha256', 'retiro' . $nro . config('app.key'));
+    abort_unless(hash_equals($expected, $hash), 403);
+    return app(\App\Http\Controllers\RetiroController::class)->show($nro);
+})->name('retiro.monto');
+
 // ── Acceso por QR desde el celular del mecánico ──────────────────
 // URL pública que redirige a la app o muestra una vista mobile-friendly
 Route::get('/mobile/ingreso/{token}', function ($token) {

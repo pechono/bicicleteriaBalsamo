@@ -549,9 +549,14 @@ class EgresoTerminar extends Component
         $nroFormateado = str_pad($bicicleta->nro_ingreso, 4, '0', STR_PAD_LEFT);
         $marca         = $bicicleta->marca ?? '';
         $color         = $bicicleta->color ?? '';
+
+        // Link a la vista pública liviana con el monto (sin login, protegida por hash).
+        $hash = hash('sha256', 'retiro' . $bicicleta->nro_ingreso . config('app.key'));
+        $link = route('retiro.monto', ['nro' => $bicicleta->nro_ingreso, 'hash' => $hash]);
+
         $this->sendWhatsAppMessage(
             $bicicleta->telefono,
-            "🔧 *BICICLETERÍA BALSAMO* 🔧\n----------------------------\nHola {$nombre}! 🎉\nTu bicicleta *#{$nroFormateado}* ya está lista\npara retirar en nuestro local.\n\n🚲 {$marca} | {$color}\n----------------------------\n⚠️ *Importante:*\nLa bici puede permanecer en el taller\nhasta *7 días* sin cargo adicional.\nPasado ese plazo se cobrará recargo\npor almacenamiento.\n\nEl local no se responsabiliza por daños\nocasionados por el clima, ni por robo o hurto.\n----------------------------\n¡Te esperamos! 📍"
+            "🔧 *BICICLETERÍA BALSAMO* 🔧\n----------------------------\nHola {$nombre}! 🎉\nTu bicicleta *#{$nroFormateado}* ya está lista\npara retirar en nuestro local.\n\n🚲 {$marca} | {$color}\n----------------------------\n💵 *Ver el monto a abonar:*\n{$link}\n----------------------------\n¡Te esperamos! 📍"
         );
     }
 
