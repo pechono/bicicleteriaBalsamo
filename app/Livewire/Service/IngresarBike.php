@@ -97,6 +97,12 @@ class IngresarBike extends Component
         $this->brands = Marca::orderBy('marca')->get();
         $this->types  = TipoBike::orderBy('tipo')->get();
         $this->cargarProcesos();
+
+        // Otra bici del mismo dueño: si viene ?cliente=ID, lo dejamos ya seleccionado
+        // así no hay que volver a buscar/cargar al cliente para la 2da bici.
+        if ($id = request()->query('cliente')) {
+            $this->cliente = Cliente::find($id);
+        }
     }
 
     /* ================== PROCESOS ================== */

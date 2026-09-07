@@ -89,6 +89,14 @@
                         🖨️ Imprimir
                     </a>
 
+                    @if($bicicleta)
+                        {{-- Cargar otra bici del MISMO dueño sin volver a buscarlo --}}
+                        <a href="{{ route('service.ingresarBike', ['cliente' => $bicicleta->cliente_id]) }}"
+                           class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm">
+                            ➕ Otra bici de este cliente
+                        </a>
+                    @endif
+
                     <button wire:click="ver"
                         class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm">
                         ← Volver
