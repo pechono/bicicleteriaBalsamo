@@ -17,6 +17,7 @@
         ['id' => 'stock', 'icon' => '📦', 'label' => 'Stock', 'items' => [
             ['route' => 'stock.index',            'label' => '📦 Ver Stock'],
             ['route' => 'stock.pedido',           'label' => '📝 Pedido a Proveedor'],
+            ['route' => 'stock.pedidoCatalogo',   'label' => '🗂️ Pedido desde Catálogo'],
             ['route' => 'stock.pedidoRealizado',  'label' => '✅ Pedidos Realizados'],
             ['route' => 'stockImprimir',          'label' => '🖨️ Imprimir Stock', 'blank' => true],
             ['route' => 'stock.actualizarFactura','label' => '🧾 Actualizar desde factura'],
