@@ -1,123 +1,183 @@
 <div class="w-full p-2 sm:px-5">
 
     <div class="mt-2 text-2xl font-semibold">Pedido a Proveedores (desde Catálogo)</div>
-    <p class="text-sm text-gray-500 mb-3">Precio de costo actualizado y pedido mínimo (Dal Santo). Lo que no esté en stock, se puede pasar al agregarlo.</p>
+    <p class="text-sm text-gray-500 mb-3">Costo actualizado y pedido mínimo (Dal Santo). Podés agregar aunque no esté en stock: al finalizar te pide pasarlo.</p>
 
-    {{-- ── Filtros ── --}}
-    <div class="flex flex-wrap items-center gap-2 mb-3">
-        <input wire:model.live.debounce.300ms="q" type="search" placeholder="Buscar código o artículo…"
-               class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none w-56">
-        <select wire:model.live="proveedor_id" class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none">
-            <option value="">Todos los proveedores</option>
-            @foreach($proveedores as $prov)
-                <option value="{{ $prov->id }}">{{ $prov->nombre }}</option>
-            @endforeach
-        </select>
-    </div>
+    @if(!$confirmando)
+        {{-- ── Filtros ── --}}
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+            <input wire:model.live.debounce.300ms="q" type="search" placeholder="Buscar código o artículo…"
+                   class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none w-56">
+            <select wire:model.live="proveedor_id" class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none">
+                <option value="">Todos los proveedores</option>
+                @foreach($proveedores as $prov)
+                    <option value="{{ $prov->id }}">{{ $prov->nombre }}</option>
+                @endforeach
+            </select>
+        </div>
 
-    <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex flex-col lg:flex-row gap-4">
+            {{-- CATÁLOGO --}}
+            <div class="lg:w-8/12 bg-white rounded-lg shadow overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-left">
+                            <th class="px-3 py-2">Código</th>
+                            <th class="px-3 py-2">Artículo</th>
+                            <th class="px-3 py-2 text-right">Costo</th>
+                            <th class="px-3 py-2 text-center">Mín.</th>
+                            <th class="px-3 py-2 text-center">Stock</th>
+                            <th class="px-3 py-2 text-center">Cant.</th>
+                            <th class="px-3 py-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        @forelse($items as $it)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-3 py-2 whitespace-nowrap">{{ $it->abreviatura }}{{ $it->codigo ? '-'.$it->codigo : '' }}</td>
+                                <td class="px-3 py-2">{{ $it->articulo }}</td>
+                                <td class="px-3 py-2 text-right font-semibold">${{ number_format((int) $it->precio_costo, 0, ',', '.') }}</td>
+                                <td class="px-3 py-2 text-center">
+                                    @if($it->pedido_minimo)<span class="text-sky-700 font-semibold">{{ $it->pedido_minimo }}</span>@else<span class="text-gray-300">—</span>@endif
+                                </td>
+                                <td class="px-3 py-2 text-center">
+                                    @if($it->articulo_id)
+                                        <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">✓ En stock</span>
+                                    @else
+                                        <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">No está</span>
+                                    @endif
+                                </td>
+                                <td class="px-3 py-2 text-center">
+                                    <input type="number" min="1" wire:model.defer="cantidades.{{ $it->id }}"
+                                           placeholder="{{ $it->pedido_minimo ?: 1 }}"
+                                           class="w-16 border rounded px-2 py-1 text-center">
+                                </td>
+                                <td class="px-3 py-2 text-right">
+                                    <button wire:click="agregar({{ $it->id }})"
+                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg">➕ Agregar</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="7" class="px-3 py-8 text-center text-gray-500">No hay artículos en el catálogo para ese filtro.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                <div class="p-3">{{ $items->links() }}</div>
+            </div>
 
-        {{-- ================= CATÁLOGO ================= --}}
-        <div class="lg:w-8/12 bg-white rounded-lg shadow overflow-x-auto">
+            {{-- CARRITO --}}
+            <div class="lg:w-4/12">
+                <div class="bg-white rounded-lg shadow p-4 sticky top-24">
+                    <h3 class="font-semibold mb-2 flex items-center justify-between">
+                        <span>🛒 Pedido</span>
+                        <span class="text-sm text-gray-500">{{ $cartItems->count() }} ítem(s)</span>
+                    </h3>
+
+                    @forelse($cartItems as $c)
+                        <div class="flex items-center justify-between gap-2 border-b py-1.5 text-sm">
+                            <div class="min-w-0">
+                                <div class="truncate">{{ $c->articulo }}</div>
+                                <div class="text-xs text-gray-500">
+                                    {{ $c->cantidad }} × ${{ number_format((int) $c->precio_costo, 0, ',', '.') }}
+                                    @if(!$c->en_stock)<span class="text-amber-600 font-semibold">· falta pasar</span>@endif
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="font-semibold">${{ number_format((int) $c->cantidad * (int) $c->precio_costo, 0, ',', '.') }}</span>
+                                <button wire:click="quitarCart({{ $c->id }})" class="text-red-500 hover:text-red-700" title="Quitar">✕</button>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-400 py-4 text-center">Todavía no agregaste nada.</p>
+                    @endforelse
+
+                    @if($cartItems->count())
+                        <div class="flex justify-between items-center mt-3 pt-2 border-t font-semibold">
+                            <span>Total estimado</span>
+                            <span class="text-emerald-600">${{ number_format($totalCar, 0, ',', '.') }}</span>
+                        </div>
+                        @if($pendientes > 0)
+                            <div class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+                                {{ $pendientes }} ítem(s) no están en stock. Al Realizar Pedido te pido pasarlos.
+                            </div>
+                        @endif
+                        <button wire:click="irAConfirmar"
+                                class="mt-3 block w-full text-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg">
+                            Realizar Pedido →
+                        </button>
+                        <button wire:click="vaciarCarrito" wire:confirm="¿Vaciar el pedido?"
+                                class="mt-2 w-full px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm rounded-lg">Vaciar</button>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @else
+        {{-- ================= RESUMEN / CONFIRMAR ================= --}}
+        <div class="bg-white rounded-lg shadow p-4 max-w-3xl">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-semibold text-lg">Confirmar pedido</h3>
+                <button wire:click="volverACatalogo" class="text-sm text-gray-500 hover:text-gray-800">← Volver al catálogo</button>
+            </div>
+
+            @if($pendientes > 0)
+                <div class="mb-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded p-3">
+                    ⚠️ Hay <b>{{ $pendientes }}</b> ítem(s) que no están en stock. Pasalos a stock para poder confirmar el pedido.
+                </div>
+            @else
+                <div class="mb-3 text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded p-3">
+                    ✅ Todos los ítems están en stock. Podés confirmar el pedido.
+                </div>
+            @endif
+
             <table class="w-full text-sm">
                 <thead>
                     <tr class="bg-gray-50 border-b text-left">
-                        <th class="px-3 py-2">Código</th>
                         <th class="px-3 py-2">Artículo</th>
-                        <th class="px-3 py-2 text-right">Costo</th>
-                        <th class="px-3 py-2 text-center">Mín.</th>
-                        <th class="px-3 py-2 text-center">Stock</th>
                         <th class="px-3 py-2 text-center">Cant.</th>
-                        <th class="px-3 py-2"></th>
+                        <th class="px-3 py-2 text-right">Costo</th>
+                        <th class="px-3 py-2 text-center">Estado</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
-                    @forelse($items as $it)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-3 py-2 whitespace-nowrap">{{ $it->abreviatura }}{{ $it->codigo ? '-'.$it->codigo : '' }}</td>
-                            <td class="px-3 py-2">{{ $it->articulo }}</td>
-                            <td class="px-3 py-2 text-right font-semibold">${{ number_format((int) $it->precio_costo, 0, ',', '.') }}</td>
+                    @foreach($cartItems as $c)
+                        <tr>
+                            <td class="px-3 py-2">{{ $c->articulo }}</td>
+                            <td class="px-3 py-2 text-center">{{ $c->cantidad }}</td>
+                            <td class="px-3 py-2 text-right">${{ number_format((int) $c->precio_costo, 0, ',', '.') }}</td>
                             <td class="px-3 py-2 text-center">
-                                @if($it->pedido_minimo)
-                                    <span class="text-sky-700 font-semibold">{{ $it->pedido_minimo }}</span>
+                                @if($c->en_stock)
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">✓ En stock</span>
                                 @else
-                                    <span class="text-gray-300">—</span>
+                                    <button wire:click="abrirPromover({{ $c->id }})"
+                                            class="text-xs font-semibold px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white">Pasar a stock</button>
                                 @endif
-                            </td>
-                            <td class="px-3 py-2 text-center">
-                                @if($it->articulo_id)
-                                    <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">✓ En stock</span>
-                                @else
-                                    <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">No está</span>
-                                @endif
-                            </td>
-                            <td class="px-3 py-2 text-center">
-                                <input type="number" min="1" wire:model.defer="cantidades.{{ $it->id }}"
-                                       placeholder="{{ $it->pedido_minimo ?: 1 }}"
-                                       class="w-16 border rounded px-2 py-1 text-center">
-                            </td>
-                            <td class="px-3 py-2 text-right">
-                                <button wire:click="agregar({{ $it->id }})"
-                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg">
-                                    ➕ Agregar
-                                </button>
                             </td>
                         </tr>
-                    @empty
-                        <tr><td colspan="7" class="px-3 py-8 text-center text-gray-500">No hay artículos en el catálogo para ese filtro.</td></tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
-            <div class="p-3">{{ $items->links() }}</div>
-        </div>
 
-        {{-- ================= CARRITO ================= --}}
-        <div class="lg:w-4/12">
-            <div class="bg-white rounded-lg shadow p-4 sticky top-24">
-                <h3 class="font-semibold mb-2 flex items-center justify-between">
-                    <span>🛒 Pedido</span>
-                    <span class="text-sm text-gray-500">{{ $inTheCar->count() }} ítem(s)</span>
-                </h3>
+            <div class="flex justify-between items-center mt-3 pt-2 border-t font-semibold">
+                <span>Total estimado</span>
+                <span class="text-emerald-600">${{ number_format($totalCar, 0, ',', '.') }}</span>
+            </div>
 
-                @forelse($inTheCar as $c)
-                    <div class="flex items-center justify-between gap-2 border-b py-1.5 text-sm">
-                        <div class="min-w-0">
-                            <div class="truncate">{{ $c->articulo }}</div>
-                            <div class="text-xs text-gray-500">{{ $c->cantidad }} × ${{ number_format((int) $c->precioI, 0, ',', '.') }}</div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="font-semibold">${{ number_format((int) $c->cantidad * (int) $c->precioI, 0, ',', '.') }}</span>
-                            <button wire:click="quitarCar({{ $c->id }})" class="text-red-500 hover:text-red-700" title="Quitar">✕</button>
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-sm text-gray-400 py-4 text-center">Todavía no agregaste nada.</p>
-                @endforelse
-
-                @if($inTheCar->count())
-                    <div class="flex justify-between items-center mt-3 pt-2 border-t font-semibold">
-                        <span>Total estimado</span>
-                        <span class="text-emerald-600">${{ number_format($totalCar, 0, ',', '.') }}</span>
-                    </div>
-                    <a href="{{ route('stock.confirmarPedido') }}"
-                       class="mt-3 block text-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg">
-                        Realizar Pedido →
-                    </a>
-                    <button wire:click="vaciarCarrito" wire:confirm="¿Vaciar el pedido?"
-                            class="mt-2 w-full px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm rounded-lg">
-                        Vaciar
-                    </button>
-                @endif
+            <div class="flex justify-end gap-2 mt-4">
+                <button wire:click="volverACatalogo" class="px-4 py-2 border rounded-lg text-sm">Seguir agregando</button>
+                <button wire:click="confirmarPedido" @if($pendientes > 0) disabled @endif
+                        class="px-5 py-2 rounded-lg text-sm font-semibold text-white {{ $pendientes > 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500' }}">
+                    Confirmar pedido
+                </button>
             </div>
         </div>
-    </div>
+    @endif
 
     {{-- ================= MODAL: PASAR A STOCK ================= --}}
     @if($promoverId)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div class="bg-white w-full max-w-lg rounded-xl shadow-lg p-5 max-h-[90vh] overflow-y-auto">
                 <h2 class="text-lg font-semibold mb-1">Pasar a stock</h2>
-                <p class="text-xs text-gray-500 mb-3">Este artículo no está en stock. Cargalo para poder incluirlo en el pedido.</p>
+                <p class="text-xs text-gray-500 mb-3">Cargalo para poder incluirlo en el pedido.</p>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div class="col-span-2">
@@ -178,9 +238,7 @@
 
                 <div class="flex justify-end gap-2 mt-4">
                     <button wire:click="cerrarPromover" class="px-3 py-1.5 text-sm border rounded-lg">Cancelar</button>
-                    <button wire:click="confirmarPromover" class="px-4 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg">
-                        Pasar a stock y agregar
-                    </button>
+                    <button wire:click="confirmarPromover" class="px-4 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg">Pasar a stock</button>
                 </div>
             </div>
         </div>

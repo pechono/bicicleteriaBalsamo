@@ -8,7 +8,7 @@ use App\Models\Grupos;
 use App\Models\GruposArticulos;
 use App\Models\HistoriasPrecio;
 use App\Models\ListaArticulo;
-use App\Models\PedidoCar;
+use App\Models\Pedido;
 use App\Models\Proveedor;
 use App\Models\Stock;
 use App\Models\Unidad;
@@ -24,10 +24,10 @@ use Livewire\WithPagination;
 
 /**
  * Pedido a proveedores ARMADO DESDE EL CATÁLOGO (lista_articulos).
- * Ventaja: se ve el precio de costo actualizado y el pedido mínimo (Dal Santo).
- * Alimenta el MISMO carrito (PedidoCar) que usa el pedido normal, así que se
- * confirma y se envía por el flujo de siempre (stock.confirmarPedido).
- * Si un ítem del catálogo NO está en stock, se pregunta y se pasa a stock ahí mismo.
+ * Se ve el costo actualizado y el pedido mínimo (Dal Santo; vtaminima).
+ * El carrito puede tener ítems que todavía NO están en stock; el "pasar a stock"
+ * se hace AL FINAL (al Realizar Pedido). Una vez todos en stock, se arma el pedido
+ * en la tabla `pedidos` y aparece en Pedidos Realizados (mismo flujo/PDF de siempre).
  */
 class PedidoCatalogo extends Component
 {
@@ -36,13 +36,13 @@ class PedidoCatalogo extends Component
     public $q = '';
     public $proveedor_id = '';
 
-    /** Cantidades por fila (clave = id de lista_articulos). */
+    /** Cantidades por fila del catálogo (clave = id de lista_articulos). */
     public $cantidades = [];
 
-    /** Cantidad que se agregará al carrito una vez pasado a stock. */
-    public $cantidadPendiente = 1;
+    /** Modo "confirmar pedido" (resumen final con los pendientes de pasar a stock). */
+    public $confirmando = false;
 
-    // ── Modal "pasar a stock" (igual que en Catálogo) ──
+    // ── Modal "pasar a stock" ──
     public $promoverId = null;
     public $promoverProveedorId = null;
     public $pNombre = '';
@@ -62,53 +62,109 @@ class PedidoCatalogo extends Component
     public function updatingQ() { $this->resetPage(); }
     public function updatingProveedorId() { $this->resetPage(); }
 
-    /* ================== CARRITO ================== */
+    /* ================== CARRITO (en sesión, admite ítems fuera de stock) ================== */
 
-    /** Agrega un ítem del catálogo al pedido. Si no está en stock, abre "pasar a stock". */
+    private function getCart(): array
+    {
+        return session()->get('pedcat_cart', []); // [lista_id => cantidad]
+    }
+
+    private function setCart(array $c): void
+    {
+        session()->put('pedcat_cart', $c);
+    }
+
     public function agregar($listaId)
     {
         $row = ListaArticulo::find($listaId);
         if (!$row) {
             return;
         }
-
         $cant = (int) ($this->cantidades[$listaId] ?? $row->pedido_minimo ?? 1);
         if ($cant < 1) {
             $cant = 1;
         }
-
-        if ($row->articulo_id && Articulo::whereKey($row->articulo_id)->exists()) {
-            $this->addToCar($row->articulo_id, $cant);
-            $this->dispatch('notify', 'Agregado al pedido ✓', 'success');
-            return;
-        }
-
-        // No está en stock: preguntar y pasar a stock antes de sumarlo al pedido.
-        $this->cantidadPendiente = $cant;
-        $this->abrirPromover($listaId);
+        $cart = $this->getCart();
+        $cart[$listaId] = $cant;
+        $this->setCart($cart);
+        $this->dispatch('notify', 'Agregado al pedido ✓', 'success');
     }
 
-    private function addToCar($articuloId, $cantidad)
+    public function quitarCart($listaId)
     {
-        $existing = PedidoCar::where('articulo_id', $articuloId)->first();
-        if ($existing) {
-            $existing->update(['cantidad' => $cantidad]);
-        } else {
-            PedidoCar::create(['articulo_id' => $articuloId, 'cantidad' => $cantidad]);
-        }
-    }
-
-    public function quitarCar($articuloId)
-    {
-        PedidoCar::where('articulo_id', $articuloId)->delete();
+        $cart = $this->getCart();
+        unset($cart[$listaId]);
+        $this->setCart($cart);
     }
 
     public function vaciarCarrito()
     {
-        PedidoCar::truncate();
+        session()->forget('pedcat_cart');
+        $this->confirmando = false;
     }
 
-    /* ================== PASAR A STOCK ================== */
+    /* ================== CONFIRMAR / FINALIZAR ================== */
+
+    public function irAConfirmar()
+    {
+        if (empty($this->getCart())) {
+            $this->dispatch('notify', 'El pedido está vacío', 'warning');
+            return;
+        }
+        $this->confirmando = true;
+    }
+
+    public function volverACatalogo()
+    {
+        $this->confirmando = false;
+    }
+
+    /** Crea el pedido en la tabla `pedidos` (aparece en Pedidos Realizados). */
+    public function confirmarPedido()
+    {
+        $cart = $this->getCart();
+        if (empty($cart)) {
+            $this->dispatch('notify', 'El pedido está vacío', 'warning');
+            return;
+        }
+
+        $rows = ListaArticulo::whereIn('id', array_keys($cart))->get();
+
+        // ¿Quedan ítems sin pasar a stock?
+        $pendientes = $rows->filter(fn ($r) => !($r->articulo_id && Articulo::whereKey($r->articulo_id)->exists()));
+        if ($pendientes->count() > 0) {
+            $this->dispatch('notify', "Faltan pasar a stock {$pendientes->count()} ítem(s)", 'warning');
+            return;
+        }
+
+        // El pedido es de un solo proveedor (se arma filtrando por proveedor).
+        $provs = $rows->pluck('proveedor_id')->unique()->values();
+        if ($provs->count() > 1) {
+            $this->dispatch('notify', 'El pedido debe ser de un solo proveedor. Armá uno por proveedor.', 'warning');
+            return;
+        }
+        $proveedorId = $provs->first();
+
+        $p = Pedido::latest()->first();
+        $nro = $p ? $p->pedido + 1 : 1;
+
+        foreach ($rows as $r) {
+            Pedido::create([
+                'articulo_id'  => $r->articulo_id,
+                'cantidad'     => (int) $cart[$r->id],
+                'proveedor_id' => $proveedorId,
+                'pedido'       => $nro,
+            ]);
+        }
+
+        session()->forget('pedcat_cart');
+        $this->confirmando = false;
+        session()->flash('message', "Pedido #{$nro} creado. Está en Pedidos Realizados para enviarlo por WhatsApp.");
+
+        return redirect()->route('stock.pedidoRealizado');
+    }
+
+    /* ================== PASAR A STOCK (al final, por ítem pendiente) ================== */
 
     public function abrirPromover($id)
     {
@@ -173,20 +229,17 @@ class PedidoCatalogo extends Component
 
         $row = ListaArticulo::findOrFail($this->promoverId);
 
-        // Si ya estaba pasado, no duplicar: solo agregar al pedido.
         if ($row->articulo_id && Articulo::whereKey($row->articulo_id)->exists()) {
-            $this->addToCar($row->articulo_id, (int) $this->cantidadPendiente);
             $this->cerrarPromover();
-            $this->dispatch('notify', 'Ese ítem ya estaba en stock; lo agregué al pedido', 'success');
+            $this->dispatch('notify', 'Ese ítem ya estaba en stock', 'success');
             return;
         }
 
         $categoriaId = (int) $this->pCategoriaId;
         $unidadId = Unidad::query()->value('id') ?? Unidad::create(['unidad' => 'Unidad'])->id;
         $abreviatura = Proveedor::whereKey($row->proveedor_id)->value('abreviatura');
-        $nuevoArticuloId = null;
 
-        DB::transaction(function () use ($row, $categoriaId, $unidadId, $abreviatura, &$nuevoArticuloId) {
+        DB::transaction(function () use ($row, $categoriaId, $unidadId, $abreviatura) {
             $articulo = Articulo::create([
                 'articulo'     => $this->pNombre,
                 'codigo'       => $row->codigo,
@@ -232,17 +285,10 @@ class PedidoCatalogo extends Component
 
             $row->articulo_id = $articulo->id;
             $row->save();
-
-            $nuevoArticuloId = $articulo->id;
         });
 
-        // Ya está en stock → lo sumo al pedido con la cantidad que venías cargando.
-        if ($nuevoArticuloId) {
-            $this->addToCar($nuevoArticuloId, (int) $this->cantidadPendiente);
-        }
-
         $this->cerrarPromover();
-        $this->dispatch('notify', 'Pasado a stock y agregado al pedido ✓', 'success');
+        $this->dispatch('notify', 'Pasado a stock ✓', 'success');
     }
 
     public function render()
@@ -256,18 +302,26 @@ class PedidoCatalogo extends Component
             ->orderBy('lista_articulos.articulo')
             ->paginate(25);
 
-        // Carrito actual (mismo PedidoCar del pedido normal).
-        $inTheCar = PedidoCar::select(
-            'articulos.id', 'articulos.codigo', 'articulos.articulo',
-            'pedido_cars.cantidad', 'articulos.precioI', 'stocks.codigo_proveedor'
-        )
-            ->join('articulos', 'articulos.id', '=', 'pedido_cars.articulo_id')
-            ->join('stocks', 'stocks.articulo_id', '=', 'articulos.id')
-            ->get();
-
+        // Carrito (desde sesión) con datos para mostrar.
+        $cart = $this->getCart();
+        $cartItems = collect();
         $totalCar = 0;
-        foreach ($inTheCar as $c) {
-            $totalCar += (int) $c->cantidad * (int) $c->precioI;
+        $pendientes = 0;
+        if (!empty($cart)) {
+            $cartItems = ListaArticulo::query()
+                ->leftJoin('proveedors', 'proveedors.id', '=', 'lista_articulos.proveedor_id')
+                ->whereIn('lista_articulos.id', array_keys($cart))
+                ->select('lista_articulos.*', 'proveedors.abreviatura')
+                ->orderBy('lista_articulos.articulo')
+                ->get();
+            foreach ($cartItems as $ci) {
+                $ci->cantidad = (int) ($cart[$ci->id] ?? 0);
+                $ci->en_stock = (bool) $ci->articulo_id;
+                if (!$ci->en_stock) {
+                    $pendientes++;
+                }
+                $totalCar += $ci->cantidad * (int) $ci->precio_costo;
+            }
         }
 
         $proveedores = Proveedor::orderBy('nombre')->get();
@@ -276,6 +330,8 @@ class PedidoCatalogo extends Component
             : collect();
         $categorias = Categoria::orderBy('categoria')->get();
 
-        return view('livewire.stock.pedido-catalogo', compact('items', 'inTheCar', 'totalCar', 'proveedores', 'gruposPromover', 'categorias'));
+        return view('livewire.stock.pedido-catalogo', compact(
+            'items', 'cartItems', 'totalCar', 'pendientes', 'proveedores', 'gruposPromover', 'categorias'
+        ));
     }
 }
