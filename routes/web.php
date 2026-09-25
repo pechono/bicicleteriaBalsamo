@@ -114,6 +114,17 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/pedido', fn() => view('stock.pedido'))->name('stock.pedido');
         Route::get('/pedido-catalogo', fn() => view('stock.pedidoCatalogo'))->name('stock.pedidoCatalogo');
         Route::get('/recibir-catalogo', fn() => view('stock.recibirCatalogo'))->name('stock.recibirCatalogo');
+        Route::get('/pedido-catalogo/informe/{orden}', function ($orden) {
+            $o = \App\Models\PedidoCatalogoOrden::leftJoin('proveedors', 'proveedors.id', '=', 'pedido_catalogo_ordenes.proveedor_id')
+                ->where('pedido_catalogo_ordenes.id', $orden)
+                ->select('pedido_catalogo_ordenes.*', 'proveedors.nombre as proveedor', 'proveedors.telefono', 'proveedors.direccion', 'proveedors.localidad')
+                ->firstOrFail();
+            $items = \App\Models\PedidoCatalogoItem::leftJoin('lista_articulos', 'lista_articulos.id', '=', 'pedido_catalogo_items.lista_articulo_id')
+                ->where('pedido_catalogo_id', $orden)
+                ->select('pedido_catalogo_items.*', 'lista_articulos.codigo', 'lista_articulos.articulo')
+                ->orderBy('lista_articulos.articulo')->get();
+            return view('stock.pedido-catalogo-informe', compact('o', 'items'));
+        })->name('stock.pedidoCatalogoInforme');
         Route::get('/pedido/confirmar', fn() => view('stock.confirmarPedido'))->name('stock.confirmarPedido');
         Route::get('/pedido/pedido/{id}', [PrintPedido::class, 'generateReport'])->name('pedidoImprimir');
         Route::get('/pedidorealizados', fn() => view('stock.pedidoRealizado'))->name('stock.pedidoRealizado');

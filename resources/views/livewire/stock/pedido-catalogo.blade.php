@@ -1,7 +1,17 @@
 <div class="w-full p-2 sm:px-5">
 
     <div class="mt-2 text-2xl font-semibold">Pedido a Proveedores (desde Catálogo)</div>
-    <p class="text-sm text-gray-500 mb-3">Costo actualizado y pedido mínimo (Dal Santo). El pedido NO toca el stock: al llegar la mercadería le das ingreso desde "Recibir Pedidos de Catálogo".</p>
+    <p class="text-sm text-gray-500 mb-3">Costo actualizado (con IVA si la lista viene neta) y pedido mínimo. El pedido NO toca el stock: al llegar la mercadería le das ingreso desde "Recibir Pedidos de Catálogo".</p>
+
+    {{-- Banner con el informe del último pedido generado (el carrito no se borra) --}}
+    @if($ultimoPedidoNumero)
+        <div class="mb-3 flex flex-wrap items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg p-3 text-sm">
+            <span>✓ <b>Pedido #{{ str_pad($ultimoPedidoNumero, 4, '0', STR_PAD_LEFT) }}</b> generado. Está en "Recibir Pedidos de Catálogo".</span>
+            <a href="{{ route('stock.pedidoCatalogoInforme', $ultimoPedidoId) }}" target="_blank"
+               class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium">🖨️ Ver informe</a>
+            <span class="text-emerald-700">Podés seguir agregando o borrar el pedido.</span>
+        </div>
+    @endif
 
     @if(!$confirmando)
         <div class="flex flex-wrap items-center gap-2 mb-3">
@@ -32,10 +42,14 @@
                     </thead>
                     <tbody class="divide-y">
                         @forelse($items as $it)
+                            @php $costo = $it->iva_incluido ? (int) $it->precio_costo : (int) round($it->precio_costo * 1.21); @endphp
                             <tr class="hover:bg-gray-50">
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $it->abreviatura }}{{ $it->codigo ? '-'.$it->codigo : '' }}</td>
                                 <td class="px-3 py-2">{{ $it->articulo }}</td>
-                                <td class="px-3 py-2 text-right font-semibold">${{ number_format((int) $it->precio_costo, 0, ',', '.') }}</td>
+                                <td class="px-3 py-2 text-right font-semibold">
+                                    ${{ number_format($costo, 0, ',', '.') }}
+                                    @unless($it->iva_incluido)<span class="text-[10px] text-gray-400">c/IVA</span>@endunless
+                                </td>
                                 <td class="px-3 py-2 text-center">
                                     @if($it->pedido_minimo)<span class="text-sky-700 font-semibold">{{ $it->pedido_minimo }}</span>@else<span class="text-gray-300">—</span>@endif
                                 </td>
@@ -82,12 +96,12 @@
                             <div class="min-w-0">
                                 <div class="truncate">{{ $c->articulo }}</div>
                                 <div class="text-xs text-gray-500">
-                                    {{ $c->cantidad }} × ${{ number_format((int) $c->precio_costo, 0, ',', '.') }}
+                                    {{ $c->cantidad }} × ${{ number_format((int) $c->costo_ef, 0, ',', '.') }}
                                     @unless($c->en_stock)<span class="text-gray-400">· nuevo</span>@endunless
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <span class="font-semibold">${{ number_format((int) $c->cantidad * (int) $c->precio_costo, 0, ',', '.') }}</span>
+                                <span class="font-semibold">${{ number_format((int) $c->cantidad * (int) $c->costo_ef, 0, ',', '.') }}</span>
                                 <button wire:click="quitarCart({{ $c->id }})" class="text-red-500 hover:text-red-700" title="Quitar">✕</button>
                             </div>
                         </div>
@@ -104,8 +118,8 @@
                                 class="mt-3 block w-full text-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg">
                             Realizar Pedido →
                         </button>
-                        <button wire:click="vaciarCarrito" wire:confirm="¿Vaciar el pedido?"
-                                class="mt-2 w-full px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm rounded-lg">Vaciar</button>
+                        <button wire:click="borrarPedido" wire:confirm="¿Borrar todo el pedido?"
+                                class="mt-2 w-full px-4 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium rounded-lg">🗑️ Borrar pedido</button>
                     @endif
                 </div>
             </div>
@@ -119,7 +133,7 @@
             </div>
 
             <div class="mb-3 text-sm text-gray-600 bg-gray-50 border rounded p-3">
-                Se guarda el pedido y lo mandás al proveedor. <b>No se toca el stock</b>: cuando llegue la mercadería, le das ingreso desde "Recibir Pedidos de Catálogo".
+                Se guarda el pedido y se genera el informe para el proveedor. <b>No se toca el stock</b> y <b>el carrito NO se borra</b> (seguís eligiendo o lo borrás con el botón). El ingreso a stock se hace al recibir la mercadería.
             </div>
 
             <table class="w-full text-sm">
@@ -136,8 +150,8 @@
                         <tr>
                             <td class="px-3 py-2">{{ $c->articulo }} @unless($c->en_stock)<span class="text-xs text-gray-400">(nuevo)</span>@endunless</td>
                             <td class="px-3 py-2 text-center">{{ $c->cantidad }}</td>
-                            <td class="px-3 py-2 text-right">${{ number_format((int) $c->precio_costo, 0, ',', '.') }}</td>
-                            <td class="px-3 py-2 text-right font-semibold">${{ number_format((int) $c->cantidad * (int) $c->precio_costo, 0, ',', '.') }}</td>
+                            <td class="px-3 py-2 text-right">${{ number_format((int) $c->costo_ef, 0, ',', '.') }}</td>
+                            <td class="px-3 py-2 text-right font-semibold">${{ number_format((int) $c->cantidad * (int) $c->costo_ef, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -151,7 +165,7 @@
             <div class="flex justify-end gap-2 mt-4">
                 <button wire:click="volverACatalogo" class="px-4 py-2 border rounded-lg text-sm">Seguir agregando</button>
                 <button wire:click="confirmarPedido" class="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500">
-                    Confirmar pedido
+                    Generar pedido + informe
                 </button>
             </div>
         </div>
