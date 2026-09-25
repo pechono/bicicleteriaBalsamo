@@ -52,8 +52,13 @@
                                            class="w-16 border rounded px-2 py-1 text-center">
                                 </td>
                                 <td class="px-3 py-2 text-right">
-                                    <button wire:click="agregar({{ $it->id }})"
-                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg">➕ Agregar</button>
+                                    @isset($enCarrito[$it->id])
+                                        <button wire:click="agregar({{ $it->id }})"
+                                                class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg">✓ Agregado ({{ $enCarrito[$it->id] }})</button>
+                                    @else
+                                        <button wire:click="agregar({{ $it->id }})"
+                                                class="inline-flex items-center gap-1 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg">➕ Agregar</button>
+                                    @endisset
                                 </td>
                             </tr>
                         @empty

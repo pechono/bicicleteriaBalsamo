@@ -161,7 +161,8 @@ class PedidoCatalogo extends Component
         }
 
         $proveedores = Proveedor::orderBy('nombre')->get();
+        $enCarrito = $cart; // [lista_id => cantidad] para marcar los ya agregados
 
-        return view('livewire.stock.pedido-catalogo', compact('items', 'cartItems', 'totalCar', 'proveedores'));
+        return view('livewire.stock.pedido-catalogo', compact('items', 'cartItems', 'totalCar', 'proveedores', 'enCarrito'));
     }
 }
