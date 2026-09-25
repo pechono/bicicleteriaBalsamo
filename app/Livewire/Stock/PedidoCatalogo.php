@@ -3,6 +3,7 @@
 namespace App\Livewire\Stock;
 
 use App\Models\ListaArticulo;
+use App\Models\PedidoCatalogoCar;
 use App\Models\PedidoCatalogoItem;
 use App\Models\PedidoCatalogoOrden;
 use App\Models\Proveedor;
@@ -11,12 +12,12 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Armar un pedido a proveedores DESDE EL CATÁLOGO (lista_articulos).
- * Costo actualizado + pedido mínimo (Dal Santo). Para proveedores cuya lista
- * viene SIN IVA (iva_incluido = false) el costo mostrado es lista × 1,21.
- * NO toca el stock: al "Realizar Pedido" se guarda y se genera el informe, pero
- * el carrito NO se vacía (se borra a mano con el botón). El ingreso a stock se
- * hace al llegar la mercadería (sección "Recibir Pedidos de Catálogo").
+ * Armar pedidos a proveedores DESDE EL CATÁLOGO (lista_articulos).
+ * Carrito en tabla (pedido_catalogo_car): admite VARIOS proveedores a la vez;
+ * al filtrar por uno se ve solo lo suyo. Realizar/Borrar es POR proveedor.
+ * Costo con IVA (×1,21) si la lista viene neta (iva_incluido=false).
+ * "Realizar" guarda el pedido + genera informe; NO vacía el carrito (se borra
+ * con el botón). El ingreso a stock se hace al recibir la mercadería.
  */
 class PedidoCatalogo extends Component
 {
@@ -25,9 +26,7 @@ class PedidoCatalogo extends Component
     public $q = '';
     public $proveedor_id = '';
     public $cantidades = [];
-    public $confirmando = false;
 
-    // Último pedido generado (para mostrar el link al informe sin vaciar el carrito).
     public $ultimoPedidoId = null;
     public $ultimoPedidoNumero = null;
 
@@ -36,23 +35,12 @@ class PedidoCatalogo extends Component
     public function updatingQ() { $this->resetPage(); }
     public function updatingProveedorId() { $this->resetPage(); }
 
-    /** Costo real: si la lista del proveedor no incluye IVA, se le suma 21%. */
     private function costoEfectivo($precioCosto, $ivaIncluido): int
     {
         return $ivaIncluido ? (int) $precioCosto : (int) round($precioCosto * 1.21);
     }
 
-    /* ================== CARRITO (sesión) ================== */
-
-    private function getCart(): array
-    {
-        return session()->get('pedcat_cart', []);
-    }
-
-    private function setCart(array $c): void
-    {
-        session()->put('pedcat_cart', $c);
-    }
+    /* ================== CARRITO (tabla) ================== */
 
     public function agregar($listaId)
     {
@@ -64,70 +52,46 @@ class PedidoCatalogo extends Component
         if ($cant < 1) {
             $cant = 1;
         }
-        $cart = $this->getCart();
-        $cart[$listaId] = $cant;
-        $this->setCart($cart);
+        PedidoCatalogoCar::updateOrCreate(
+            ['lista_articulo_id' => $row->id],
+            ['proveedor_id' => $row->proveedor_id, 'cantidad' => $cant]
+        );
         $this->dispatch('notify', 'Agregado al pedido ✓', 'success');
     }
 
     public function quitarCart($listaId)
     {
-        $cart = $this->getCart();
-        unset($cart[$listaId]);
-        $this->setCart($cart);
+        PedidoCatalogoCar::where('lista_articulo_id', $listaId)->delete();
     }
 
-    public function borrarPedido()
+    public function borrarProveedor($proveedorId)
     {
-        session()->forget('pedcat_cart');
-        $this->confirmando = false;
-        $this->ultimoPedidoId = null;
-        $this->ultimoPedidoNumero = null;
+        PedidoCatalogoCar::where('proveedor_id', $proveedorId)->delete();
+        if ($this->ultimoPedidoNumero) {
+            $this->ultimoPedidoId = null;
+            $this->ultimoPedidoNumero = null;
+        }
         $this->dispatch('notify', 'Pedido borrado', 'warning');
     }
 
-    /* ================== CONFIRMAR / GENERAR ================== */
-
-    public function irAConfirmar()
-    {
-        if (empty($this->getCart())) {
-            $this->dispatch('notify', 'El pedido está vacío', 'warning');
-            return;
-        }
-        $this->confirmando = true;
-    }
-
-    public function volverACatalogo()
-    {
-        $this->confirmando = false;
-    }
-
     /**
-     * Guarda el pedido (va a "Recibir") y deja listo el informe. NO vacía el carrito:
-     * el usuario sigue eligiendo o borra con el botón.
+     * Genera el pedido de UN proveedor (guarda + deja el informe). No vacía el
+     * carrito de ese proveedor (se borra con el botón).
      */
-    public function confirmarPedido()
+    public function realizarProveedor($proveedorId)
     {
-        $cart = $this->getCart();
-        if (empty($cart)) {
-            $this->dispatch('notify', 'El pedido está vacío', 'warning');
+        $carRows = PedidoCatalogoCar::where('proveedor_id', $proveedorId)->get();
+        if ($carRows->isEmpty()) {
+            $this->dispatch('notify', 'No hay ítems de ese proveedor', 'warning');
             return;
         }
 
         $rows = ListaArticulo::leftJoin('proveedors', 'proveedors.id', '=', 'lista_articulos.proveedor_id')
-            ->whereIn('lista_articulos.id', array_keys($cart))
+            ->whereIn('lista_articulos.id', $carRows->pluck('lista_articulo_id')->all())
             ->select('lista_articulos.*', 'proveedors.iva_incluido')
-            ->get();
-
-        $provs = $rows->pluck('proveedor_id')->unique()->values();
-        if ($provs->count() > 1) {
-            $this->dispatch('notify', 'El pedido debe ser de un solo proveedor. Filtrá y armá uno por proveedor.', 'warning');
-            return;
-        }
-        $proveedorId = $provs->first();
+            ->get()->keyBy('id');
 
         $numero = (int) (PedidoCatalogoOrden::max('numero') ?? 0) + 1;
-
         $orden = PedidoCatalogoOrden::create([
             'numero'       => $numero,
             'proveedor_id' => $proveedorId,
@@ -135,19 +99,21 @@ class PedidoCatalogo extends Component
             'enviado'      => false,
         ]);
 
-        foreach ($rows as $r) {
+        foreach ($carRows as $cr) {
+            $r = $rows[$cr->lista_articulo_id] ?? null;
+            if (!$r) {
+                continue;
+            }
             PedidoCatalogoItem::create([
                 'pedido_catalogo_id' => $orden->id,
                 'lista_articulo_id'  => $r->id,
-                'cantidad'           => (int) $cart[$r->id],
+                'cantidad'           => (int) $cr->cantidad,
                 'precio_costo'       => $this->costoEfectivo($r->precio_costo, $r->iva_incluido),
                 'recibido'           => false,
                 'articulo_id'        => $r->articulo_id,
             ]);
         }
 
-        // NO se vacía el carrito. Se deja el link al informe.
-        $this->confirmando = false;
         $this->ultimoPedidoId = $orden->id;
         $this->ultimoPedidoNumero = $numero;
         $this->dispatch('notify', "Pedido #{$numero} generado ✓ (mirá el informe; el carrito queda)", 'success');
@@ -163,27 +129,37 @@ class PedidoCatalogo extends Component
             ->orderBy('lista_articulos.articulo')
             ->paginate(25);
 
-        $cart = $this->getCart();
-        $cartItems = collect();
-        $totalCar = 0;
-        if (!empty($cart)) {
-            $cartItems = ListaArticulo::query()
-                ->leftJoin('proveedors', 'proveedors.id', '=', 'lista_articulos.proveedor_id')
-                ->whereIn('lista_articulos.id', array_keys($cart))
-                ->select('lista_articulos.*', 'proveedors.abreviatura', 'proveedors.iva_incluido')
-                ->orderBy('lista_articulos.articulo')
-                ->get();
-            foreach ($cartItems as $ci) {
-                $ci->cantidad = (int) ($cart[$ci->id] ?? 0);
-                $ci->en_stock = (bool) $ci->articulo_id;
-                $ci->costo_ef = $this->costoEfectivo($ci->precio_costo, $ci->iva_incluido);
-                $totalCar += $ci->cantidad * $ci->costo_ef;
+        // Carrito (tabla), agrupado por proveedor. Si hay proveedor filtrado, solo ese.
+        $cartRows = PedidoCatalogoCar::query()
+            ->join('lista_articulos', 'lista_articulos.id', '=', 'pedido_catalogo_car.lista_articulo_id')
+            ->leftJoin('proveedors', 'proveedors.id', '=', 'pedido_catalogo_car.proveedor_id')
+            ->when($this->proveedor_id, fn ($qb) => $qb->where('pedido_catalogo_car.proveedor_id', $this->proveedor_id))
+            ->select(
+                'pedido_catalogo_car.cantidad',
+                'lista_articulos.id as lista_id', 'lista_articulos.articulo', 'lista_articulos.precio_costo',
+                'lista_articulos.articulo_id',
+                'proveedors.iva_incluido', 'proveedors.id as prov_id', 'proveedors.nombre as prov_nombre'
+            )
+            ->orderBy('proveedors.nombre')->orderBy('lista_articulos.articulo')
+            ->get();
+
+        $cartGroups = [];
+        foreach ($cartRows as $ci) {
+            $ci->costo_ef = $this->costoEfectivo($ci->precio_costo, $ci->iva_incluido);
+            $ci->subtotal = $ci->cantidad * $ci->costo_ef;
+            $pid = $ci->prov_id;
+            if (!isset($cartGroups[$pid])) {
+                $cartGroups[$pid] = ['proveedor' => $ci->prov_nombre, 'proveedor_id' => $pid, 'items' => [], 'subtotal' => 0];
             }
+            $cartGroups[$pid]['items'][] = $ci;
+            $cartGroups[$pid]['subtotal'] += $ci->subtotal;
         }
+        $cartCount = $cartRows->count();
+
+        $enCarrito = PedidoCatalogoCar::pluck('cantidad', 'lista_articulo_id')->all();
 
         $proveedores = Proveedor::orderBy('nombre')->get();
-        $enCarrito = $cart;
 
-        return view('livewire.stock.pedido-catalogo', compact('items', 'cartItems', 'totalCar', 'proveedores', 'enCarrito'));
+        return view('livewire.stock.pedido-catalogo', compact('items', 'cartGroups', 'cartCount', 'enCarrito', 'proveedores'));
     }
 }

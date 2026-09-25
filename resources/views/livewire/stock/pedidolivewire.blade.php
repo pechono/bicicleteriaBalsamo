@@ -51,6 +51,26 @@
 
         </div>
 
+        {{-- Panel de seleccionados con montos --}}
+        @if($carritoDetalle->count())
+            <div class="mb-3 bg-white border border-sky-200 rounded-lg p-3 shadow-sm">
+                <div class="font-semibold text-sm text-gray-700 mb-2">🛒 Seleccionados ({{ $carritoDetalle->count() }})</div>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($carritoDetalle as $c)
+                        <span class="inline-flex items-center gap-2 bg-sky-50 border border-sky-100 rounded-full px-3 py-1 text-xs">
+                            <span>{{ $c->articulo }}</span>
+                            <span class="text-gray-500">{{ $c->cantidad }} × ${{ number_format((int) $c->precioI, 0, ',', '.') }}</span>
+                            <span class="font-semibold text-sky-700">${{ number_format((int) $c->cantidad * (int) $c->precioI, 0, ',', '.') }}</span>
+                        </span>
+                    @endforeach
+                </div>
+                <div class="flex justify-end mt-2 pt-2 border-t text-sm font-semibold">
+                    <span class="mr-2">Total estimado:</span>
+                    <span class="text-emerald-600">${{ number_format($totalCarrito, 0, ',', '.') }}</span>
+                </div>
+            </div>
+        @endif
+
         <table class="table-auto w-full">
             <thead>
                 <tr>

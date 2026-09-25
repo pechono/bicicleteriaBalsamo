@@ -80,13 +80,25 @@ class PedidoLivewire extends Component
             ->get();
 
         $inTheCar   = PedidoCar::all();
+
+        // Detalle del carrito con montos (para el panel de seleccionados).
+        $carritoDetalle = PedidoCar::query()
+            ->join('articulos', 'articulos.id', '=', 'pedido_cars.articulo_id')
+            ->leftJoin('stocks', 'stocks.articulo_id', '=', 'articulos.id')
+            ->select('pedido_cars.articulo_id', 'pedido_cars.cantidad', 'articulos.articulo', 'articulos.precioI', 'stocks.codigo_proveedor')
+            ->get();
+        $totalCarrito = 0;
+        foreach ($carritoDetalle as $c) {
+            $totalCarrito += (int) $c->cantidad * (int) $c->precioI;
+        }
+
         $categorias = Categoria::orderBy('categoria')->get();
         $proveedores = Proveedor::where('activo', 1)->orderBy('nombre')->get();
         $grupos     = $this->proveedor_id_filter
             ? Grupos::where('proveedor_id', $this->proveedor_id_filter)->orderBy('NombreGrupo')->get()
             : collect();
 
-        return view('livewire.stock.pedidolivewire', compact('articulos', 'inTheCar', 'categorias', 'proveedores', 'grupos'));
+        return view('livewire.stock.pedidolivewire', compact('articulos', 'inTheCar', 'carritoDetalle', 'totalCarrito', 'categorias', 'proveedores', 'grupos'));
     }
 
     public function updatingProveedorIdFilter()
