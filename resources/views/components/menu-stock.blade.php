@@ -24,6 +24,14 @@
         🗂️ Pedido desde Catálogo
     </a>
 
+    <a href="{{ route('stock.recibirCatalogo') }}"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
+              {{ request()->routeIs('stock.recibirCatalogo')
+                 ? 'bg-indigo-600 text-white shadow-sm'
+                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
+        📥 Recibir Pedidos de Catálogo
+    </a>
+
     <a href="{{ route('stock.pedidoRealizado') }}"
        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
               {{ request()->routeIs('stock.pedidoRealizado')

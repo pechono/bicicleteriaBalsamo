@@ -113,6 +113,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/', fn() => view('stock.index'))->name('stock.index');
         Route::get('/pedido', fn() => view('stock.pedido'))->name('stock.pedido');
         Route::get('/pedido-catalogo', fn() => view('stock.pedidoCatalogo'))->name('stock.pedidoCatalogo');
+        Route::get('/recibir-catalogo', fn() => view('stock.recibirCatalogo'))->name('stock.recibirCatalogo');
         Route::get('/pedido/confirmar', fn() => view('stock.confirmarPedido'))->name('stock.confirmarPedido');
         Route::get('/pedido/pedido/{id}', [PrintPedido::class, 'generateReport'])->name('pedidoImprimir');
         Route::get('/pedidorealizados', fn() => view('stock.pedidoRealizado'))->name('stock.pedidoRealizado');
