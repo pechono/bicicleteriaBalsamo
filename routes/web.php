@@ -114,7 +114,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/pedido', fn() => view('stock.pedido'))->name('stock.pedido');
         Route::get('/pedido-catalogo', fn() => view('stock.pedidoCatalogo'))->name('stock.pedidoCatalogo');
         Route::get('/recibir-catalogo', fn() => view('stock.recibirCatalogo'))->name('stock.recibirCatalogo');
-        Route::get('/pedido-catalogo/informe/{orden}', function ($orden) {
+        // Informe PDF del pedido de catálogo. tipo = 'interno' (con costos/subtotales)
+        // o 'proveedor' (solo cantidades, para compartir).
+        Route::get('/pedido-catalogo/informe/{orden}/{tipo?}', function ($orden, $tipo = 'interno') {
             $o = \App\Models\PedidoCatalogoOrden::leftJoin('proveedors', 'proveedors.id', '=', 'pedido_catalogo_ordenes.proveedor_id')
                 ->where('pedido_catalogo_ordenes.id', $orden)
                 ->select('pedido_catalogo_ordenes.*', 'proveedors.nombre as proveedor', 'proveedors.telefono', 'proveedors.direccion', 'proveedors.localidad')
@@ -123,7 +125,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 ->where('pedido_catalogo_id', $orden)
                 ->select('pedido_catalogo_items.*', 'lista_articulos.codigo', 'lista_articulos.articulo')
                 ->orderBy('lista_articulos.articulo')->get();
-            return view('stock.pedido-catalogo-informe', compact('o', 'items'));
+            $emp = \App\Models\Empresa::first();
+            $tipo = $tipo === 'proveedor' ? 'proveedor' : 'interno';
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('stock.pedido-catalogo-informe-pdf', compact('o', 'items', 'emp', 'tipo'));
+            return $pdf->stream("pedido-{$o->numero}-{$tipo}.pdf");
         })->name('stock.pedidoCatalogoInforme');
         Route::get('/pedido/confirmar', fn() => view('stock.confirmarPedido'))->name('stock.confirmarPedido');
         Route::get('/pedido/pedido/{id}', [PrintPedido::class, 'generateReport'])->name('pedidoImprimir');

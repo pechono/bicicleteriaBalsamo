@@ -6,8 +6,10 @@
     @if($ultimoPedidoNumero)
         <div class="mb-3 flex flex-wrap items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg p-3 text-sm">
             <span>✓ <b>Pedido #{{ str_pad($ultimoPedidoNumero, 4, '0', STR_PAD_LEFT) }}</b> generado. Está en "Recibir Pedidos de Catálogo".</span>
-            <a href="{{ route('stock.pedidoCatalogoInforme', $ultimoPedidoId) }}" target="_blank"
-               class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium">🖨️ Ver informe</a>
+            <a href="{{ route('stock.pedidoCatalogoInforme', [$ultimoPedidoId, 'interno']) }}" target="_blank"
+               class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium">🖨️ Informe (mío)</a>
+            <a href="{{ route('stock.pedidoCatalogoInforme', [$ultimoPedidoId, 'proveedor']) }}" target="_blank"
+               class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-medium">📤 PDF proveedor</a>
         </div>
     @endif
 

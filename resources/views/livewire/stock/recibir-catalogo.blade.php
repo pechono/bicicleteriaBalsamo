@@ -56,6 +56,10 @@
                     class="ml-2 px-3 py-1 bg-green-600 hover:bg-green-500 text-white text-xs font-medium rounded-lg">
                 📲 {{ $orden->enviado ? 'Reenviar' : 'Enviar' }} al proveedor
             </button>
+            <a href="{{ route('stock.pedidoCatalogoInforme', [$orden->id, 'interno']) }}" target="_blank"
+               class="ml-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg">🖨️ Informe</a>
+            <a href="{{ route('stock.pedidoCatalogoInforme', [$orden->id, 'proveedor']) }}" target="_blank"
+               class="ml-1 px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg">📤 PDF proveedor</a>
         </div>
 
         <div class="bg-white rounded-lg shadow overflow-x-auto">
