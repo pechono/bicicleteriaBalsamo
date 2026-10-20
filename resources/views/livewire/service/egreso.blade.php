@@ -93,15 +93,15 @@
                     <thead>
                         <tr class="bg-gray-50 border-b-2 border-gray-200">
                             <th class="px-4 py-3 text-sm font-semibold text-gray-700 text-center border-r " rowspan="2">N° Ingreso</th>
-                            <th class="px-4 py-3 text-sm font-semibold text-gray-700 text-center border-r" colspan="4">Propietario</th>
+                            <th class="px-4 py-3 text-sm font-semibold text-gray-700 text-center border-r" rowspan="2">Fecha<div class="text-[10px] font-normal normal-case text-gray-400">ingreso || listo</div></th>
+                            <th class="px-4 py-3 text-sm font-semibold text-gray-700 text-center border-r" colspan="3">Propietario</th>
                             <th class="px-4 py-3 text-sm font-semibold text-gray-700 text-center" colspan="4">Bicicleta</th>
                             <th class="px-4 py-3 text-sm font-semibold text-gray-700 text-center border-l" rowspan="2">Acción</th>
                         </tr>
-                        
+
                         <tr class="bg-gray-50 border-b border-gray-200">
                             <th class="px-4 py-2 text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Nombre</th>
                             <th class="px-4 py-2 text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Apellido</th>
-                            <th class="px-4 py-2 text-xs font-medium text-gray-600 uppercase tracking-wider border-r">DNI</th>
                             <th class="px-4 py-2 text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Teléfono</th>
                             <th class="px-4 py-2 text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Marca</th>
                             <th class="px-4 py-2 text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Tipo</th>
@@ -112,7 +112,7 @@
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($clientes as $cliente)
                         <!-- Fila principal -->
-                        <tr class="hover:bg-brand-50 transition-colors duration-150 {{ $ver == $cliente->nro_ingreso ? 'bg-brand-50' : '' }}">
+                        <tr id="fila-{{ $cliente->nro_ingreso }}" class="hover:bg-brand-50 transition-colors duration-150 {{ $ver == $cliente->nro_ingreso ? 'bg-brand-50' : '' }}">
                             <td class="px-4 py-3 text-sm font-medium text-gray-900 border-r">
                                 <span class="inline-flex items-center gap-1">
                                     <span class="px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
@@ -131,9 +131,12 @@
                                     <div class="text-xs font-semibold text-emerald-600 mt-1">${{ number_format($precios[$cliente->nro_ingreso]->monto, 0, ',', '.') }}</div>
                                 @endisset
                             </td>
+                            <td class="px-4 py-3 text-xs text-gray-700 border-r text-center whitespace-nowrap">
+                                {{ $cliente->fecha_ingreso ? \Carbon\Carbon::parse($cliente->fecha_ingreso)->format('d/m/y') : '—' }}
+                                @isset($precios[$cliente->nro_ingreso])@if($precios[$cliente->nro_ingreso]->fecha_listo)<span class="text-emerald-600 font-semibold"> || {{ \Carbon\Carbon::parse($precios[$cliente->nro_ingreso]->fecha_listo)->format('d/m/y') }}</span>@endif @endisset
+                            </td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->nombre }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->apellido }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->dni }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">{{ $cliente->telefono }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 border-r">
                                 <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">{{ $cliente->marca }}</span>
@@ -217,19 +220,10 @@
                                     </tr>
                                     @endif
 
-                                    {{-- Fechas + WhatsApp (siempre visible). Enviar/recordar usa el teléfono ACTUAL del cliente. --}}
+                                    {{-- WhatsApp (siempre visible). Enviar/recordar usa el teléfono ACTUAL del cliente. --}}
                                     <tr>
                                         <td colspan="10" class="px-6 py-1.5 text-xs text-gray-600 border-b border-gray-100">
-                                            @if($cliente->fecha_ingreso)
-                                                <span class="mr-3">📅 Ingresó: <b>{{ \Carbon\Carbon::parse($cliente->fecha_ingreso)->format('d/m/Y') }}</b></span>
-                                            @endif
-                                            @isset($precios[$cliente->nro_ingreso])
-                                                @if($precios[$cliente->nro_ingreso]->fecha_listo)
-                                                    <span class="mr-3">✅ Listo: <b>{{ \Carbon\Carbon::parse($precios[$cliente->nro_ingreso]->fecha_listo)->format('d/m/Y') }}</b></span>
-                                                @endif
-                                            @endisset
-
-                                            <span class="ml-1">· WhatsApp:</span>
+                                            <span class="mr-1">WhatsApp:</span>
                                             @isset($whatsapp[$cliente->nro_ingreso])
                                                 @php $wa = $whatsapp[$cliente->nro_ingreso]; @endphp
                                                 @if($wa === 'enviado')
@@ -245,7 +239,6 @@
                                                 <span class="text-gray-400">sin enviar</span>
                                             @endisset
 
-                                            {{-- Enviar al número ACTUAL (sirve si corregiste el teléfono) --}}
                                             @if($cliente->estado == 'Terminado')
                                                 <button wire:click="recordarRetiro({{ $cliente->nro_ingreso }})"
                                                     wire:confirm="¿Enviar por WhatsApp que la bici está lista para retirar? (al número actual)"
@@ -255,52 +248,10 @@
                                                     wire:confirm="¿Enviar el aviso de ingreso por WhatsApp? (al número actual)"
                                                     class="ml-2 text-blue-600 hover:text-blue-800 underline font-semibold">📲 enviar aviso de ingreso</button>
                                             @endif
+
+                                            <button wire:click="verMensajes" class="ml-3 text-gray-500 hover:text-gray-800 underline">📨 ver mensajes</button>
                                         </td>
                                     </tr>
-
-                                    {{-- Historial: TODOS los WhatsApp de esta bici (#nro) --}}
-                                    @if($historialWa->count())
-                                        <tr>
-                                            <td colspan="10" class="px-6 py-2 border-b border-gray-100">
-                                                <div class="text-xs font-semibold text-gray-600 mb-1">📨 Mensajes enviados (#{{ str_pad($cliente->nro_ingreso, 4, '0', STR_PAD_LEFT) }})</div>
-                                                <div class="overflow-x-auto">
-                                                    <table class="w-full text-xs">
-                                                        <thead>
-                                                            <tr class="text-left text-gray-500 border-b">
-                                                                <th class="py-1 pr-3">Fecha</th>
-                                                                <th class="pr-3">Teléfono</th>
-                                                                <th class="pr-3">Tipo</th>
-                                                                <th class="pr-3">Estado</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($historialWa as $m)
-                                                                @php
-                                                                    $txt = (string) $m->mensaje;
-                                                                    $tipo = str_contains($txt, 'ingresó') ? 'Ingreso'
-                                                                          : ((str_contains($txt, 'lista para retirar') || str_contains($txt, 'recordamos')) ? 'Lista / recordatorio' : 'Mensaje');
-                                                                @endphp
-                                                                <tr class="border-b border-gray-50">
-                                                                    <td class="py-1 pr-3 whitespace-nowrap">{{ \Carbon\Carbon::parse($m->created_at)->format('d/m/Y H:i') }}</td>
-                                                                    <td class="pr-3 whitespace-nowrap">{{ $m->telefono }}</td>
-                                                                    <td class="pr-3">{{ $tipo }}</td>
-                                                                    <td class="pr-3 whitespace-nowrap">
-                                                                        @if($m->enviado)
-                                                                            <span class="text-green-600">✓ enviado</span>@if($m->enviado_en)<span class="text-gray-400"> {{ \Carbon\Carbon::parse($m->enviado_en)->format('d/m H:i') }}</span>@endif
-                                                                        @elseif($m->error)
-                                                                            <span class="text-red-500" title="{{ $m->error }}">✗ falló</span>
-                                                                        @else
-                                                                            <span class="text-amber-600">⏳ en cola</span>
-                                                                        @endif
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endif
 
                                     @if($cliente->estado=='Terminado')
                                     <tr> 
@@ -444,4 +395,68 @@
     <!-- Paginación -->
     <div class="mt-4">
     </div>
+
+    {{-- ===== Modal: historial de mensajes del ingreso abierto ===== --}}
+    @if($modalMsjs && $ver)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" wire:click.self="cerrarMsjs">
+            <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between px-5 py-3 border-b sticky top-0 bg-white">
+                    <h3 class="font-semibold">📨 Mensajes del ingreso #{{ str_pad($ver, 4, '0', STR_PAD_LEFT) }}</h3>
+                    <button wire:click="cerrarMsjs" class="text-gray-400 hover:text-gray-700 text-xl leading-none">✕</button>
+                </div>
+                <div class="p-5">
+                    @if($historialWa->count())
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-gray-500 border-b">
+                                    <th class="py-1 pr-3">Fecha</th>
+                                    <th class="pr-3">Teléfono</th>
+                                    <th class="pr-3">Tipo</th>
+                                    <th class="pr-3">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($historialWa as $m)
+                                    @php
+                                        $txt = (string) $m->mensaje;
+                                        $tipo = str_contains($txt, 'ingresó') ? 'Ingreso'
+                                              : ((str_contains($txt, 'lista para retirar') || str_contains($txt, 'recordamos')) ? 'Lista / recordatorio' : 'Mensaje');
+                                    @endphp
+                                    <tr class="border-b border-gray-50">
+                                        <td class="py-1.5 pr-3 whitespace-nowrap">{{ \Carbon\Carbon::parse($m->created_at)->format('d/m/Y H:i') }}</td>
+                                        <td class="pr-3 whitespace-nowrap">{{ $m->telefono }}</td>
+                                        <td class="pr-3">{{ $tipo }}</td>
+                                        <td class="pr-3 whitespace-nowrap">
+                                            @if($m->enviado)
+                                                <span class="text-green-600">✓ enviado</span>@if($m->enviado_en)<span class="text-gray-400"> {{ \Carbon\Carbon::parse($m->enviado_en)->format('d/m H:i') }}</span>@endif
+                                            @elseif($m->error)
+                                                <span class="text-red-500" title="{{ $m->error }}">✗ falló</span>
+                                            @else
+                                                <span class="text-amber-600">⏳ en cola</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <p class="text-gray-500 text-sm text-center py-6">No hay mensajes registrados para este ingreso.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Scroll al expandir "Ver": lleva la fila y su detalle a la vista (soluciona que quede abajo del borde) --}}
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('scroll-ingreso', (e) => {
+                const nro = (e && e.nro !== undefined) ? e.nro : (Array.isArray(e) ? (e[0] && e[0].nro !== undefined ? e[0].nro : e[0]) : e);
+                setTimeout(() => {
+                    const el = document.getElementById('fila-' + nro);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 150);
+            });
+        });
+    </script>
 </div>

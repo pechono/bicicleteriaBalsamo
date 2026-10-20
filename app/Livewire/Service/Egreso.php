@@ -263,20 +263,30 @@ public $operacionNro;
 
 
     public $ver=false;
+    public $modalMsjs = false; // modal con el historial de mensajes
+
     public function verCliente($nro_ingreso)
     {
         // Aquí puedes agregar la lógica para mostrar el detalle del ingreso
         $this->ver = $nro_ingreso;
+        $this->modalMsjs = false;
         $this->ingresoProceso($nro_ingreso);
         $this->operacion($nro_ingreso);
     $this->mostrarProcesosTerminado($nro_ingreso);
 
         $this->nroDetalles($nro_ingreso);
         session()->flash('message', 'Mostrando detalle para el ingreso: ' . $nro_ingreso);
+
+        // Scroll al detalle (así no queda por debajo del borde de la pantalla).
+        $this->dispatch('scroll-ingreso', nro: $nro_ingreso);
     }
     public function cerrarDetalles(){
         $this->ver=false;
+        $this->modalMsjs=false;
     }
+
+    public function verMensajes(){ $this->modalMsjs = true; }
+    public function cerrarMsjs(){ $this->modalMsjs = false; }
    
 
     public function ingresoProceso($nro_ingreso)
