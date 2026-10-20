@@ -100,16 +100,17 @@ public $operacionNro;
                 'bicis.color',
                 'marcas.marca',
                 'tipo_bikes.tipo',
-                'nro_ingresos.estado'
+                'nro_ingresos.estado',
+                'nro_ingresos.created_at as fecha_ingreso'
             )
             ->distinct()
             ->get();
 
-        // Precio (monto del egreso) por nro de ingreso — SOLO para mostrar, no altera nada.
+        // Precio (monto del egreso) + fecha en que quedó listo (created_at del egreso) por nro de ingreso.
         $precios = DB::table('egreso_bicis as e')
             ->join('ingreso_bicis as i', 'i.bici_id', '=', 'e.ingreso_bici_id')
             ->join('nro_egresos as ne', 'ne.id', '=', 'e.nro_egreso')
-            ->select('i.nro_ingreso', 'ne.monto')
+            ->select('i.nro_ingreso', 'ne.monto', 'ne.created_at as fecha_listo')
             ->distinct()
             ->get()
             ->keyBy('nro_ingreso');
@@ -187,6 +188,36 @@ public $operacionNro;
         } else {
             $this->dispatch('notify', 'No hay un WhatsApp encolado para este ingreso', 'warning');
         }
+    }
+
+    /**
+     * Enviar el aviso de INGRESO por WhatsApp al número ACTUAL del cliente.
+     * Sirve cuando se corrigió el teléfono y nunca se había enviado / no quedó encolado.
+     */
+    public function enviarIngreso($nro_ingreso)
+    {
+        $datos = DB::table('bicis')
+            ->join('clientes', 'clientes.id', '=', 'bicis.cliente_id')
+            ->join('marcas', 'marcas.id', '=', 'bicis.marca_id')
+            ->join('ingreso_bicis', 'ingreso_bicis.bici_id', '=', 'bicis.id')
+            ->where('ingreso_bicis.nro_ingreso', $nro_ingreso)
+            ->select('clientes.nombre', 'clientes.telefono', 'marcas.marca', 'bicis.color')
+            ->first();
+
+        if (!$datos || !$datos->telefono) {
+            $this->dispatch('notify', 'El cliente no tiene teléfono registrado', 'warning');
+            return;
+        }
+
+        $nroFmt = str_pad($nro_ingreso, 4, '0', STR_PAD_LEFT);
+        $nombre = $datos->nombre;
+        $marca  = $datos->marca ?? '';
+        $color  = $datos->color ?? '';
+
+        $mensaje = "🔧 *BICICLETERÍA BALSAMO* 🔧\n----------------------------\nHola {$nombre} 👋\nTu bicicleta ingresó al taller.\n\nN° de ingreso: *#{$nroFmt}*\n🚲 Marca: {$marca}\n🎨 Color: {$color}\n----------------------------\nEn cuanto esté lista te avisamos.\n¡Gracias por elegirnos! 🙏";
+
+        \App\Support\WhatsApp::encolarTexto($datos->telefono, $mensaje);
+        $this->dispatch('notify', 'Aviso de ingreso en cola ✓', 'success');
     }
 
     /**

@@ -217,31 +217,46 @@
                                     </tr>
                                     @endif
 
-                                    {{-- Estado del WhatsApp (discreto): enviado / en cola / falló + reenviar --}}
-                                    @isset($whatsapp[$cliente->nro_ingreso])
-                                        @php $wa = $whatsapp[$cliente->nro_ingreso]; @endphp
-                                        <tr>
-                                            <td colspan="10" class="px-6 py-1.5 text-xs text-gray-500 border-b border-gray-100">
-                                                <span class="mr-1">WhatsApp:</span>
+                                    {{-- Fechas + WhatsApp (siempre visible). Enviar/recordar usa el teléfono ACTUAL del cliente. --}}
+                                    <tr>
+                                        <td colspan="10" class="px-6 py-1.5 text-xs text-gray-600 border-b border-gray-100">
+                                            @if($cliente->fecha_ingreso)
+                                                <span class="mr-3">📅 Ingresó: <b>{{ \Carbon\Carbon::parse($cliente->fecha_ingreso)->format('d/m/Y') }}</b></span>
+                                            @endif
+                                            @isset($precios[$cliente->nro_ingreso])
+                                                @if($precios[$cliente->nro_ingreso]->fecha_listo)
+                                                    <span class="mr-3">✅ Listo: <b>{{ \Carbon\Carbon::parse($precios[$cliente->nro_ingreso]->fecha_listo)->format('d/m/Y') }}</b></span>
+                                                @endif
+                                            @endisset
+
+                                            <span class="ml-1">· WhatsApp:</span>
+                                            @isset($whatsapp[$cliente->nro_ingreso])
+                                                @php $wa = $whatsapp[$cliente->nro_ingreso]; @endphp
                                                 @if($wa === 'enviado')
-                                                    <span class="text-green-600">✓ enviado exitoso</span>
-                                                    <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" wire:confirm="¿Volver a enviar el WhatsApp de este ingreso?" class="ml-1 text-gray-400 hover:text-blue-600 underline">reenviar</button>
+                                                    <span class="text-green-600">✓ enviado</span>
+                                                    <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" wire:confirm="¿Volver a reenviar el mismo mensaje?" class="ml-1 text-gray-400 hover:text-blue-600 underline">reenviar</button>
                                                 @elseif($wa === 'error')
                                                     <span class="text-red-500">✗ no se envió</span>
                                                     <button wire:click="reenviarWhatsApp({{ $cliente->nro_ingreso }})" class="ml-1 text-blue-500 hover:text-blue-700 underline">reenviar</button>
                                                 @else
                                                     <span class="text-amber-600">⏳ en cola…</span>
                                                 @endif
+                                            @else
+                                                <span class="text-gray-400">sin enviar</span>
+                                            @endisset
 
-                                                {{-- Recordatorio de retiro: solo si la bici ya está Terminada (lista) --}}
-                                                @if($cliente->estado == 'Terminado')
-                                                    <button wire:click="recordarRetiro({{ $cliente->nro_ingreso }})"
-                                                        wire:confirm="¿Enviar un recordatorio por WhatsApp de que la bici ya está lista para retirar?"
-                                                        class="ml-2 text-amber-700 hover:text-amber-900 underline font-semibold">🔔 recordar retiro</button>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endisset
+                                            {{-- Enviar al número ACTUAL (sirve si corregiste el teléfono) --}}
+                                            @if($cliente->estado == 'Terminado')
+                                                <button wire:click="recordarRetiro({{ $cliente->nro_ingreso }})"
+                                                    wire:confirm="¿Enviar por WhatsApp que la bici está lista para retirar? (al número actual)"
+                                                    class="ml-2 text-amber-700 hover:text-amber-900 underline font-semibold">🔔 enviar / recordar retiro</button>
+                                            @else
+                                                <button wire:click="enviarIngreso({{ $cliente->nro_ingreso }})"
+                                                    wire:confirm="¿Enviar el aviso de ingreso por WhatsApp? (al número actual)"
+                                                    class="ml-2 text-blue-600 hover:text-blue-800 underline font-semibold">📲 enviar aviso de ingreso</button>
+                                            @endif
+                                        </td>
+                                    </tr>
 
                                     @if($cliente->estado=='Terminado')
                                     <tr> 
