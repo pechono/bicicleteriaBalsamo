@@ -144,7 +144,17 @@ public $operacionNro;
             }
         }
 
-        return view('livewire.service.egreso', compact('clientes', 'precios', 'whatsapp'));
+        // Historial de WhatsApp del ingreso abierto: TODOS los mensajes de esa bici (#nro),
+        // sin importar el teléfono (así también se ven los que salieron al número viejo).
+        $historialWa = collect();
+        if ($this->ver) {
+            $nroFmtVer = str_pad($this->ver, 4, '0', STR_PAD_LEFT);
+            $historialWa = \App\Models\WhatsAppQueue::where('mensaje', 'like', '%#' . $nroFmtVer . '%')
+                ->orderBy('id')
+                ->get(['id', 'telefono', 'mensaje', 'enviado', 'enviado_en', 'error', 'created_at']);
+        }
+
+        return view('livewire.service.egreso', compact('clientes', 'precios', 'whatsapp', 'historialWa'));
     }
 
     /**

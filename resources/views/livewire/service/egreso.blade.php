@@ -258,6 +258,50 @@
                                         </td>
                                     </tr>
 
+                                    {{-- Historial: TODOS los WhatsApp de esta bici (#nro) --}}
+                                    @if($historialWa->count())
+                                        <tr>
+                                            <td colspan="10" class="px-6 py-2 border-b border-gray-100">
+                                                <div class="text-xs font-semibold text-gray-600 mb-1">📨 Mensajes enviados (#{{ str_pad($cliente->nro_ingreso, 4, '0', STR_PAD_LEFT) }})</div>
+                                                <div class="overflow-x-auto">
+                                                    <table class="w-full text-xs">
+                                                        <thead>
+                                                            <tr class="text-left text-gray-500 border-b">
+                                                                <th class="py-1 pr-3">Fecha</th>
+                                                                <th class="pr-3">Teléfono</th>
+                                                                <th class="pr-3">Tipo</th>
+                                                                <th class="pr-3">Estado</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($historialWa as $m)
+                                                                @php
+                                                                    $txt = (string) $m->mensaje;
+                                                                    $tipo = str_contains($txt, 'ingresó') ? 'Ingreso'
+                                                                          : ((str_contains($txt, 'lista para retirar') || str_contains($txt, 'recordamos')) ? 'Lista / recordatorio' : 'Mensaje');
+                                                                @endphp
+                                                                <tr class="border-b border-gray-50">
+                                                                    <td class="py-1 pr-3 whitespace-nowrap">{{ \Carbon\Carbon::parse($m->created_at)->format('d/m/Y H:i') }}</td>
+                                                                    <td class="pr-3 whitespace-nowrap">{{ $m->telefono }}</td>
+                                                                    <td class="pr-3">{{ $tipo }}</td>
+                                                                    <td class="pr-3 whitespace-nowrap">
+                                                                        @if($m->enviado)
+                                                                            <span class="text-green-600">✓ enviado</span>@if($m->enviado_en)<span class="text-gray-400"> {{ \Carbon\Carbon::parse($m->enviado_en)->format('d/m H:i') }}</span>@endif
+                                                                        @elseif($m->error)
+                                                                            <span class="text-red-500" title="{{ $m->error }}">✗ falló</span>
+                                                                        @else
+                                                                            <span class="text-amber-600">⏳ en cola</span>
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+
                                     @if($cliente->estado=='Terminado')
                                     <tr> 
                                         
